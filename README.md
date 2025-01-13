@@ -1,1 +1,1 @@
-# Solid Safe Language (SoSal)
+# Social Safe Language (SoSaL)
