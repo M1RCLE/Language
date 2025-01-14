@@ -1,1 +1,48 @@
-let x = 2 + (2 * 2);
+// Объявление глобальных переменных
+let x = 10;
+let y = 20;
+
+// Простая функция для сложения двух чисел
+func add(a, b) {
+    return a + b;
+}
+
+// Факториал через рекурсию
+func factorial(n) {
+    if (n <= 1) {
+        return 1;
+    } else {
+        return n * factorial(n - 1);
+    }
+}
+
+// Вычисление суммы чисел от 1 до n с помощью цикла
+func sumTo(n) {
+    let sum = 0;
+    for (let i = 1; i <= n; i = i + 1) {
+        sum = sum + i;
+    }
+    return sum;
+}
+
+// Главная точка входа в программу
+func main() {
+    let result1 = add(x, y);
+    let result2 = factorial(5);
+    let result3 = sumTo(10);
+
+    // Условие с логическим оператором
+    if (result1 > result2) {
+        print("Result1 is greater than Result2");
+    } else {
+        print("Result1 is less than or equal to Result2");
+    }
+
+    // Вывод результатов
+    print("Sum of x and y: ", result1);
+    print("Factorial of 5: ", result2);
+    print("Sum from 1 to 10: ", result3);
+}
+
+// Вызов главной функции
+main();
