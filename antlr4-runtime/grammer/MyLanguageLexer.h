@@ -26,7 +26,11 @@ public:
 
   virtual const std::vector<std::string>& getChannelNames() const override;
   virtual const std::vector<std::string>& getModeNames() const override;
+<<<<<<< Updated upstream
   //virtual const std::vector<std::string>& getTokenNames() const override; // deprecated, use vocabulary instead
+=======
+//  virtual const std::vector<std::string>& getTokenNames() const override; // deprecated, use vocabulary instead
+>>>>>>> Stashed changes
   virtual antlr4::dfa::Vocabulary& getVocabulary() const override;
 
   virtual antlr4::atn::SerializedATNView getSerializedATN() const override;
@@ -44,7 +48,7 @@ private:
   static std::vector<std::string> _symbolicNames;
   static antlr4::dfa::Vocabulary _vocabulary;
   static antlr4::atn::ATN _atn;
-  static std::vector<uint16_t> _serializedATN;
+  static antlr4::atn::SerializedATNView _serializedATN;
 
 
   // Individual action functions triggered by action() above.

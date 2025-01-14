@@ -32,15 +32,15 @@ const std::vector<std::string>& MyLanguageLexer::getModeNames() const {
   return _modeNames;
 }
 
-const std::vector<std::string>& MyLanguageLexer::getTokenNames() const {
-  return _tokenNames;
-}
+//const std::vector<std::string>& MyLanguageLexer::getTokenNames() const {
+//  return _tokenNames;
+//}
 
 dfa::Vocabulary& MyLanguageLexer::getVocabulary() const {
   return _vocabulary;
 }
 
-const std::vector<uint16_t> MyLanguageLexer::getSerializedATN() const {
+atn::SerializedATNView MyLanguageLexer::getSerializedATN() const {
   return _serializedATN;
 }
 
@@ -57,7 +57,7 @@ atn::PredictionContextCache MyLanguageLexer::_sharedContextCache;
 
 // We own the ATN which in turn owns the ATN states.
 atn::ATN MyLanguageLexer::_atn;
-std::vector<uint16_t> MyLanguageLexer::_serializedATN;
+atn::SerializedATNView MyLanguageLexer::_serializedATN;
 
 std::vector<std::string> MyLanguageLexer::_ruleNames = {
   u8"T__0", u8"T__1", u8"T__2", u8"T__3", u8"T__4", u8"T__5", u8"T__6", 
@@ -93,7 +93,7 @@ std::vector<std::string> MyLanguageLexer::_tokenNames;
 MyLanguageLexer::Initializer::Initializer() {
   // This code could be in a static initializer lambda, but VS doesn't allow access to private class members from there.
 	for (size_t i = 0; i < _symbolicNames.size(); ++i) {
-		std::string name = _vocabulary.getLiteralName(i);
+		std::string name = std::string(_vocabulary.getLiteralName(i));
 		if (name.empty()) {
 			name = _vocabulary.getSymbolicName(i);
 		}
