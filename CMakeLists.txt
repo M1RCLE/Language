@@ -1,30 +1,34 @@
 cmake_minimum_required(VERSION 3.10)
 
-# Укажите проект
+# Project name
 project(SoSaL)
 
-# Укажите стандарт C++
+# C++ standard
 set(CMAKE_CXX_STANDARD 17)
 
-# Укажите путь к установке ANTLR Runtime (с установленными файлами)
-set(ANTLR_RUNTIME_DIR "${CMAKE_CURRENT_SOURCE_DIR}/antlr4-runtime")
+# Path to ANTLR Runtime
+set(ANTLR_RUNTIME_DIR "${CMAKE_CURRENT_SOURCE_DIR}/antlr4/runtime/Cpp/build/antlr4-runtime")
+set(SRC_DIR "${ANTLR_RUNTIME_DIR}/grammer")
+set(ANTLR_RUNTIME_LIB_DIR "${ANTLR_RUNTIME_DIR}/lib")
 
-# Укажите путь к сгенерированным файлам (например, HelloLexer.h, HelloParser.h)
-set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/antlr4-runtime/grammer")
-
-# Укажите директории с заголовочными файлами
+# Include directories
 include_directories(
-        ${ANTLR_RUNTIME_DIR}/include/antlr4-runtime       # Путь к заголовочным файлам ANTLR Runtime
-        ${SRC_DIR}                                        # Путь к сгенерированным заголовочным файлам
+        ${ANTLR_RUNTIME_DIR}/include/antlr4-runtime   # ANTLR runtime headers
+        ${SRC_DIR}                                   # Generated headers
 )
 
-# Укажите директорию с библиотеками ANTLR Runtime
-link_directories(
-        ${ANTLR_RUNTIME_DIR}          # Путь к библиотекам ANTLR Runtime
+# Add all generated source files for lexer and parser
+set(GENERATED_SOURCES
+        ${SRC_DIR}/MyLanguageLexer.cpp
+        ${SRC_DIR}/MyLanguageParser.cpp
+        ${SRC_DIR}/MyLanguageBaseListener.cpp  # Add other files as needed
 )
 
-# Укажите исполнимаемый файл (это ваш проект)
-add_executable(language_antlr main.cpp)
+# Add executable
+add_executable(language_antlr main.cpp ${GENERATED_SOURCES})
 
-# Линкуем библиотеку ANTLR Runtime с вашим проектом
-target_link_libraries(language_antlr antlr4-runtime)
+# Link ANTLR runtime library
+target_link_libraries(language_antlr ${ANTLR_RUNTIME_LIB_DIR}/libantlr4-runtime.a)
+
+# Set RPATH for runtime library
+set(CMAKE_BUILD_RPATH "${ANTLR_RUNTIME_LIB_DIR}")
