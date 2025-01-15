@@ -7,8 +7,8 @@ project(SoSaL)
 set(CMAKE_CXX_STANDARD 17)
 
 # Path to ANTLR Runtime
-set(ANTLR_RUNTIME_DIR "${CMAKE_CURRENT_SOURCE_DIR}/antlr4/runtime/Cpp/build/antlr4-runtime")
-set(SRC_DIR "${ANTLR_RUNTIME_DIR}/grammer")
+set(ANTLR_RUNTIME_DIR "${CMAKE_CURRENT_SOURCE_DIR}/antlr4-gen")
+set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/grammer")
 set(ANTLR_RUNTIME_LIB_DIR "${ANTLR_RUNTIME_DIR}/lib")
 
 # Include directories
