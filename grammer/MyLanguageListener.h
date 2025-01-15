@@ -38,9 +38,6 @@ public:
   virtual void enterWhileLoop(MyLanguageParser::WhileLoopContext *ctx) = 0;
   virtual void exitWhileLoop(MyLanguageParser::WhileLoopContext *ctx) = 0;
 
-  virtual void enterForLoopAssignment(MyLanguageParser::ForLoopAssignmentContext *ctx) = 0;
-  virtual void exitForLoopAssignment(MyLanguageParser::ForLoopAssignmentContext *ctx) = 0;
-
   virtual void enterForLoop(MyLanguageParser::ForLoopContext *ctx) = 0;
   virtual void exitForLoop(MyLanguageParser::ForLoopContext *ctx) = 0;
 

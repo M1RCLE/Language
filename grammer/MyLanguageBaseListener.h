@@ -40,9 +40,6 @@ public:
   virtual void enterWhileLoop(MyLanguageParser::WhileLoopContext * /*ctx*/) override { }
   virtual void exitWhileLoop(MyLanguageParser::WhileLoopContext * /*ctx*/) override { }
 
-  virtual void enterForLoopAssignment(MyLanguageParser::ForLoopAssignmentContext * /*ctx*/) override { }
-  virtual void exitForLoopAssignment(MyLanguageParser::ForLoopAssignmentContext * /*ctx*/) override { }
-
   virtual void enterForLoop(MyLanguageParser::ForLoopContext * /*ctx*/) override { }
   virtual void exitForLoop(MyLanguageParser::ForLoopContext * /*ctx*/) override { }
 

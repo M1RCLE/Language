@@ -3,6 +3,7 @@
 
 
 #include "MyLanguageListener.h"
+#include "MyLanguageVisitor.h"
 
 #include "MyLanguageParser.h"
 
@@ -53,10 +54,9 @@ void mylanguageParserInitialize() {
   auto staticData = std::make_unique<MyLanguageParserStaticData>(
     std::vector<std::string>{
       "program", "statement", "varDeclaration", "assignment", "functionDeclaration", 
-      "parameterList", "ifStatement", "whileLoop", "forLoopAssignment", 
-      "forLoop", "returnStatement", "block", "expressionStatement", "expression", 
-      "comparison", "addition", "multiplication", "unary", "primary", "functionCall", 
-      "argumentList"
+      "parameterList", "ifStatement", "whileLoop", "forLoop", "returnStatement", 
+      "block", "expressionStatement", "expression", "comparison", "addition", 
+      "multiplication", "unary", "primary", "functionCall", "argumentList"
     },
     std::vector<std::string>{
       "", "'let'", "'='", "';'", "'func'", "'('", "')'", "','", "'if'", 
@@ -71,71 +71,70 @@ void mylanguageParserInitialize() {
     }
   );
   static const int32_t serializedATNSegment[] = {
-  	4,1,34,205,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,
+  	4,1,34,199,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,
   	7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,2,14,7,
-  	14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,20,7,20,1,0,5,
-  	0,44,8,0,10,0,12,0,47,9,0,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,
-  	59,8,1,1,2,1,2,1,2,1,2,3,2,65,8,2,1,2,1,2,1,3,1,3,1,3,1,3,1,3,1,4,1,4,
-  	1,4,1,4,3,4,78,8,4,1,4,1,4,1,4,1,5,1,5,1,5,5,5,86,8,5,10,5,12,5,89,9,
-  	5,1,6,1,6,1,6,1,6,1,6,1,6,1,6,3,6,98,8,6,1,7,1,7,1,7,1,7,1,7,1,7,1,8,
-  	1,8,1,8,1,8,1,9,1,9,1,9,1,9,1,9,3,9,115,8,9,1,9,3,9,118,8,9,1,9,1,9,1,
-  	9,3,9,123,8,9,1,9,1,9,1,9,1,10,1,10,3,10,130,8,10,1,10,1,10,1,11,1,11,
-  	5,11,136,8,11,10,11,12,11,139,9,11,1,11,1,11,1,12,1,12,1,12,1,13,1,13,
-  	1,14,1,14,1,14,5,14,151,8,14,10,14,12,14,154,9,14,1,15,1,15,1,15,5,15,
-  	159,8,15,10,15,12,15,162,9,15,1,16,1,16,1,16,5,16,167,8,16,10,16,12,16,
-  	170,9,16,1,17,1,17,1,17,3,17,175,8,17,1,18,1,18,1,18,1,18,1,18,1,18,1,
-  	18,1,18,1,18,1,18,1,18,3,18,188,8,18,1,19,1,19,1,19,3,19,193,8,19,1,19,
-  	1,19,1,20,1,20,1,20,5,20,200,8,20,10,20,12,20,203,9,20,1,20,0,0,21,0,
-  	2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,0,4,1,0,15,20,
-  	1,0,21,22,1,0,23,24,2,0,21,22,25,25,215,0,45,1,0,0,0,2,58,1,0,0,0,4,60,
-  	1,0,0,0,6,68,1,0,0,0,8,73,1,0,0,0,10,82,1,0,0,0,12,90,1,0,0,0,14,99,1,
-  	0,0,0,16,105,1,0,0,0,18,109,1,0,0,0,20,127,1,0,0,0,22,133,1,0,0,0,24,
-  	142,1,0,0,0,26,145,1,0,0,0,28,147,1,0,0,0,30,155,1,0,0,0,32,163,1,0,0,
-  	0,34,174,1,0,0,0,36,187,1,0,0,0,38,189,1,0,0,0,40,196,1,0,0,0,42,44,3,
-  	2,1,0,43,42,1,0,0,0,44,47,1,0,0,0,45,43,1,0,0,0,45,46,1,0,0,0,46,48,1,
-  	0,0,0,47,45,1,0,0,0,48,49,5,0,0,1,49,1,1,0,0,0,50,59,3,4,2,0,51,59,3,
-  	6,3,0,52,59,3,8,4,0,53,59,3,12,6,0,54,59,3,14,7,0,55,59,3,18,9,0,56,59,
-  	3,24,12,0,57,59,3,20,10,0,58,50,1,0,0,0,58,51,1,0,0,0,58,52,1,0,0,0,58,
-  	53,1,0,0,0,58,54,1,0,0,0,58,55,1,0,0,0,58,56,1,0,0,0,58,57,1,0,0,0,59,
-  	3,1,0,0,0,60,61,5,1,0,0,61,64,5,28,0,0,62,63,5,2,0,0,63,65,3,26,13,0,
-  	64,62,1,0,0,0,64,65,1,0,0,0,65,66,1,0,0,0,66,67,5,3,0,0,67,5,1,0,0,0,
-  	68,69,5,28,0,0,69,70,5,2,0,0,70,71,3,26,13,0,71,72,5,3,0,0,72,7,1,0,0,
-  	0,73,74,5,4,0,0,74,75,5,28,0,0,75,77,5,5,0,0,76,78,3,10,5,0,77,76,1,0,
-  	0,0,77,78,1,0,0,0,78,79,1,0,0,0,79,80,5,6,0,0,80,81,3,22,11,0,81,9,1,
-  	0,0,0,82,87,5,28,0,0,83,84,5,7,0,0,84,86,5,28,0,0,85,83,1,0,0,0,86,89,
-  	1,0,0,0,87,85,1,0,0,0,87,88,1,0,0,0,88,11,1,0,0,0,89,87,1,0,0,0,90,91,
-  	5,8,0,0,91,92,5,5,0,0,92,93,3,26,13,0,93,94,5,6,0,0,94,97,3,22,11,0,95,
-  	96,5,9,0,0,96,98,3,22,11,0,97,95,1,0,0,0,97,98,1,0,0,0,98,13,1,0,0,0,
-  	99,100,5,10,0,0,100,101,5,5,0,0,101,102,3,26,13,0,102,103,5,6,0,0,103,
-  	104,3,22,11,0,104,15,1,0,0,0,105,106,5,28,0,0,106,107,5,2,0,0,107,108,
-  	3,26,13,0,108,17,1,0,0,0,109,110,5,11,0,0,110,114,5,5,0,0,111,115,3,4,
-  	2,0,112,115,3,6,3,0,113,115,5,3,0,0,114,111,1,0,0,0,114,112,1,0,0,0,114,
-  	113,1,0,0,0,115,117,1,0,0,0,116,118,3,26,13,0,117,116,1,0,0,0,117,118,
-  	1,0,0,0,118,119,1,0,0,0,119,122,5,3,0,0,120,123,3,26,13,0,121,123,3,16,
-  	8,0,122,120,1,0,0,0,122,121,1,0,0,0,122,123,1,0,0,0,123,124,1,0,0,0,124,
-  	125,5,6,0,0,125,126,3,22,11,0,126,19,1,0,0,0,127,129,5,12,0,0,128,130,
-  	3,26,13,0,129,128,1,0,0,0,129,130,1,0,0,0,130,131,1,0,0,0,131,132,5,3,
-  	0,0,132,21,1,0,0,0,133,137,5,13,0,0,134,136,3,2,1,0,135,134,1,0,0,0,136,
-  	139,1,0,0,0,137,135,1,0,0,0,137,138,1,0,0,0,138,140,1,0,0,0,139,137,1,
-  	0,0,0,140,141,5,14,0,0,141,23,1,0,0,0,142,143,3,26,13,0,143,144,5,3,0,
-  	0,144,25,1,0,0,0,145,146,3,28,14,0,146,27,1,0,0,0,147,152,3,30,15,0,148,
-  	149,7,0,0,0,149,151,3,30,15,0,150,148,1,0,0,0,151,154,1,0,0,0,152,150,
-  	1,0,0,0,152,153,1,0,0,0,153,29,1,0,0,0,154,152,1,0,0,0,155,160,3,32,16,
-  	0,156,157,7,1,0,0,157,159,3,32,16,0,158,156,1,0,0,0,159,162,1,0,0,0,160,
-  	158,1,0,0,0,160,161,1,0,0,0,161,31,1,0,0,0,162,160,1,0,0,0,163,168,3,
-  	34,17,0,164,165,7,2,0,0,165,167,3,34,17,0,166,164,1,0,0,0,167,170,1,0,
-  	0,0,168,166,1,0,0,0,168,169,1,0,0,0,169,33,1,0,0,0,170,168,1,0,0,0,171,
-  	172,7,3,0,0,172,175,3,34,17,0,173,175,3,36,18,0,174,171,1,0,0,0,174,173,
-  	1,0,0,0,175,35,1,0,0,0,176,188,5,29,0,0,177,188,5,30,0,0,178,188,5,31,
-  	0,0,179,188,5,26,0,0,180,188,5,27,0,0,181,182,5,5,0,0,182,183,3,26,13,
-  	0,183,184,5,6,0,0,184,188,1,0,0,0,185,188,5,28,0,0,186,188,3,38,19,0,
-  	187,176,1,0,0,0,187,177,1,0,0,0,187,178,1,0,0,0,187,179,1,0,0,0,187,180,
-  	1,0,0,0,187,181,1,0,0,0,187,185,1,0,0,0,187,186,1,0,0,0,188,37,1,0,0,
-  	0,189,190,5,28,0,0,190,192,5,5,0,0,191,193,3,40,20,0,192,191,1,0,0,0,
-  	192,193,1,0,0,0,193,194,1,0,0,0,194,195,5,6,0,0,195,39,1,0,0,0,196,201,
-  	3,26,13,0,197,198,5,7,0,0,198,200,3,26,13,0,199,197,1,0,0,0,200,203,1,
-  	0,0,0,201,199,1,0,0,0,201,202,1,0,0,0,202,41,1,0,0,0,203,201,1,0,0,0,
-  	18,45,58,64,77,87,97,114,117,122,129,137,152,160,168,174,187,192,201
+  	14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,1,0,5,0,42,8,0,10,
+  	0,12,0,45,9,0,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,57,8,1,1,2,
+  	1,2,1,2,1,2,3,2,63,8,2,1,2,1,2,1,3,1,3,1,3,1,3,1,3,1,4,1,4,1,4,1,4,3,
+  	4,76,8,4,1,4,1,4,1,4,1,5,1,5,1,5,5,5,84,8,5,10,5,12,5,87,9,5,1,6,1,6,
+  	1,6,1,6,1,6,1,6,1,6,3,6,96,8,6,1,7,1,7,1,7,1,7,1,7,1,7,1,8,1,8,1,8,1,
+  	8,1,8,3,8,109,8,8,1,8,3,8,112,8,8,1,8,1,8,1,8,3,8,117,8,8,1,8,1,8,1,8,
+  	1,9,1,9,3,9,124,8,9,1,9,1,9,1,10,1,10,5,10,130,8,10,10,10,12,10,133,9,
+  	10,1,10,1,10,1,11,1,11,1,11,1,12,1,12,1,13,1,13,1,13,5,13,145,8,13,10,
+  	13,12,13,148,9,13,1,14,1,14,1,14,5,14,153,8,14,10,14,12,14,156,9,14,1,
+  	15,1,15,1,15,5,15,161,8,15,10,15,12,15,164,9,15,1,16,1,16,1,16,3,16,169,
+  	8,16,1,17,1,17,1,17,1,17,1,17,1,17,1,17,1,17,1,17,1,17,1,17,3,17,182,
+  	8,17,1,18,1,18,1,18,3,18,187,8,18,1,18,1,18,1,19,1,19,1,19,5,19,194,8,
+  	19,10,19,12,19,197,9,19,1,19,0,0,20,0,2,4,6,8,10,12,14,16,18,20,22,24,
+  	26,28,30,32,34,36,38,0,4,1,0,15,20,1,0,21,22,1,0,23,24,2,0,21,22,25,25,
+  	210,0,43,1,0,0,0,2,56,1,0,0,0,4,58,1,0,0,0,6,66,1,0,0,0,8,71,1,0,0,0,
+  	10,80,1,0,0,0,12,88,1,0,0,0,14,97,1,0,0,0,16,103,1,0,0,0,18,121,1,0,0,
+  	0,20,127,1,0,0,0,22,136,1,0,0,0,24,139,1,0,0,0,26,141,1,0,0,0,28,149,
+  	1,0,0,0,30,157,1,0,0,0,32,168,1,0,0,0,34,181,1,0,0,0,36,183,1,0,0,0,38,
+  	190,1,0,0,0,40,42,3,2,1,0,41,40,1,0,0,0,42,45,1,0,0,0,43,41,1,0,0,0,43,
+  	44,1,0,0,0,44,46,1,0,0,0,45,43,1,0,0,0,46,47,5,0,0,1,47,1,1,0,0,0,48,
+  	57,3,4,2,0,49,57,3,6,3,0,50,57,3,8,4,0,51,57,3,12,6,0,52,57,3,14,7,0,
+  	53,57,3,16,8,0,54,57,3,22,11,0,55,57,3,18,9,0,56,48,1,0,0,0,56,49,1,0,
+  	0,0,56,50,1,0,0,0,56,51,1,0,0,0,56,52,1,0,0,0,56,53,1,0,0,0,56,54,1,0,
+  	0,0,56,55,1,0,0,0,57,3,1,0,0,0,58,59,5,1,0,0,59,62,5,28,0,0,60,61,5,2,
+  	0,0,61,63,3,24,12,0,62,60,1,0,0,0,62,63,1,0,0,0,63,64,1,0,0,0,64,65,5,
+  	3,0,0,65,5,1,0,0,0,66,67,5,28,0,0,67,68,5,2,0,0,68,69,3,24,12,0,69,70,
+  	5,3,0,0,70,7,1,0,0,0,71,72,5,4,0,0,72,73,5,28,0,0,73,75,5,5,0,0,74,76,
+  	3,10,5,0,75,74,1,0,0,0,75,76,1,0,0,0,76,77,1,0,0,0,77,78,5,6,0,0,78,79,
+  	3,20,10,0,79,9,1,0,0,0,80,85,5,28,0,0,81,82,5,7,0,0,82,84,5,28,0,0,83,
+  	81,1,0,0,0,84,87,1,0,0,0,85,83,1,0,0,0,85,86,1,0,0,0,86,11,1,0,0,0,87,
+  	85,1,0,0,0,88,89,5,8,0,0,89,90,5,5,0,0,90,91,3,24,12,0,91,92,5,6,0,0,
+  	92,95,3,20,10,0,93,94,5,9,0,0,94,96,3,20,10,0,95,93,1,0,0,0,95,96,1,0,
+  	0,0,96,13,1,0,0,0,97,98,5,10,0,0,98,99,5,5,0,0,99,100,3,24,12,0,100,101,
+  	5,6,0,0,101,102,3,20,10,0,102,15,1,0,0,0,103,104,5,11,0,0,104,108,5,5,
+  	0,0,105,109,3,4,2,0,106,109,3,6,3,0,107,109,5,3,0,0,108,105,1,0,0,0,108,
+  	106,1,0,0,0,108,107,1,0,0,0,109,111,1,0,0,0,110,112,3,24,12,0,111,110,
+  	1,0,0,0,111,112,1,0,0,0,112,113,1,0,0,0,113,116,5,3,0,0,114,117,3,24,
+  	12,0,115,117,3,6,3,0,116,114,1,0,0,0,116,115,1,0,0,0,116,117,1,0,0,0,
+  	117,118,1,0,0,0,118,119,5,6,0,0,119,120,3,20,10,0,120,17,1,0,0,0,121,
+  	123,5,12,0,0,122,124,3,24,12,0,123,122,1,0,0,0,123,124,1,0,0,0,124,125,
+  	1,0,0,0,125,126,5,3,0,0,126,19,1,0,0,0,127,131,5,13,0,0,128,130,3,2,1,
+  	0,129,128,1,0,0,0,130,133,1,0,0,0,131,129,1,0,0,0,131,132,1,0,0,0,132,
+  	134,1,0,0,0,133,131,1,0,0,0,134,135,5,14,0,0,135,21,1,0,0,0,136,137,3,
+  	24,12,0,137,138,5,3,0,0,138,23,1,0,0,0,139,140,3,26,13,0,140,25,1,0,0,
+  	0,141,146,3,28,14,0,142,143,7,0,0,0,143,145,3,28,14,0,144,142,1,0,0,0,
+  	145,148,1,0,0,0,146,144,1,0,0,0,146,147,1,0,0,0,147,27,1,0,0,0,148,146,
+  	1,0,0,0,149,154,3,30,15,0,150,151,7,1,0,0,151,153,3,30,15,0,152,150,1,
+  	0,0,0,153,156,1,0,0,0,154,152,1,0,0,0,154,155,1,0,0,0,155,29,1,0,0,0,
+  	156,154,1,0,0,0,157,162,3,32,16,0,158,159,7,2,0,0,159,161,3,32,16,0,160,
+  	158,1,0,0,0,161,164,1,0,0,0,162,160,1,0,0,0,162,163,1,0,0,0,163,31,1,
+  	0,0,0,164,162,1,0,0,0,165,166,7,3,0,0,166,169,3,32,16,0,167,169,3,34,
+  	17,0,168,165,1,0,0,0,168,167,1,0,0,0,169,33,1,0,0,0,170,182,5,29,0,0,
+  	171,182,5,30,0,0,172,182,5,31,0,0,173,182,5,26,0,0,174,182,5,27,0,0,175,
+  	176,5,5,0,0,176,177,3,24,12,0,177,178,5,6,0,0,178,182,1,0,0,0,179,182,
+  	5,28,0,0,180,182,3,36,18,0,181,170,1,0,0,0,181,171,1,0,0,0,181,172,1,
+  	0,0,0,181,173,1,0,0,0,181,174,1,0,0,0,181,175,1,0,0,0,181,179,1,0,0,0,
+  	181,180,1,0,0,0,182,35,1,0,0,0,183,184,5,28,0,0,184,186,5,5,0,0,185,187,
+  	3,38,19,0,186,185,1,0,0,0,186,187,1,0,0,0,187,188,1,0,0,0,188,189,5,6,
+  	0,0,189,37,1,0,0,0,190,195,3,24,12,0,191,192,5,7,0,0,192,194,3,24,12,
+  	0,193,191,1,0,0,0,194,197,1,0,0,0,195,193,1,0,0,0,195,196,1,0,0,0,196,
+  	39,1,0,0,0,197,195,1,0,0,0,18,43,56,62,75,85,95,108,111,116,123,131,146,
+  	154,162,168,181,186,195
   };
   staticData->serializedATN = antlr4::atn::SerializedATNView(serializedATNSegment, sizeof(serializedATNSegment) / sizeof(serializedATNSegment[0]));
 
@@ -219,6 +218,14 @@ void MyLanguageParser::ProgramContext::exitRule(tree::ParseTreeListener *listene
     parserListener->exitProgram(this);
 }
 
+
+std::any MyLanguageParser::ProgramContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MyLanguageVisitor*>(visitor))
+    return parserVisitor->visitProgram(this);
+  else
+    return visitor->visitChildren(this);
+}
+
 MyLanguageParser::ProgramContext* MyLanguageParser::program() {
   ProgramContext *_localctx = _tracker.createInstance<ProgramContext>(_ctx, getState());
   enterRule(_localctx, 0, MyLanguageParser::RuleProgram);
@@ -233,18 +240,18 @@ MyLanguageParser::ProgramContext* MyLanguageParser::program() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(45);
+    setState(43);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 4267711794) != 0)) {
-      setState(42);
+      setState(40);
       statement();
-      setState(47);
+      setState(45);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
-    setState(48);
+    setState(46);
     match(MyLanguageParser::EOF);
    
   }
@@ -312,6 +319,14 @@ void MyLanguageParser::StatementContext::exitRule(tree::ParseTreeListener *liste
     parserListener->exitStatement(this);
 }
 
+
+std::any MyLanguageParser::StatementContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MyLanguageVisitor*>(visitor))
+    return parserVisitor->visitStatement(this);
+  else
+    return visitor->visitChildren(this);
+}
+
 MyLanguageParser::StatementContext* MyLanguageParser::statement() {
   StatementContext *_localctx = _tracker.createInstance<StatementContext>(_ctx, getState());
   enterRule(_localctx, 2, MyLanguageParser::RuleStatement);
@@ -324,61 +339,61 @@ MyLanguageParser::StatementContext* MyLanguageParser::statement() {
     exitRule();
   });
   try {
-    setState(58);
+    setState(56);
     _errHandler->sync(this);
     switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 1, _ctx)) {
     case 1: {
       enterOuterAlt(_localctx, 1);
-      setState(50);
+      setState(48);
       varDeclaration();
       break;
     }
 
     case 2: {
       enterOuterAlt(_localctx, 2);
-      setState(51);
+      setState(49);
       assignment();
       break;
     }
 
     case 3: {
       enterOuterAlt(_localctx, 3);
-      setState(52);
+      setState(50);
       functionDeclaration();
       break;
     }
 
     case 4: {
       enterOuterAlt(_localctx, 4);
-      setState(53);
+      setState(51);
       ifStatement();
       break;
     }
 
     case 5: {
       enterOuterAlt(_localctx, 5);
-      setState(54);
+      setState(52);
       whileLoop();
       break;
     }
 
     case 6: {
       enterOuterAlt(_localctx, 6);
-      setState(55);
+      setState(53);
       forLoop();
       break;
     }
 
     case 7: {
       enterOuterAlt(_localctx, 7);
-      setState(56);
+      setState(54);
       expressionStatement();
       break;
     }
 
     case 8: {
       enterOuterAlt(_localctx, 8);
-      setState(57);
+      setState(55);
       returnStatement();
       break;
     }
@@ -428,6 +443,14 @@ void MyLanguageParser::VarDeclarationContext::exitRule(tree::ParseTreeListener *
     parserListener->exitVarDeclaration(this);
 }
 
+
+std::any MyLanguageParser::VarDeclarationContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MyLanguageVisitor*>(visitor))
+    return parserVisitor->visitVarDeclaration(this);
+  else
+    return visitor->visitChildren(this);
+}
+
 MyLanguageParser::VarDeclarationContext* MyLanguageParser::varDeclaration() {
   VarDeclarationContext *_localctx = _tracker.createInstance<VarDeclarationContext>(_ctx, getState());
   enterRule(_localctx, 4, MyLanguageParser::RuleVarDeclaration);
@@ -442,21 +465,21 @@ MyLanguageParser::VarDeclarationContext* MyLanguageParser::varDeclaration() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(60);
+    setState(58);
     match(MyLanguageParser::T__0);
-    setState(61);
+    setState(59);
     match(MyLanguageParser::ID);
-    setState(64);
+    setState(62);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == MyLanguageParser::T__1) {
-      setState(62);
+      setState(60);
       match(MyLanguageParser::T__1);
-      setState(63);
+      setState(61);
       expression();
     }
-    setState(66);
+    setState(64);
     match(MyLanguageParser::T__2);
    
   }
@@ -500,6 +523,14 @@ void MyLanguageParser::AssignmentContext::exitRule(tree::ParseTreeListener *list
     parserListener->exitAssignment(this);
 }
 
+
+std::any MyLanguageParser::AssignmentContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MyLanguageVisitor*>(visitor))
+    return parserVisitor->visitAssignment(this);
+  else
+    return visitor->visitChildren(this);
+}
+
 MyLanguageParser::AssignmentContext* MyLanguageParser::assignment() {
   AssignmentContext *_localctx = _tracker.createInstance<AssignmentContext>(_ctx, getState());
   enterRule(_localctx, 6, MyLanguageParser::RuleAssignment);
@@ -513,13 +544,13 @@ MyLanguageParser::AssignmentContext* MyLanguageParser::assignment() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(68);
+    setState(66);
     match(MyLanguageParser::ID);
-    setState(69);
+    setState(67);
     match(MyLanguageParser::T__1);
-    setState(70);
+    setState(68);
     expression();
-    setState(71);
+    setState(69);
     match(MyLanguageParser::T__2);
    
   }
@@ -567,6 +598,14 @@ void MyLanguageParser::FunctionDeclarationContext::exitRule(tree::ParseTreeListe
     parserListener->exitFunctionDeclaration(this);
 }
 
+
+std::any MyLanguageParser::FunctionDeclarationContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MyLanguageVisitor*>(visitor))
+    return parserVisitor->visitFunctionDeclaration(this);
+  else
+    return visitor->visitChildren(this);
+}
+
 MyLanguageParser::FunctionDeclarationContext* MyLanguageParser::functionDeclaration() {
   FunctionDeclarationContext *_localctx = _tracker.createInstance<FunctionDeclarationContext>(_ctx, getState());
   enterRule(_localctx, 8, MyLanguageParser::RuleFunctionDeclaration);
@@ -581,23 +620,23 @@ MyLanguageParser::FunctionDeclarationContext* MyLanguageParser::functionDeclarat
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(73);
+    setState(71);
     match(MyLanguageParser::T__3);
-    setState(74);
+    setState(72);
     match(MyLanguageParser::ID);
-    setState(75);
+    setState(73);
     match(MyLanguageParser::T__4);
-    setState(77);
+    setState(75);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == MyLanguageParser::ID) {
-      setState(76);
+      setState(74);
       parameterList();
     }
-    setState(79);
+    setState(77);
     match(MyLanguageParser::T__5);
-    setState(80);
+    setState(78);
     block();
    
   }
@@ -641,6 +680,14 @@ void MyLanguageParser::ParameterListContext::exitRule(tree::ParseTreeListener *l
     parserListener->exitParameterList(this);
 }
 
+
+std::any MyLanguageParser::ParameterListContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MyLanguageVisitor*>(visitor))
+    return parserVisitor->visitParameterList(this);
+  else
+    return visitor->visitChildren(this);
+}
+
 MyLanguageParser::ParameterListContext* MyLanguageParser::parameterList() {
   ParameterListContext *_localctx = _tracker.createInstance<ParameterListContext>(_ctx, getState());
   enterRule(_localctx, 10, MyLanguageParser::RuleParameterList);
@@ -655,17 +702,17 @@ MyLanguageParser::ParameterListContext* MyLanguageParser::parameterList() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(82);
+    setState(80);
     match(MyLanguageParser::ID);
-    setState(87);
+    setState(85);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (_la == MyLanguageParser::T__6) {
-      setState(83);
+      setState(81);
       match(MyLanguageParser::T__6);
-      setState(84);
+      setState(82);
       match(MyLanguageParser::ID);
-      setState(89);
+      setState(87);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
@@ -715,6 +762,14 @@ void MyLanguageParser::IfStatementContext::exitRule(tree::ParseTreeListener *lis
     parserListener->exitIfStatement(this);
 }
 
+
+std::any MyLanguageParser::IfStatementContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MyLanguageVisitor*>(visitor))
+    return parserVisitor->visitIfStatement(this);
+  else
+    return visitor->visitChildren(this);
+}
+
 MyLanguageParser::IfStatementContext* MyLanguageParser::ifStatement() {
   IfStatementContext *_localctx = _tracker.createInstance<IfStatementContext>(_ctx, getState());
   enterRule(_localctx, 12, MyLanguageParser::RuleIfStatement);
@@ -729,24 +784,24 @@ MyLanguageParser::IfStatementContext* MyLanguageParser::ifStatement() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(90);
+    setState(88);
     match(MyLanguageParser::T__7);
-    setState(91);
+    setState(89);
     match(MyLanguageParser::T__4);
-    setState(92);
+    setState(90);
     expression();
-    setState(93);
+    setState(91);
     match(MyLanguageParser::T__5);
-    setState(94);
+    setState(92);
     block();
-    setState(97);
+    setState(95);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == MyLanguageParser::T__8) {
-      setState(95);
+      setState(93);
       match(MyLanguageParser::T__8);
-      setState(96);
+      setState(94);
       block();
     }
    
@@ -791,6 +846,14 @@ void MyLanguageParser::WhileLoopContext::exitRule(tree::ParseTreeListener *liste
     parserListener->exitWhileLoop(this);
 }
 
+
+std::any MyLanguageParser::WhileLoopContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MyLanguageVisitor*>(visitor))
+    return parserVisitor->visitWhileLoop(this);
+  else
+    return visitor->visitChildren(this);
+}
+
 MyLanguageParser::WhileLoopContext* MyLanguageParser::whileLoop() {
   WhileLoopContext *_localctx = _tracker.createInstance<WhileLoopContext>(_ctx, getState());
   enterRule(_localctx, 14, MyLanguageParser::RuleWhileLoop);
@@ -804,77 +867,16 @@ MyLanguageParser::WhileLoopContext* MyLanguageParser::whileLoop() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(99);
+    setState(97);
     match(MyLanguageParser::T__9);
-    setState(100);
+    setState(98);
     match(MyLanguageParser::T__4);
-    setState(101);
+    setState(99);
     expression();
-    setState(102);
+    setState(100);
     match(MyLanguageParser::T__5);
-    setState(103);
+    setState(101);
     block();
-   
-  }
-  catch (RecognitionException &e) {
-    _errHandler->reportError(this, e);
-    _localctx->exception = std::current_exception();
-    _errHandler->recover(this, _localctx->exception);
-  }
-
-  return _localctx;
-}
-
-//----------------- ForLoopAssignmentContext ------------------------------------------------------------------
-
-MyLanguageParser::ForLoopAssignmentContext::ForLoopAssignmentContext(ParserRuleContext *parent, size_t invokingState)
-  : ParserRuleContext(parent, invokingState) {
-}
-
-tree::TerminalNode* MyLanguageParser::ForLoopAssignmentContext::ID() {
-  return getToken(MyLanguageParser::ID, 0);
-}
-
-MyLanguageParser::ExpressionContext* MyLanguageParser::ForLoopAssignmentContext::expression() {
-  return getRuleContext<MyLanguageParser::ExpressionContext>(0);
-}
-
-
-size_t MyLanguageParser::ForLoopAssignmentContext::getRuleIndex() const {
-  return MyLanguageParser::RuleForLoopAssignment;
-}
-
-void MyLanguageParser::ForLoopAssignmentContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<MyLanguageListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->enterForLoopAssignment(this);
-}
-
-void MyLanguageParser::ForLoopAssignmentContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<MyLanguageListener *>(listener);
-  if (parserListener != nullptr)
-    parserListener->exitForLoopAssignment(this);
-}
-
-MyLanguageParser::ForLoopAssignmentContext* MyLanguageParser::forLoopAssignment() {
-  ForLoopAssignmentContext *_localctx = _tracker.createInstance<ForLoopAssignmentContext>(_ctx, getState());
-  enterRule(_localctx, 16, MyLanguageParser::RuleForLoopAssignment);
-
-#if __cplusplus > 201703L
-  auto onExit = finally([=, this] {
-#else
-  auto onExit = finally([=] {
-#endif
-    exitRule();
-  });
-  try {
-    enterOuterAlt(_localctx, 1);
-    setState(105);
-    match(MyLanguageParser::ID);
-    setState(106);
-    match(MyLanguageParser::T__1);
-    setState(107);
-    expression();
    
   }
   catch (RecognitionException &e) {
@@ -900,8 +902,12 @@ MyLanguageParser::VarDeclarationContext* MyLanguageParser::ForLoopContext::varDe
   return getRuleContext<MyLanguageParser::VarDeclarationContext>(0);
 }
 
-MyLanguageParser::AssignmentContext* MyLanguageParser::ForLoopContext::assignment() {
-  return getRuleContext<MyLanguageParser::AssignmentContext>(0);
+std::vector<MyLanguageParser::AssignmentContext *> MyLanguageParser::ForLoopContext::assignment() {
+  return getRuleContexts<MyLanguageParser::AssignmentContext>();
+}
+
+MyLanguageParser::AssignmentContext* MyLanguageParser::ForLoopContext::assignment(size_t i) {
+  return getRuleContext<MyLanguageParser::AssignmentContext>(i);
 }
 
 std::vector<MyLanguageParser::ExpressionContext *> MyLanguageParser::ForLoopContext::expression() {
@@ -910,10 +916,6 @@ std::vector<MyLanguageParser::ExpressionContext *> MyLanguageParser::ForLoopCont
 
 MyLanguageParser::ExpressionContext* MyLanguageParser::ForLoopContext::expression(size_t i) {
   return getRuleContext<MyLanguageParser::ExpressionContext>(i);
-}
-
-MyLanguageParser::ForLoopAssignmentContext* MyLanguageParser::ForLoopContext::forLoopAssignment() {
-  return getRuleContext<MyLanguageParser::ForLoopAssignmentContext>(0);
 }
 
 
@@ -933,9 +935,17 @@ void MyLanguageParser::ForLoopContext::exitRule(tree::ParseTreeListener *listene
     parserListener->exitForLoop(this);
 }
 
+
+std::any MyLanguageParser::ForLoopContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MyLanguageVisitor*>(visitor))
+    return parserVisitor->visitForLoop(this);
+  else
+    return visitor->visitChildren(this);
+}
+
 MyLanguageParser::ForLoopContext* MyLanguageParser::forLoop() {
   ForLoopContext *_localctx = _tracker.createInstance<ForLoopContext>(_ctx, getState());
-  enterRule(_localctx, 18, MyLanguageParser::RuleForLoop);
+  enterRule(_localctx, 16, MyLanguageParser::RuleForLoop);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -947,27 +957,27 @@ MyLanguageParser::ForLoopContext* MyLanguageParser::forLoop() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(109);
+    setState(103);
     match(MyLanguageParser::T__10);
-    setState(110);
+    setState(104);
     match(MyLanguageParser::T__4);
-    setState(114);
+    setState(108);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case MyLanguageParser::T__0: {
-        setState(111);
+        setState(105);
         varDeclaration();
         break;
       }
 
       case MyLanguageParser::ID: {
-        setState(112);
+        setState(106);
         assignment();
         break;
       }
 
       case MyLanguageParser::T__2: {
-        setState(113);
+        setState(107);
         match(MyLanguageParser::T__2);
         break;
       }
@@ -975,39 +985,39 @@ MyLanguageParser::ForLoopContext* MyLanguageParser::forLoop() {
     default:
       throw NoViableAltException(this);
     }
-    setState(117);
+    setState(111);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 4267704352) != 0)) {
-      setState(116);
+      setState(110);
       expression();
     }
-    setState(119);
+    setState(113);
     match(MyLanguageParser::T__2);
-    setState(122);
+    setState(116);
     _errHandler->sync(this);
 
     switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 8, _ctx)) {
     case 1: {
-      setState(120);
+      setState(114);
       expression();
       break;
     }
 
     case 2: {
-      setState(121);
-      forLoopAssignment();
+      setState(115);
+      assignment();
       break;
     }
 
     default:
       break;
     }
-    setState(124);
+    setState(118);
     match(MyLanguageParser::T__5);
-    setState(125);
+    setState(119);
     block();
    
   }
@@ -1047,9 +1057,17 @@ void MyLanguageParser::ReturnStatementContext::exitRule(tree::ParseTreeListener 
     parserListener->exitReturnStatement(this);
 }
 
+
+std::any MyLanguageParser::ReturnStatementContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MyLanguageVisitor*>(visitor))
+    return parserVisitor->visitReturnStatement(this);
+  else
+    return visitor->visitChildren(this);
+}
+
 MyLanguageParser::ReturnStatementContext* MyLanguageParser::returnStatement() {
   ReturnStatementContext *_localctx = _tracker.createInstance<ReturnStatementContext>(_ctx, getState());
-  enterRule(_localctx, 20, MyLanguageParser::RuleReturnStatement);
+  enterRule(_localctx, 18, MyLanguageParser::RuleReturnStatement);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1061,18 +1079,18 @@ MyLanguageParser::ReturnStatementContext* MyLanguageParser::returnStatement() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(127);
+    setState(121);
     match(MyLanguageParser::T__11);
-    setState(129);
+    setState(123);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 4267704352) != 0)) {
-      setState(128);
+      setState(122);
       expression();
     }
-    setState(131);
+    setState(125);
     match(MyLanguageParser::T__2);
    
   }
@@ -1116,9 +1134,17 @@ void MyLanguageParser::BlockContext::exitRule(tree::ParseTreeListener *listener)
     parserListener->exitBlock(this);
 }
 
+
+std::any MyLanguageParser::BlockContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MyLanguageVisitor*>(visitor))
+    return parserVisitor->visitBlock(this);
+  else
+    return visitor->visitChildren(this);
+}
+
 MyLanguageParser::BlockContext* MyLanguageParser::block() {
   BlockContext *_localctx = _tracker.createInstance<BlockContext>(_ctx, getState());
-  enterRule(_localctx, 22, MyLanguageParser::RuleBlock);
+  enterRule(_localctx, 20, MyLanguageParser::RuleBlock);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1130,20 +1156,20 @@ MyLanguageParser::BlockContext* MyLanguageParser::block() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(133);
+    setState(127);
     match(MyLanguageParser::T__12);
-    setState(137);
+    setState(131);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 4267711794) != 0)) {
-      setState(134);
+      setState(128);
       statement();
-      setState(139);
+      setState(133);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
-    setState(140);
+    setState(134);
     match(MyLanguageParser::T__13);
    
   }
@@ -1183,9 +1209,17 @@ void MyLanguageParser::ExpressionStatementContext::exitRule(tree::ParseTreeListe
     parserListener->exitExpressionStatement(this);
 }
 
+
+std::any MyLanguageParser::ExpressionStatementContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MyLanguageVisitor*>(visitor))
+    return parserVisitor->visitExpressionStatement(this);
+  else
+    return visitor->visitChildren(this);
+}
+
 MyLanguageParser::ExpressionStatementContext* MyLanguageParser::expressionStatement() {
   ExpressionStatementContext *_localctx = _tracker.createInstance<ExpressionStatementContext>(_ctx, getState());
-  enterRule(_localctx, 24, MyLanguageParser::RuleExpressionStatement);
+  enterRule(_localctx, 22, MyLanguageParser::RuleExpressionStatement);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -1196,9 +1230,9 @@ MyLanguageParser::ExpressionStatementContext* MyLanguageParser::expressionStatem
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(142);
+    setState(136);
     expression();
-    setState(143);
+    setState(137);
     match(MyLanguageParser::T__2);
    
   }
@@ -1238,9 +1272,17 @@ void MyLanguageParser::ExpressionContext::exitRule(tree::ParseTreeListener *list
     parserListener->exitExpression(this);
 }
 
+
+std::any MyLanguageParser::ExpressionContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MyLanguageVisitor*>(visitor))
+    return parserVisitor->visitExpression(this);
+  else
+    return visitor->visitChildren(this);
+}
+
 MyLanguageParser::ExpressionContext* MyLanguageParser::expression() {
   ExpressionContext *_localctx = _tracker.createInstance<ExpressionContext>(_ctx, getState());
-  enterRule(_localctx, 26, MyLanguageParser::RuleExpression);
+  enterRule(_localctx, 24, MyLanguageParser::RuleExpression);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -1251,7 +1293,7 @@ MyLanguageParser::ExpressionContext* MyLanguageParser::expression() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(145);
+    setState(139);
     comparison();
    
   }
@@ -1295,9 +1337,17 @@ void MyLanguageParser::ComparisonContext::exitRule(tree::ParseTreeListener *list
     parserListener->exitComparison(this);
 }
 
+
+std::any MyLanguageParser::ComparisonContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MyLanguageVisitor*>(visitor))
+    return parserVisitor->visitComparison(this);
+  else
+    return visitor->visitChildren(this);
+}
+
 MyLanguageParser::ComparisonContext* MyLanguageParser::comparison() {
   ComparisonContext *_localctx = _tracker.createInstance<ComparisonContext>(_ctx, getState());
-  enterRule(_localctx, 28, MyLanguageParser::RuleComparison);
+  enterRule(_localctx, 26, MyLanguageParser::RuleComparison);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1309,14 +1359,14 @@ MyLanguageParser::ComparisonContext* MyLanguageParser::comparison() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(147);
+    setState(141);
     addition();
-    setState(152);
+    setState(146);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 2064384) != 0)) {
-      setState(148);
+      setState(142);
       _la = _input->LA(1);
       if (!((((_la & ~ 0x3fULL) == 0) &&
         ((1ULL << _la) & 2064384) != 0))) {
@@ -1326,9 +1376,9 @@ MyLanguageParser::ComparisonContext* MyLanguageParser::comparison() {
         _errHandler->reportMatch(this);
         consume();
       }
-      setState(149);
+      setState(143);
       addition();
-      setState(154);
+      setState(148);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
@@ -1374,9 +1424,17 @@ void MyLanguageParser::AdditionContext::exitRule(tree::ParseTreeListener *listen
     parserListener->exitAddition(this);
 }
 
+
+std::any MyLanguageParser::AdditionContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MyLanguageVisitor*>(visitor))
+    return parserVisitor->visitAddition(this);
+  else
+    return visitor->visitChildren(this);
+}
+
 MyLanguageParser::AdditionContext* MyLanguageParser::addition() {
   AdditionContext *_localctx = _tracker.createInstance<AdditionContext>(_ctx, getState());
-  enterRule(_localctx, 30, MyLanguageParser::RuleAddition);
+  enterRule(_localctx, 28, MyLanguageParser::RuleAddition);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1388,15 +1446,15 @@ MyLanguageParser::AdditionContext* MyLanguageParser::addition() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(155);
+    setState(149);
     multiplication();
-    setState(160);
+    setState(154);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (_la == MyLanguageParser::T__20
 
     || _la == MyLanguageParser::T__21) {
-      setState(156);
+      setState(150);
       _la = _input->LA(1);
       if (!(_la == MyLanguageParser::T__20
 
@@ -1407,9 +1465,9 @@ MyLanguageParser::AdditionContext* MyLanguageParser::addition() {
         _errHandler->reportMatch(this);
         consume();
       }
-      setState(157);
+      setState(151);
       multiplication();
-      setState(162);
+      setState(156);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
@@ -1455,9 +1513,17 @@ void MyLanguageParser::MultiplicationContext::exitRule(tree::ParseTreeListener *
     parserListener->exitMultiplication(this);
 }
 
+
+std::any MyLanguageParser::MultiplicationContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MyLanguageVisitor*>(visitor))
+    return parserVisitor->visitMultiplication(this);
+  else
+    return visitor->visitChildren(this);
+}
+
 MyLanguageParser::MultiplicationContext* MyLanguageParser::multiplication() {
   MultiplicationContext *_localctx = _tracker.createInstance<MultiplicationContext>(_ctx, getState());
-  enterRule(_localctx, 32, MyLanguageParser::RuleMultiplication);
+  enterRule(_localctx, 30, MyLanguageParser::RuleMultiplication);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1469,15 +1535,15 @@ MyLanguageParser::MultiplicationContext* MyLanguageParser::multiplication() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(163);
+    setState(157);
     unary();
-    setState(168);
+    setState(162);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (_la == MyLanguageParser::T__22
 
     || _la == MyLanguageParser::T__23) {
-      setState(164);
+      setState(158);
       _la = _input->LA(1);
       if (!(_la == MyLanguageParser::T__22
 
@@ -1488,9 +1554,9 @@ MyLanguageParser::MultiplicationContext* MyLanguageParser::multiplication() {
         _errHandler->reportMatch(this);
         consume();
       }
-      setState(165);
+      setState(159);
       unary();
-      setState(170);
+      setState(164);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
@@ -1536,9 +1602,17 @@ void MyLanguageParser::UnaryContext::exitRule(tree::ParseTreeListener *listener)
     parserListener->exitUnary(this);
 }
 
+
+std::any MyLanguageParser::UnaryContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MyLanguageVisitor*>(visitor))
+    return parserVisitor->visitUnary(this);
+  else
+    return visitor->visitChildren(this);
+}
+
 MyLanguageParser::UnaryContext* MyLanguageParser::unary() {
   UnaryContext *_localctx = _tracker.createInstance<UnaryContext>(_ctx, getState());
-  enterRule(_localctx, 34, MyLanguageParser::RuleUnary);
+  enterRule(_localctx, 32, MyLanguageParser::RuleUnary);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1549,14 +1623,14 @@ MyLanguageParser::UnaryContext* MyLanguageParser::unary() {
     exitRule();
   });
   try {
-    setState(174);
+    setState(168);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case MyLanguageParser::T__20:
       case MyLanguageParser::T__21:
       case MyLanguageParser::T__24: {
         enterOuterAlt(_localctx, 1);
-        setState(171);
+        setState(165);
         _la = _input->LA(1);
         if (!((((_la & ~ 0x3fULL) == 0) &&
           ((1ULL << _la) & 39845888) != 0))) {
@@ -1566,7 +1640,7 @@ MyLanguageParser::UnaryContext* MyLanguageParser::unary() {
           _errHandler->reportMatch(this);
           consume();
         }
-        setState(172);
+        setState(166);
         unary();
         break;
       }
@@ -1579,7 +1653,7 @@ MyLanguageParser::UnaryContext* MyLanguageParser::unary() {
       case MyLanguageParser::FLOAT:
       case MyLanguageParser::STRING: {
         enterOuterAlt(_localctx, 2);
-        setState(173);
+        setState(167);
         primary();
         break;
       }
@@ -1645,9 +1719,17 @@ void MyLanguageParser::PrimaryContext::exitRule(tree::ParseTreeListener *listene
     parserListener->exitPrimary(this);
 }
 
+
+std::any MyLanguageParser::PrimaryContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MyLanguageVisitor*>(visitor))
+    return parserVisitor->visitPrimary(this);
+  else
+    return visitor->visitChildren(this);
+}
+
 MyLanguageParser::PrimaryContext* MyLanguageParser::primary() {
   PrimaryContext *_localctx = _tracker.createInstance<PrimaryContext>(_ctx, getState());
-  enterRule(_localctx, 36, MyLanguageParser::RulePrimary);
+  enterRule(_localctx, 34, MyLanguageParser::RulePrimary);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -1657,65 +1739,65 @@ MyLanguageParser::PrimaryContext* MyLanguageParser::primary() {
     exitRule();
   });
   try {
-    setState(187);
+    setState(181);
     _errHandler->sync(this);
     switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 15, _ctx)) {
     case 1: {
       enterOuterAlt(_localctx, 1);
-      setState(176);
+      setState(170);
       match(MyLanguageParser::INT);
       break;
     }
 
     case 2: {
       enterOuterAlt(_localctx, 2);
-      setState(177);
+      setState(171);
       match(MyLanguageParser::FLOAT);
       break;
     }
 
     case 3: {
       enterOuterAlt(_localctx, 3);
-      setState(178);
+      setState(172);
       match(MyLanguageParser::STRING);
       break;
     }
 
     case 4: {
       enterOuterAlt(_localctx, 4);
-      setState(179);
+      setState(173);
       match(MyLanguageParser::T__25);
       break;
     }
 
     case 5: {
       enterOuterAlt(_localctx, 5);
-      setState(180);
+      setState(174);
       match(MyLanguageParser::T__26);
       break;
     }
 
     case 6: {
       enterOuterAlt(_localctx, 6);
-      setState(181);
+      setState(175);
       match(MyLanguageParser::T__4);
-      setState(182);
+      setState(176);
       expression();
-      setState(183);
+      setState(177);
       match(MyLanguageParser::T__5);
       break;
     }
 
     case 7: {
       enterOuterAlt(_localctx, 7);
-      setState(185);
+      setState(179);
       match(MyLanguageParser::ID);
       break;
     }
 
     case 8: {
       enterOuterAlt(_localctx, 8);
-      setState(186);
+      setState(180);
       functionCall();
       break;
     }
@@ -1765,9 +1847,17 @@ void MyLanguageParser::FunctionCallContext::exitRule(tree::ParseTreeListener *li
     parserListener->exitFunctionCall(this);
 }
 
+
+std::any MyLanguageParser::FunctionCallContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MyLanguageVisitor*>(visitor))
+    return parserVisitor->visitFunctionCall(this);
+  else
+    return visitor->visitChildren(this);
+}
+
 MyLanguageParser::FunctionCallContext* MyLanguageParser::functionCall() {
   FunctionCallContext *_localctx = _tracker.createInstance<FunctionCallContext>(_ctx, getState());
-  enterRule(_localctx, 38, MyLanguageParser::RuleFunctionCall);
+  enterRule(_localctx, 36, MyLanguageParser::RuleFunctionCall);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1779,20 +1869,20 @@ MyLanguageParser::FunctionCallContext* MyLanguageParser::functionCall() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(189);
+    setState(183);
     match(MyLanguageParser::ID);
-    setState(190);
+    setState(184);
     match(MyLanguageParser::T__4);
-    setState(192);
+    setState(186);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 4267704352) != 0)) {
-      setState(191);
+      setState(185);
       argumentList();
     }
-    setState(194);
+    setState(188);
     match(MyLanguageParser::T__5);
    
   }
@@ -1836,9 +1926,17 @@ void MyLanguageParser::ArgumentListContext::exitRule(tree::ParseTreeListener *li
     parserListener->exitArgumentList(this);
 }
 
+
+std::any MyLanguageParser::ArgumentListContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<MyLanguageVisitor*>(visitor))
+    return parserVisitor->visitArgumentList(this);
+  else
+    return visitor->visitChildren(this);
+}
+
 MyLanguageParser::ArgumentListContext* MyLanguageParser::argumentList() {
   ArgumentListContext *_localctx = _tracker.createInstance<ArgumentListContext>(_ctx, getState());
-  enterRule(_localctx, 40, MyLanguageParser::RuleArgumentList);
+  enterRule(_localctx, 38, MyLanguageParser::RuleArgumentList);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1850,17 +1948,17 @@ MyLanguageParser::ArgumentListContext* MyLanguageParser::argumentList() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(196);
+    setState(190);
     expression();
-    setState(201);
+    setState(195);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (_la == MyLanguageParser::T__6) {
-      setState(197);
+      setState(191);
       match(MyLanguageParser::T__6);
-      setState(198);
+      setState(192);
       expression();
-      setState(203);
+      setState(197);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }

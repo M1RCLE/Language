@@ -40,12 +40,8 @@ whileLoop
     : 'while' '(' expression ')' block
     ;
 
-forLoopAssignment
-    : ID '=' expression
-    ;
-
 forLoop
-    : 'for' '(' (varDeclaration | assignment | ';') expression? ';' (expression | forLoopAssignment)? ')' block
+    : 'for' '(' (varDeclaration | assignment | ';') expression? ';' (expression | assignment)? ')' block
     ;
 
 returnStatement
