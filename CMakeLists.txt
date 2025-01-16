@@ -23,7 +23,8 @@ include_directories(
 set(GENERATED_SOURCES
         ${SRC_DIR}/MyLanguageLexer.cpp
         ${SRC_DIR}/MyLanguageParser.cpp
-        ${SRC_DIR}/MyLanguageBaseListener.cpp  # Add other files as needed
+        ${SRC_DIR}/MyLanguageBaseVisitor.cpp  # Add other files as needed
+        ${SRC_DIR}/MyLanguageBaseListener.cpp
 )
 
 # Manually specify the path to LLVMConfig.cmake
