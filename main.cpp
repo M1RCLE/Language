@@ -39,21 +39,10 @@ int main(int argc, const char* argv[]) {
         MyLanguageParser parser(&tokens);
 
         // Parse the input and obtain the parse tree
-        tree::ParseTree* tree = parser.program();  // Replace "program" with your root rule
+        MyLanguageParser::ProgramContext* tree = parser.program();  // Replace "program" with your root rule
 
         // Print the parse tree (for debugging purposes)
         std::cout << "Parse tree: " << tree->toStringTree(&parser) << "\n";
-
-        ASTBuilder builder;
-
-        auto astAny = builder.visitProgram(tree);
-        auto ast = std::any_cast<std::unique_ptr<ASTProgram>>(std::move(astAny)); // Извлекаем std::unique_ptr
-
-        std::cout << "Generated AST:\n";
-        ASTVisitor visitor;
-        visitor.visit(ast.get()); // Передаем AST в визитор
-
-        // Further processing can be done here (e.g., visitor pattern)
 
     } catch (std::exception& e) {
         std::cerr << "Error: " << e.what() << "\n";

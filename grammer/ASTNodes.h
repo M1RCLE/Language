@@ -5,105 +5,79 @@
 #ifndef SOSAL_ASTNODES_H
 #define SOSAL_ASTNODES_H
 
-#include <string>
-#include <vector>
 #include <memory>
+#include <vector>
+#include <string>
 
-// Base AST Node
-class ASTNode {
+class AstNode {
 public:
-    virtual ~ASTNode() = default;
+    virtual ~AstNode() = default;
 };
 
-// Derived classes for specific AST node types
-class ProgramNode : public ASTNode {
+class ProgramNode : public AstNode {
 public:
-    std::vector<std::unique_ptr<ASTNode>> statements;
+    std::vector<std::shared_ptr<AstNode>> statements;
 };
 
-class VarDeclarationNode : public ASTNode {
+class VarDeclarationNode : public AstNode {
 public:
-    std::string varName;
-    std::unique_ptr<ASTNode> initializer;
+    std::string name;
+    std::shared_ptr<AstNode> initializer; // Can be nullptr if not initialized
 };
 
-class AssignmentNode : public ASTNode {
+class AssignmentNode : public AstNode {
 public:
-    std::string varName;
-    std::unique_ptr<ASTNode> value;
+    std::string name;
+    std::shared_ptr<AstNode> expression;
 };
 
-class FunctionDeclarationNode : public ASTNode {
+class FunctionDeclarationNode : public AstNode {
 public:
-    std::string funcName;
+    std::string name;
     std::vector<std::string> parameters;
-    std::unique_ptr<ASTNode> body;
+    std::shared_ptr<AstNode> body;
 };
 
-class IfNode : public ASTNode {
+class FunctionCallNode : public AstNode {
 public:
-    std::unique_ptr<ASTNode> condition;
-    std::unique_ptr<ASTNode> thenBlock;
-    std::unique_ptr<ASTNode> elseBlock;
+    std::string functionName;
+    std::vector<std::shared_ptr<AstNode>> arguments;
 };
 
-class WhileNode : public ASTNode {
+class IfStatementNode : public AstNode {
 public:
-    std::unique_ptr<ASTNode> condition;
-    std::unique_ptr<ASTNode> body;
+    std::shared_ptr<AstNode> condition;
+    std::shared_ptr<AstNode> thenBranch;
+    std::shared_ptr<AstNode> elseBranch; // Can be nullptr if no else branch
 };
 
-class ForNode : public ASTNode {
+class WhileLoopNode : public AstNode {
 public:
-    std::unique_ptr<ASTNode> initializer;
-    std::unique_ptr<ASTNode> condition;
-    std::unique_ptr<ASTNode> update;
-    std::unique_ptr<ASTNode> body;
+    std::shared_ptr<AstNode> condition;
+    std::shared_ptr<AstNode> body;
 };
 
-class ReturnNode : public ASTNode {
+class ExpressionNode : public AstNode {
 public:
-    std::unique_ptr<ASTNode> value;
+    // Base class for all expressions
 };
 
-class BlockNode : public ASTNode {
-public:
-    std::vector<std::unique_ptr<ASTNode>> statements;
-};
-
-class ExpressionStatementNode : public ASTNode {
-public:
-    std::unique_ptr<ASTNode> expression;
-};
-
-class BinaryExpressionNode : public ASTNode {
+class BinaryExpressionNode : public ExpressionNode {
 public:
     std::string op;
-    std::unique_ptr<ASTNode> left;
-    std::unique_ptr<ASTNode> right;
+    std::shared_ptr<AstNode> left;
+    std::shared_ptr<AstNode> right;
 };
 
-class UnaryExpressionNode : public ASTNode {
+class UnaryExpressionNode : public ExpressionNode {
 public:
     std::string op;
-    std::unique_ptr<ASTNode> operand;
+    std::shared_ptr<AstNode> operand;
 };
 
-class LiteralNode : public ASTNode {
+class LiteralNode : public ExpressionNode {
 public:
     std::string value;
 };
-
-class IdentifierNode : public ASTNode {
-public:
-    std::string name;
-};
-
-class FunctionCallNode : public ASTNode {
-public:
-    std::string funcName;
-    std::vector<std::unique_ptr<ASTNode>> arguments;
-};
-
 
 #endif //SOSAL_ASTNODES_H
