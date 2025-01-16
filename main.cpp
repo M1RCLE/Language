@@ -4,6 +4,8 @@
 #include "antlr4-runtime.h"  // Include the ANTLR runtime for C++
 #include "MyLanguageLexer.h"  // Include the generated lexer header
 #include "MyLanguageParser.h"  // Include the generated parser header
+#include "grammer/AST/ASTBuilder.h"
+#include "grammer/AST/ASTVisitor.h"
 
 using namespace antlr4;
 
@@ -41,6 +43,15 @@ int main(int argc, const char* argv[]) {
 
         // Print the parse tree (for debugging purposes)
         std::cout << "Parse tree: " << tree->toStringTree(&parser) << "\n";
+
+        ASTBuilder builder;
+
+        auto astAny = builder.visitProgram(tree);
+        auto ast = std::any_cast<std::unique_ptr<ASTProgram>>(std::move(astAny)); // Извлекаем std::unique_ptr
+
+        std::cout << "Generated AST:\n";
+        ASTVisitor visitor;
+        visitor.visit(ast.get()); // Передаем AST в визитор
 
         // Further processing can be done here (e.g., visitor pattern)
 
