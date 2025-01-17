@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <string>
-#include "Token.h"
+#include "token.h"
 #include "instruction.h"
 
 class Parser {

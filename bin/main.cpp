@@ -1,4 +1,5 @@
-#include <iostream>
+#include "lib/lib.h"
+#include <sstream>
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
@@ -30,10 +31,12 @@ int main(int argc, char* argv[]) {
         vm.loadFromFile(compiledFile);
         vm.run();
 
-    } catch (const std::ios_base::failure& e) {
+    }
+    catch (const std::ios_base::failure& e) {
         std::cerr << "Error reading or writing file: " << e.what() << std::endl;
         return 2;
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception& e) {
         std::cerr << "Error executing program: " << e.what() << std::endl;
         return 3;
     }
