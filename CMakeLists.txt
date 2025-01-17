@@ -25,6 +25,7 @@ set(GENERATED_SOURCES
         ${SRC_DIR}/MyLanguageParser.cpp
         ${SRC_DIR}/MyLanguageBaseVisitor.cpp  # Add other files as needed
         ${SRC_DIR}/MyLanguageBaseListener.cpp
+        ${SRC_DIR}/ASTBuilder.cpp
 )
 
 # Manually specify the path to LLVMConfig.cmake

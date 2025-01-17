@@ -22,7 +22,7 @@ public:
 class VarDeclarationNode : public AstNode {
 public:
     std::string name;
-    std::shared_ptr<AstNode> initializer; // Can be nullptr if not initialized
+    std::shared_ptr<AstNode> initializer = nullptr;
 };
 
 class AssignmentNode : public AstNode {
@@ -59,7 +59,7 @@ public:
 
 class ExpressionNode : public AstNode {
 public:
-    // Base class for all expressions
+    virtual ~ExpressionNode() = 0;
 };
 
 class BinaryExpressionNode : public ExpressionNode {
