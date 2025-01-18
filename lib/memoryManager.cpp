@@ -2,12 +2,12 @@
 
 bool MemoryManager::isInFunction() const { return !callStack.empty(); }
 
-std::unordered_map<std::string, MemoryManager::ObjectEntry>&
+std::unordered_map<std::string, ObjectEntry>&
 MemoryManager::getCurrentMemory() {
   return isInFunction() ? callStack.top() : globalMemory;
 }
 
-MemoryManager::ObjectEntry* MemoryManager::getMemoryEntry(
+ObjectEntry* MemoryManager::getMemoryEntry(
     const std::string& name) {
   if (isInFunction() && callStack.top().count(name)) {
     return &callStack.top().at(name);

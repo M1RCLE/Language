@@ -6,15 +6,16 @@
 #include <unordered_map>
 #include <vector>
 
+struct ObjectEntry {
+  std::any value;
+  long refCount;
+
+  ObjectEntry() {}
+  ObjectEntry(const std::any& value) : value(value), refCount(1) {}
+};
+
 class MemoryManager {
  private:
-  struct ObjectEntry {
-    std::any value;
-    long refCount;
-
-    ObjectEntry(const std::any& value) : value(value), refCount(1) {}
-  };
-
   std::unordered_map<std::string, ObjectEntry> globalMemory;
   std::stack<std::unordered_map<std::string, ObjectEntry>> callStack;
   std::any returnValue;
