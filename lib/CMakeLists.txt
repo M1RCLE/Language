@@ -1,1 +1,1 @@
-add_library(Language compiler.cpp compiler.h instruction.h lexer.cpp lexer.h parser.cpp parser.h token.cpp token.h lib.h)
+add_library(Language compiler.cpp compiler.h instruction.h lexer.cpp lexer.h lib.h memoryManager.cpp memoryManager.h parser.cpp parser.h token.cpp token.h virtualMachine.cpp virtualMachine.h)
