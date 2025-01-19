@@ -11,9 +11,9 @@ void VirtualMachine::loadFromFile(const std::string& filename) {
     }
 
     while (file.peek() != EOF) {
-      int8_t opCodeOrdinal;
-      file.read(reinterpret_cast<char*>(&opCodeOrdinal), sizeof(opCodeOrdinal));
-      auto opCode = static_cast<Instruction::OpCode>(opCodeOrdinal);
+      std::string opCodeOrdinal;
+      std::getline(file, opCodeOrdinal, '\0');
+      auto opCode = static_cast<Instruction::OpCode>(opCodeOrdinal[0]);
 
       switch (opCode) {
         case Instruction::OpCode::FUN: {
@@ -106,9 +106,7 @@ void VirtualMachine::loadFromFile(const std::string& filename) {
 
       std::string operand1, operand2, operand3;
       std::getline(file, operand1, '\0');
-
       std::getline(file, operand2, '\0');
-
       std::getline(file, operand3, '\0');
 
       std::vector<Instruction> block;

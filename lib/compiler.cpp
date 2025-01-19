@@ -13,7 +13,8 @@ std::string anyToString(const std::any& value) {
   } else if (value.type() == typeid(double)) {
     return std::to_string(std::any_cast<double>(value));
   } else if (value.type() == typeid(Instruction::OpCode)) {
-    return Instruction::opCodeToString(std::any_cast<Instruction::OpCode>(value));
+    return Instruction::opCodeToString(
+        std::any_cast<Instruction::OpCode>(value));
   }
   return "";
 }
@@ -188,19 +189,21 @@ std::vector<Instruction> Compiler::filterDeadCode(
 }
 
 void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
-  out.put(static_cast<char>(instr.opCode));
+  auto c = static_cast<char>(instr.opCode);
+  out << c;
+  out << '\0';
 
   switch (instr.opCode) {
     case Instruction::OpCode::FUN: {
       if (!instr.operand1.empty()) {
-        out.write(instr.operand1.data(), instr.operand1.size());
-        out.put('\0');
+        out << instr.operand1;
+        out << '\0';
       }
       auto params_size = instr.parameters.size();
       out.write(reinterpret_cast<const char*>(&params_size), sizeof(size_t));
       for (const auto& param : instr.parameters) {
-        out.write(param.data(), param.size());
-        out.put('\0');
+        out << param;
+        out << '\0';
       }
       size_t blockSize = instr.block.size();
       out.write(reinterpret_cast<const char*>(&blockSize), sizeof(size_t));
@@ -211,8 +214,8 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
     }
     case Instruction::OpCode::RETURN: {
       if (!instr.operand1.empty()) {
-        out.write(instr.operand1.data(), instr.operand1.size());
-        out.put('\0');
+        out << instr.operand1;
+        out << '\0';
       }
       if (instr.operand2.has_value()) {
         writeInstruction(out, std::any_cast<Instruction>(instr.operand2));
@@ -221,20 +224,20 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
     }
     case Instruction::OpCode::IF: {
       if (!instr.operand1.empty()) {
-        out.write(instr.operand1.data(), instr.operand1.size());
-        out.put('\0');
+        out << instr.operand1;
+        out << '\0';
       }
 
       if (instr.operand2.has_value()) {
         auto op2 = anyToString(instr.operand2);
-        out.write(op2.data(), op2.size());
-        out.put('\0');
+        out << op2;
+        out << '\0';
       }
 
       if (instr.operand3.has_value()) {
         auto op3 = anyToString(instr.operand3);
-        out.write(op3.data(), op3.size());
-        out.put('\0');
+        out << op3;
+        out << '\0';
       }
 
       size_t blockSize = instr.block.size();
@@ -246,20 +249,20 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
     }
     case Instruction::OpCode::LOOP: {
       if (!instr.operand1.empty()) {
-        out.write(instr.operand1.data(), instr.operand1.size());
-        out.put('\0');
+        out << instr.operand1;
+        out << '\0';
       }
 
       if (instr.operand2.has_value()) {
         auto op2 = anyToString(instr.operand2);
-        out.write(op2.data(), op2.size());
-        out.put('\0');
+        out << op2;
+        out << '\0';
       }
 
       if (instr.operand3.has_value()) {
         auto op3 = anyToString(instr.operand3);
-        out.write(op3.data(), op3.size());
-        out.put('\0');
+        out << op3;
+        out << '\0';
       }
 
       size_t blockSize = instr.block.size();
@@ -271,20 +274,20 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
     }
     default: {
       if (!instr.operand1.empty()) {
-        out.write(instr.operand1.data(), instr.operand1.size());
-        out.put('\0');
+        out << instr.operand1;
+        out << '\0';
       }
 
       if (instr.operand2.has_value()) {
         auto op2 = anyToString(instr.operand2);
-        out.write(op2.data(), op2.size());
-        out.put('\0');
+        out << op2;
+        out << '\0';
       }
 
       if (instr.operand3.has_value()) {
         auto op3 = anyToString(instr.operand3);
-        out.write(op3.data(), op3.size());
-        out.put('\0');
+        out << op3;
+        out << '\0';
       }
       break;
     }
