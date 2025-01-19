@@ -18,8 +18,10 @@ std::string anyToStringVM(const std::any& value) {
   } else if (value.type() == typeid(double)) {
     return std::to_string(std::any_cast<double>(value));
   } else if (value.type() == typeid(Instruction::OpCode)) {
-    return Instruction::opCodeToString(
-        std::any_cast<Instruction::OpCode>(value));
+    auto opCode = std::any_cast<Instruction::OpCode>(value);
+    auto c = static_cast<char>(opCode);
+    std::string s(1, c);
+    return s;
   }
   return "";
 }
