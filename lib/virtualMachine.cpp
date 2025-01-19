@@ -154,10 +154,9 @@ std::vector<Instruction> VirtualMachine::readNestedBlock(std::ifstream& file) {
   file.read(reinterpret_cast<char*>(&blockSize), sizeof(blockSize));
   if (blockSize > 0) {
     for (int64_t i = 0; i < blockSize; ++i) {
-      int8_t nestedOpCodeOrdinal;
-      file.read(reinterpret_cast<char*>(&nestedOpCodeOrdinal),
-                sizeof(nestedOpCodeOrdinal));
-      auto nestedOpCode = static_cast<Instruction::OpCode>(nestedOpCodeOrdinal);
+      std::string opCodeOrdinal;
+      std::getline(file, opCodeOrdinal, '\0');
+      auto nestedOpCode = static_cast<Instruction::OpCode>(opCodeOrdinal[0]);
 
       if (nestedOpCode == Instruction::OpCode::RETURN) {
         std::string returnValue;
@@ -165,9 +164,9 @@ std::vector<Instruction> VirtualMachine::readNestedBlock(std::ifstream& file) {
 
         Instruction instruction;
         if (returnValue.empty()) {
-          file.read(reinterpret_cast<char*>(&nestedOpCodeOrdinal),
-                    sizeof(nestedOpCodeOrdinal));
-          nestedOpCode = static_cast<Instruction::OpCode>(nestedOpCodeOrdinal);
+          std::string opCodeOrdinal;
+          std::getline(file, opCodeOrdinal, '\0');
+          auto nestedOpCode = static_cast<Instruction::OpCode>(opCodeOrdinal[0]);
 
           std::string nestedOperand1, nestedOperand2, nestedOperand3;
           std::getline(file, nestedOperand1, '\0');
@@ -461,6 +460,8 @@ long VirtualMachine::getOperandValue(const std::any& operand) {
     auto value = memoryManager.getValue(varName);
     if (value.type() == typeid(int)) {
       return std::any_cast<int>(value);
+    } else if (value.type() == typeid(long)) {
+      return std::any_cast<long>(value);
     } else if (value.type() == typeid(std::string)) {
       try {
         return std::stol(std::any_cast<std::string>(value));

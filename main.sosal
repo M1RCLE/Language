@@ -1,5 +1,10 @@
+let a = 10;
+let c = a + 1;
+print [c];
 let c = 1;
-loop [ c < 3 ]
+let a = c + 1;
+print [a];
+loop [ c < 6 ]
 [ print [c];
   let c = c + 1;
 ]
