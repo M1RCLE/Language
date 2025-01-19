@@ -1,6 +1,6 @@
 #include "compiler.h"
 
-std::string anyToString(const std::any& value) {
+std::string anyToStringCompiler(const std::any& value) {
   if (!value.has_value()) {
     return "";
   }
@@ -8,6 +8,8 @@ std::string anyToString(const std::any& value) {
     return std::any_cast<std::string>(value);
   } else if (value.type() == typeid(int)) {
     return std::to_string(std::any_cast<int>(value));
+  } else if (value.type() == typeid(long)) {
+    return std::to_string(std::any_cast<long>(value));
   } else if (value.type() == typeid(float)) {
     return std::to_string(std::any_cast<float>(value));
   } else if (value.type() == typeid(double)) {
@@ -89,7 +91,7 @@ std::vector<Instruction> Compiler::preprocessInstructions(
         preprocessedInstructions.push_back(instruction);
         break;
       case Instruction::OpCode::STORE_ARRAY_VAR:
-        instruction.target = anyToString(instruction.operand3);
+        instruction.target = anyToStringCompiler(instruction.operand3);
         preprocessedInstructions.push_back(instruction);
         break;
       default:
@@ -111,7 +113,7 @@ std::vector<Instruction> Compiler::optimizeInstructions(
       if (current.opCode == Instruction::OpCode::STORE &&
           next.opCode == Instruction::OpCode::STORE &&
           current.target == next.operand1 &&
-          anyToString(next.operand2) == next.operand1) {
+          anyToStringCompiler(next.operand2) == next.operand1) {
         optimizeInstructions.push_back(current);
         i++;
       } else {
@@ -144,8 +146,8 @@ std::vector<Instruction> Compiler::filterDeadCode(
         if (!instruction.target.empty() &&
                 usedVariables.contains(instruction.target) ||
             usedVariables.contains(instruction.operand1)) {
-          usedVariables.insert(anyToString(instruction.operand2));
-          usedVariables.insert(anyToString(instruction.operand3));
+          usedVariables.insert(anyToStringCompiler(instruction.operand2));
+          usedVariables.insert(anyToStringCompiler(instruction.operand3));
           optimizedInstructions.push_back(instruction);
         }
         break;
@@ -247,7 +249,7 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
       out << '\0';
 
       if (instr.operand2.has_value()) {
-        auto op2 = anyToString(instr.operand2);
+        auto op2 = anyToStringCompiler(instr.operand2);
         out << op2;
       } else {
         out << "";
@@ -255,7 +257,7 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
       out << '\0';
 
       if (instr.operand3.has_value()) {
-        auto op3 = anyToString(instr.operand3);
+        auto op3 = anyToStringCompiler(instr.operand3);
         out << op3;
       } else {
         out << "";
@@ -278,7 +280,7 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
       out << '\0';
 
       if (instr.operand2.has_value()) {
-        auto op2 = anyToString(instr.operand2);
+        auto op2 = anyToStringCompiler(instr.operand2);
         out << op2;
       } else {
         out << "";
@@ -286,7 +288,7 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
       out << '\0';
 
       if (instr.operand3.has_value()) {
-        auto op3 = anyToString(instr.operand3);
+        auto op3 = anyToStringCompiler(instr.operand3);
         out << op3;
       } else {
         out << "";
@@ -309,7 +311,7 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
       out << '\0';
 
       if (instr.operand2.has_value()) {
-        auto op2 = anyToString(instr.operand2);
+        auto op2 = anyToStringCompiler(instr.operand2);
         out << op2;
       } else {
         out << "";
@@ -317,7 +319,7 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
       out << '\0';
 
       if (instr.operand3.has_value()) {
-        auto op3 = anyToString(instr.operand3);
+        auto op3 = anyToStringCompiler(instr.operand3);
         out << op3;
       } else {
         out << "";

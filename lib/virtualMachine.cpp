@@ -3,6 +3,27 @@
 #include <fstream>
 #include <sstream>
 
+std::string anyToStringVM(const std::any& value) {
+  if (!value.has_value()) {
+    return "";
+  }
+  if (value.type() == typeid(std::string)) {
+    return std::any_cast<std::string>(value);
+  } else if (value.type() == typeid(int)) {
+    return std::to_string(std::any_cast<int>(value));
+  } else if (value.type() == typeid(long)) {
+    return std::to_string(std::any_cast<long>(value));
+  } else if (value.type() == typeid(float)) {
+    return std::to_string(std::any_cast<float>(value));
+  } else if (value.type() == typeid(double)) {
+    return std::to_string(std::any_cast<double>(value));
+  } else if (value.type() == typeid(Instruction::OpCode)) {
+    return Instruction::opCodeToString(
+        std::any_cast<Instruction::OpCode>(value));
+  }
+  return "";
+}
+
 void VirtualMachine::loadFromFile(const std::string& filename) {
   try {
     std::ifstream file(filename, std::ios::binary);
@@ -199,7 +220,7 @@ void VirtualMachine::execute(const Instruction& instruction) {
     case Instruction::OpCode::PRINT: {
       auto value = memoryManager.getValue(instruction.operand1);
       if (value.has_value()) {
-        std::cout << std::any_cast<std::string>(value) << std::endl;
+        std::cout << anyToStringVM(value) << std::endl;
       } else {
         throw std::runtime_error("Variable not found: " + instruction.operand1);
       }
