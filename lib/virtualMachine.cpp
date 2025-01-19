@@ -18,24 +18,14 @@ void VirtualMachine::loadFromFile(const std::string& filename) {
       switch (opCode) {
         case Instruction::OpCode::FUN: {
           std::string functionName;
-          size_t functionNameLength;
-          file.read(reinterpret_cast<char*>(&functionNameLength),
-                    sizeof(functionNameLength));
-          functionName.resize(functionNameLength);
-          file.read(&functionName[0], functionNameLength);
+          std::getline(file, functionName, '\0');
 
           int64_t parameterCount;
           file.read(reinterpret_cast<char*>(&parameterCount),
                     sizeof(parameterCount));
           std::vector<std::string> parameters;
           for (int64_t i = 0; i < parameterCount; ++i) {
-            std::string parameter;
-            size_t parameterLength;
-            file.read(reinterpret_cast<char*>(&parameterLength),
-                      sizeof(parameterLength));
-            parameter.resize(parameterLength);
-            file.read(&parameter[0], parameterLength);
-            parameters.push_back(parameter);
+            std::getline(file, parameters[i], '\0');
           }
 
           std::vector<Instruction> block;
@@ -51,11 +41,7 @@ void VirtualMachine::loadFromFile(const std::string& filename) {
 
               if (nestedOpCode == Instruction::OpCode::RETURN) {
                 std::string returnValue;
-                size_t returnValueLength;
-                file.read(reinterpret_cast<char*>(&returnValueLength),
-                          sizeof(returnValueLength));
-                returnValue.resize(returnValueLength);
-                file.read(&returnValue[0], returnValueLength);
+                std::getline(file, returnValue, '\0');
 
                 Instruction nestedInstruction;
                 if (returnValue.empty()) {
@@ -65,18 +51,9 @@ void VirtualMachine::loadFromFile(const std::string& filename) {
                       static_cast<Instruction::OpCode>(nestedOpCodeOrdinal);
 
                   std::string nestedOperand1, nestedOperand2, nestedOperand3;
-                  size_t length;
-                  file.read(reinterpret_cast<char*>(&length), sizeof(length));
-                  nestedOperand1.resize(length);
-                  file.read(&nestedOperand1[0], length);
-
-                  file.read(reinterpret_cast<char*>(&length), sizeof(length));
-                  nestedOperand2.resize(length);
-                  file.read(&nestedOperand2[0], length);
-
-                  file.read(reinterpret_cast<char*>(&length), sizeof(length));
-                  nestedOperand3.resize(length);
-                  file.read(&nestedOperand3[0], length);
+                  std::getline(file, nestedOperand1, '\0');
+                  std::getline(file, nestedOperand2, '\0');
+                  std::getline(file, nestedOperand3, '\0');
 
                   nestedInstruction =
                       Instruction(nestedOpCode, nestedOperand1, nestedOperand2,
@@ -88,36 +65,22 @@ void VirtualMachine::loadFromFile(const std::string& filename) {
               } else if (nestedOpCode == Instruction::OpCode::IF ||
                          nestedOpCode == Instruction::OpCode::LOOP) {
                 std::string operand1, operand2, operand3;
-                size_t length;
-                file.read(reinterpret_cast<char*>(&length), sizeof(length));
-                operand1.resize(length);
-                file.read(&operand1[0], length);
+                std::getline(file, operand1, '\0');
 
-                file.read(reinterpret_cast<char*>(&length), sizeof(length));
-                operand2.resize(length);
-                file.read(&operand2[0], length);
+                std::getline(file, operand2, '\0');
 
-                file.read(reinterpret_cast<char*>(&length), sizeof(length));
-                operand3.resize(length);
-                file.read(&operand3[0], length);
+                std::getline(file, operand3, '\0');
 
                 std::vector<Instruction> nestedBlock = readNestedBlock(file);
                 block.push_back(Instruction(nestedOpCode, operand1, operand2,
                                             operand3, nestedBlock));
               } else {
                 std::string nestedOperand1, nestedOperand2, nestedOperand3;
-                size_t length;
-                file.read(reinterpret_cast<char*>(&length), sizeof(length));
-                nestedOperand1.resize(length);
-                file.read(&nestedOperand1[0], length);
+                std::getline(file, nestedOperand1, '\0');
 
-                file.read(reinterpret_cast<char*>(&length), sizeof(length));
-                nestedOperand2.resize(length);
-                file.read(&nestedOperand2[0], length);
+                std::getline(file, nestedOperand2, '\0');
 
-                file.read(reinterpret_cast<char*>(&length), sizeof(length));
-                nestedOperand3.resize(length);
-                file.read(&nestedOperand3[0], length);
+                std::getline(file, nestedOperand3, '\0');
 
                 block.push_back(Instruction(nestedOpCode, nestedOperand1,
                                             nestedOperand2, nestedOperand3));
@@ -133,11 +96,7 @@ void VirtualMachine::loadFromFile(const std::string& filename) {
 
         case Instruction::OpCode::RETURN: {
           std::string returnValue;
-          size_t returnValueLength;
-          file.read(reinterpret_cast<char*>(&returnValueLength),
-                    sizeof(returnValueLength));
-          returnValue.resize(returnValueLength);
-          file.read(&returnValue[0], returnValueLength);
+          std::getline(file, returnValue, '\0');
 
           instructions.push_back(
               Instruction(Instruction::OpCode::RETURN, returnValue));
@@ -146,18 +105,11 @@ void VirtualMachine::loadFromFile(const std::string& filename) {
       }
 
       std::string operand1, operand2, operand3;
-      size_t length;
-      file.read(reinterpret_cast<char*>(&length), sizeof(length));
-      operand1.resize(length);
-      file.read(&operand1[0], length);
+      std::getline(file, operand1, '\0');
 
-      file.read(reinterpret_cast<char*>(&length), sizeof(length));
-      operand2.resize(length);
-      file.read(&operand2[0], length);
+      std::getline(file, operand2, '\0');
 
-      file.read(reinterpret_cast<char*>(&length), sizeof(length));
-      operand3.resize(length);
-      file.read(&operand3[0], length);
+      std::getline(file, operand3, '\0');
 
       std::vector<Instruction> block;
       if (opCode == Instruction::OpCode::IF ||
@@ -174,44 +126,31 @@ void VirtualMachine::loadFromFile(const std::string& filename) {
   }
 }
 
-std::vector<Instruction> VirtualMachine::readNestedBlock(std::ifstream& in) {
+std::vector<Instruction> VirtualMachine::readNestedBlock(std::ifstream& file) {
   std::vector<Instruction> block;
   int64_t blockSize;
-  in.read(reinterpret_cast<char*>(&blockSize), sizeof(blockSize));
+  file.read(reinterpret_cast<char*>(&blockSize), sizeof(blockSize));
   if (blockSize > 0) {
     for (int64_t i = 0; i < blockSize; ++i) {
       int8_t nestedOpCodeOrdinal;
-      in.read(reinterpret_cast<char*>(&nestedOpCodeOrdinal),
+      file.read(reinterpret_cast<char*>(&nestedOpCodeOrdinal),
               sizeof(nestedOpCodeOrdinal));
       auto nestedOpCode = static_cast<Instruction::OpCode>(nestedOpCodeOrdinal);
 
       if (nestedOpCode == Instruction::OpCode::RETURN) {
         std::string returnValue;
-        size_t returnValueLength;
-        in.read(reinterpret_cast<char*>(&returnValueLength),
-                sizeof(returnValueLength));
-        returnValue.resize(returnValueLength);
-        in.read(&returnValue[0], returnValueLength);
+        std::getline(file, returnValue, '\0');
 
         Instruction instruction;
         if (returnValue.empty()) {
-          in.read(reinterpret_cast<char*>(&nestedOpCodeOrdinal),
+          file.read(reinterpret_cast<char*>(&nestedOpCodeOrdinal),
                   sizeof(nestedOpCodeOrdinal));
           nestedOpCode = static_cast<Instruction::OpCode>(nestedOpCodeOrdinal);
 
           std::string nestedOperand1, nestedOperand2, nestedOperand3;
-          size_t length;
-          in.read(reinterpret_cast<char*>(&length), sizeof(length));
-          nestedOperand1.resize(length);
-          in.read(&nestedOperand1[0], length);
-
-          in.read(reinterpret_cast<char*>(&length), sizeof(length));
-          nestedOperand2.resize(length);
-          in.read(&nestedOperand2[0], length);
-
-          in.read(reinterpret_cast<char*>(&length), sizeof(length));
-          nestedOperand3.resize(length);
-          in.read(&nestedOperand3[0], length);
+          std::getline(file, nestedOperand1, '\0');
+          std::getline(file, nestedOperand2, '\0');
+          std::getline(file, nestedOperand3, '\0');
 
           instruction = Instruction(nestedOpCode, nestedOperand1,
                                     nestedOperand2, nestedOperand3);
@@ -222,36 +161,18 @@ std::vector<Instruction> VirtualMachine::readNestedBlock(std::ifstream& in) {
       } else if (nestedOpCode == Instruction::OpCode::IF ||
                  nestedOpCode == Instruction::OpCode::LOOP) {
         std::string operand1, operand2, operand3;
-        size_t length;
-        in.read(reinterpret_cast<char*>(&length), sizeof(length));
-        operand1.resize(length);
-        in.read(&operand1[0], length);
+        std::getline(file, operand1, '\0');
+        std::getline(file, operand2, '\0');
+        std::getline(file, operand3, '\0');
 
-        in.read(reinterpret_cast<char*>(&length), sizeof(length));
-        operand2.resize(length);
-        in.read(&operand2[0], length);
-
-        in.read(reinterpret_cast<char*>(&length), sizeof(length));
-        operand3.resize(length);
-        in.read(&operand3[0], length);
-
-        std::vector<Instruction> nestedBlock = readNestedBlock(in);
+        std::vector<Instruction> nestedBlock = readNestedBlock(file);
         block.emplace_back(Instruction(nestedOpCode, operand1, operand2,
                                        operand3, nestedBlock));
       } else {
         std::string nestedOperand1, nestedOperand2, nestedOperand3;
-        size_t length;
-        in.read(reinterpret_cast<char*>(&length), sizeof(length));
-        nestedOperand1.resize(length);
-        in.read(&nestedOperand1[0], length);
-
-        in.read(reinterpret_cast<char*>(&length), sizeof(length));
-        nestedOperand2.resize(length);
-        in.read(&nestedOperand2[0], length);
-
-        in.read(reinterpret_cast<char*>(&length), sizeof(length));
-        nestedOperand3.resize(length);
-        in.read(&nestedOperand3[0], length);
+        std::getline(file, nestedOperand1, '\0');
+        std::getline(file, nestedOperand2, '\0');
+        std::getline(file, nestedOperand3, '\0');
 
         block.emplace_back(Instruction(nestedOpCode, nestedOperand1,
                                        nestedOperand2, nestedOperand3));
