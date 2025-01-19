@@ -1,5 +1,23 @@
 #include "compiler.h"
 
+std::string anyToString(const std::any& value) {
+  if (!value.has_value()) {
+    return "";
+  }
+  if (value.type() == typeid(std::string)) {
+    return std::any_cast<std::string>(value);
+  } else if (value.type() == typeid(int)) {
+    return std::to_string(std::any_cast<int>(value));
+  } else if (value.type() == typeid(float)) {
+    return std::to_string(std::any_cast<float>(value));
+  } else if (value.type() == typeid(double)) {
+    return std::to_string(std::any_cast<double>(value));
+  } else if (value.type() == typeid(Instruction::OpCode)) {
+    return Instruction::opCodeToString(std::any_cast<Instruction::OpCode>(value));
+  }
+  return "";
+}
+
 long Compiler::getVariableIndex(const std::string& variableName) {
   if (variableIndexes.find(variableName) == variableIndexes.end()) {
     variableIndexes[variableName] = nextVariableIndex++;
@@ -207,15 +225,14 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
         out.put('\0');
       }
 
-      auto op2 = std::any_cast<std::string>(instr.operand2);
-      auto op3 = std::any_cast<std::string>(instr.operand3);
-
       if (instr.operand2.has_value()) {
+        auto op2 = anyToString(instr.operand2);
         out.write(op2.data(), op2.size());
         out.put('\0');
       }
 
       if (instr.operand3.has_value()) {
+        auto op3 = anyToString(instr.operand3);
         out.write(op3.data(), op3.size());
         out.put('\0');
       }
@@ -233,15 +250,14 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
         out.put('\0');
       }
 
-      auto op2 = std::any_cast<std::string>(instr.operand2);
-      auto op3 = std::any_cast<std::string>(instr.operand3);
-
       if (instr.operand2.has_value()) {
+        auto op2 = anyToString(instr.operand2);
         out.write(op2.data(), op2.size());
         out.put('\0');
       }
 
       if (instr.operand3.has_value()) {
+        auto op3 = anyToString(instr.operand3);
         out.write(op3.data(), op3.size());
         out.put('\0');
       }
@@ -259,15 +275,14 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
         out.put('\0');
       }
 
-      auto op2 = std::any_cast<std::string>(instr.operand2);
-      auto op3 = std::any_cast<std::string>(instr.operand3);
-
       if (instr.operand2.has_value()) {
+        auto op2 = anyToString(instr.operand2);
         out.write(op2.data(), op2.size());
         out.put('\0');
       }
 
       if (instr.operand3.has_value()) {
+        auto op3 = anyToString(instr.operand3);
         out.write(op3.data(), op3.size());
         out.put('\0');
       }

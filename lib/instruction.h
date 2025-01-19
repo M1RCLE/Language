@@ -101,8 +101,7 @@ class Instruction {
         target(),
         parameters(parameters) {}
 
-  Instruction(OpCode opCode, const std::string& operand1,
-              std::any operand2,
+  Instruction(OpCode opCode, const std::string& operand1, std::any operand2,
               std::any operand3,
               const std::vector<Instruction>& blockInstructions)
       : opCode(opCode),
@@ -174,8 +173,7 @@ class Instruction {
     return result;
   }
 
- private:
-  std::string opCodeToString(OpCode opCode) const {
+  static std::string opCodeToString(OpCode opCode) {
     switch (opCode) {
       case OpCode::STORE:
         return "STORE";

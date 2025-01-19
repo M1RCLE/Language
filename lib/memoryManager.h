@@ -8,10 +8,10 @@
 
 struct ObjectEntry {
   std::any value;
-  long refCount;
+  long refCount{};
 
-  ObjectEntry() {}
-  ObjectEntry(const std::any& value) : value(value), refCount(1) {}
+  ObjectEntry() = default;
+  explicit ObjectEntry(std::any value) : value(std::move(value)), refCount(1) {}
 };
 
 class MemoryManager {
