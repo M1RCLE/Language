@@ -18,10 +18,15 @@ std::string anyToStringVM(const std::any& value) {
   } else if (value.type() == typeid(double)) {
     return std::to_string(std::any_cast<double>(value));
   } else if (value.type() == typeid(Instruction::OpCode)) {
-    return Instruction::opCodeToString(
-        std::any_cast<Instruction::OpCode>(value));
+    int i = std::any_cast<int>(value);
+    return Instruction::opCodeToString(static_cast<Instruction::OpCode>(i));
   }
   return "";
+}
+
+std::string opCodeToString(const std::string& value) {
+  int i = atoi(value.c_str());
+  return Instruction::opCodeToString(static_cast<Instruction::OpCode>(i));
 }
 
 void VirtualMachine::loadFromFile(const std::string& filename) {
@@ -134,6 +139,7 @@ void VirtualMachine::loadFromFile(const std::string& filename) {
       if (opCode == Instruction::OpCode::IF ||
           opCode == Instruction::OpCode::LOOP) {
         block = readNestedBlock(file);
+        operand2 = opCodeToString(operand2);
       }
 
       instructions.push_back(
@@ -430,7 +436,8 @@ void VirtualMachine::run(const std::vector<Instruction>& block) {
 }
 
 bool VirtualMachine::conditions(const Instruction& instruction) {
-  std::string conditionType = std::any_cast<std::string>(instruction.operand2);
+  std::string conditionType = anyToStringVM(instruction.operand2);
+  std::cout << conditionType;
   if (conditionType == "LESS") {
     return getOperandValue(instruction.operand1) <
            getOperandValue(instruction.operand3);
