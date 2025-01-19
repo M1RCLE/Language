@@ -132,7 +132,7 @@ std::vector<Instruction> VirtualMachine::readNestedBlock(std::ifstream& file) {
     for (int64_t i = 0; i < blockSize; ++i) {
       int8_t nestedOpCodeOrdinal;
       file.read(reinterpret_cast<char*>(&nestedOpCodeOrdinal),
-              sizeof(nestedOpCodeOrdinal));
+                sizeof(nestedOpCodeOrdinal));
       auto nestedOpCode = static_cast<Instruction::OpCode>(nestedOpCodeOrdinal);
 
       if (nestedOpCode == Instruction::OpCode::RETURN) {
@@ -142,7 +142,7 @@ std::vector<Instruction> VirtualMachine::readNestedBlock(std::ifstream& file) {
         Instruction instruction;
         if (returnValue.empty()) {
           file.read(reinterpret_cast<char*>(&nestedOpCodeOrdinal),
-                  sizeof(nestedOpCodeOrdinal));
+                    sizeof(nestedOpCodeOrdinal));
           nestedOpCode = static_cast<Instruction::OpCode>(nestedOpCodeOrdinal);
 
           std::string nestedOperand1, nestedOperand2, nestedOperand3;
@@ -430,11 +430,13 @@ bool VirtualMachine::conditions(const Instruction& instruction) {
 long VirtualMachine::getOperandValue(const std::any& operand) {
   if (operand.type() == typeid(long)) {
     return std::any_cast<long>(operand);
+  } else if (operand.type() == typeid(int)) {
+    return std::any_cast<int>(operand);
   } else if (operand.type() == typeid(std::string)) {
     std::string varName = std::any_cast<std::string>(operand);
     auto value = memoryManager.getValue(varName);
-    if (value.type() == typeid(long)) {
-      return std::any_cast<long>(value);
+    if (value.type() == typeid(int)) {
+      return std::any_cast<int>(value);
     } else if (value.type() == typeid(std::string)) {
       try {
         return std::stol(std::any_cast<std::string>(value));
@@ -443,7 +445,7 @@ long VirtualMachine::getOperandValue(const std::any& operand) {
             "Variable " + varName +
             " is not a valid number: " + std::any_cast<std::string>(value));
       }
-    } else if (value.type() == typeid(std::nullptr_t)) {
+    } else if (value.type() == typeid(nullptr)) {
       try {
         return std::stol(varName);
       } catch (const std::invalid_argument&) {

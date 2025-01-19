@@ -71,10 +71,8 @@ std::vector<Instruction> Compiler::preprocessInstructions(
         if (!instruction.block.empty()) {
           processedBlock = preprocessInstructions(instruction.block);
           instruction.block = processedBlock;
-          preprocessedInstructions.push_back(compileLoop(instruction));
-        } else {
-          preprocessedInstructions.push_back(compileLoop(instruction));
         }
+        preprocessedInstructions.push_back(compileLoop(instruction));
         break;
       case Instruction::OpCode::ADD:
       case Instruction::OpCode::SUB:
@@ -89,9 +87,11 @@ std::vector<Instruction> Compiler::preprocessInstructions(
       case Instruction::OpCode::WRITE_INDEX:
         instruction.target = instruction.operand1;
         preprocessedInstructions.push_back(instruction);
+        break;
       case Instruction::OpCode::STORE_ARRAY_VAR:
         instruction.target = anyToString(instruction.operand3);
         preprocessedInstructions.push_back(instruction);
+        break;
       default:
         preprocessedInstructions.push_back(instruction);
         break;
@@ -111,7 +111,7 @@ std::vector<Instruction> Compiler::optimizeInstructions(
       if (current.opCode == Instruction::OpCode::STORE &&
           next.opCode == Instruction::OpCode::STORE &&
           current.target == next.operand1 &&
-          std::any_cast<std::string>(next.operand2) == next.operand1) {
+          anyToString(next.operand2) == next.operand1) {
         optimizeInstructions.push_back(current);
         i++;
       } else {

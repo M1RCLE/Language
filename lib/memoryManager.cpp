@@ -54,7 +54,7 @@ void MemoryManager::releaseReference(const std::string& name) {
 
 std::any MemoryManager::getValue(const std::string& name) {
   ObjectEntry* entry = getMemoryEntry(name);
-  return entry ? entry->value : std::any();
+  return entry ? entry->value : std::any(nullptr);
 }
 
 void MemoryManager::allocateArray(const std::string& name, long size) {
