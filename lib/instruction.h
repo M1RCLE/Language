@@ -9,6 +9,7 @@
 class Instruction {
  public:
   enum class OpCode {
+    EMPTY,
     STORE,
     PRINT,
     ARRAY,

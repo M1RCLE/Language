@@ -26,11 +26,11 @@ class Compiler {
   bool isInteger(const std::string& str);
   Instruction compileLoop(const Instruction& loopInstruction);
   std::vector<Instruction> preprocessInstructions(
-      const std::vector<Instruction>& instructions);
+      std::vector<Instruction>& instructions);
   std::vector<Instruction> optimizeInstructions(
       const std::vector<Instruction>& instructions);
   std::vector<Instruction> filterDeadCode(
-      const std::vector<Instruction>& instructions);
+      std::vector<Instruction>& instructions);
   void writeInstruction(std::ofstream& out, const Instruction& instr);
 
  public:

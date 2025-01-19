@@ -47,9 +47,9 @@ Instruction Compiler::compileLoop(const Instruction& loopInstruction) {
 }
 
 std::vector<Instruction> Compiler::preprocessInstructions(
-    const std::vector<Instruction>& instructions) {
+    std::vector<Instruction>& instructions) {
   std::vector<Instruction> preprocessedInstructions;
-  for (const auto& instruction : instructions) {
+  for (auto& instruction : instructions) {
     std::vector<Instruction> processedBlock;
     switch (instruction.opCode) {
       case Instruction::OpCode::FUN:
@@ -62,23 +62,36 @@ std::vector<Instruction> Compiler::preprocessInstructions(
       case Instruction::OpCode::IF:
         if (!instruction.block.empty()) {
           processedBlock = preprocessInstructions(instruction.block);
-          preprocessedInstructions.push_back(
-              Instruction(instruction.opCode, instruction.operand1,
-                          instruction.operand2, processedBlock));
-        } else {
-          preprocessedInstructions.push_back(instruction);
+          instruction.block = processedBlock;
         }
+        preprocessedInstructions.push_back(instruction);
         break;
 
       case Instruction::OpCode::LOOP:
         if (!instruction.block.empty()) {
           processedBlock = preprocessInstructions(instruction.block);
+          instruction.block = processedBlock;
           preprocessedInstructions.push_back(compileLoop(instruction));
         } else {
           preprocessedInstructions.push_back(compileLoop(instruction));
         }
         break;
-
+      case Instruction::OpCode::ADD:
+      case Instruction::OpCode::SUB:
+      case Instruction::OpCode::MUL:
+      case Instruction::OpCode::MOD:
+      case Instruction::OpCode::STORE:
+      case Instruction::OpCode::LESS:
+      case Instruction::OpCode::GREATER:
+      case Instruction::OpCode::EQUALS:
+      case Instruction::OpCode::NOT_EQUALS:
+      case Instruction::OpCode::NEW:
+      case Instruction::OpCode::WRITE_INDEX:
+        instruction.target = instruction.operand1;
+        preprocessedInstructions.push_back(instruction);
+      case Instruction::OpCode::STORE_ARRAY_VAR:
+        instruction.target = anyToString(instruction.operand3);
+        preprocessedInstructions.push_back(instruction);
       default:
         preprocessedInstructions.push_back(instruction);
         break;
@@ -113,11 +126,11 @@ std::vector<Instruction> Compiler::optimizeInstructions(
 }
 
 std::vector<Instruction> Compiler::filterDeadCode(
-    const std::vector<Instruction>& instructions) {
+    std::vector<Instruction>& instructions) {
   std::vector<Instruction> optimizedInstructions;
 
   for (auto it = instructions.rbegin(); it != instructions.rend(); ++it) {
-    const auto& instruction = *it;
+    auto& instruction = *it;
     switch (instruction.opCode) {
       case Instruction::OpCode::PRINT:
         usedVariables.insert(instruction.operand1);
@@ -131,8 +144,8 @@ std::vector<Instruction> Compiler::filterDeadCode(
         if (!instruction.target.empty() &&
                 usedVariables.contains(instruction.target) ||
             usedVariables.contains(instruction.operand1)) {
-          addUsedVariable(instruction.operand2);
-          addUsedVariable(instruction.operand3);
+          usedVariables.insert(anyToString(instruction.operand2));
+          usedVariables.insert(anyToString(instruction.operand3));
           optimizedInstructions.push_back(instruction);
         }
         break;
@@ -154,10 +167,9 @@ std::vector<Instruction> Compiler::filterDeadCode(
           std::vector<Instruction> reversedBlock =
               filterDeadCode(instruction.block);
           std::reverse(reversedBlock.begin(), reversedBlock.end());
-          optimizedInstructions.push_back(
-              Instruction(instruction.opCode, instruction.operand1,
-                          instruction.operand2, reversedBlock));
+          instruction.block = reversedBlock;
         }
+        optimizedInstructions.push_back(instruction);
         break;
 
       case Instruction::OpCode::CALL:
@@ -197,8 +209,10 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
     case Instruction::OpCode::FUN: {
       if (!instr.operand1.empty()) {
         out << instr.operand1;
-        out << '\0';
+      } else {
+        out << "";
       }
+      out << '\0';
       auto params_size = instr.parameters.size();
       out.write(reinterpret_cast<const char*>(&params_size), sizeof(size_t));
       for (const auto& param : instr.parameters) {
@@ -215,8 +229,10 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
     case Instruction::OpCode::RETURN: {
       if (!instr.operand1.empty()) {
         out << instr.operand1;
-        out << '\0';
+      } else {
+        out << "";
       }
+      out << '\0';
       if (instr.operand2.has_value()) {
         writeInstruction(out, std::any_cast<Instruction>(instr.operand2));
       }
@@ -225,20 +241,26 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
     case Instruction::OpCode::IF: {
       if (!instr.operand1.empty()) {
         out << instr.operand1;
-        out << '\0';
+      } else {
+        out << "";
       }
+      out << '\0';
 
       if (instr.operand2.has_value()) {
         auto op2 = anyToString(instr.operand2);
         out << op2;
-        out << '\0';
+      } else {
+        out << "";
       }
+      out << '\0';
 
       if (instr.operand3.has_value()) {
         auto op3 = anyToString(instr.operand3);
         out << op3;
-        out << '\0';
+      } else {
+        out << "";
       }
+      out << '\0';
 
       size_t blockSize = instr.block.size();
       out.write(reinterpret_cast<const char*>(&blockSize), sizeof(size_t));
@@ -250,20 +272,26 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
     case Instruction::OpCode::LOOP: {
       if (!instr.operand1.empty()) {
         out << instr.operand1;
-        out << '\0';
+      } else {
+        out << "";
       }
+      out << '\0';
 
       if (instr.operand2.has_value()) {
         auto op2 = anyToString(instr.operand2);
         out << op2;
-        out << '\0';
+      } else {
+        out << "";
       }
+      out << '\0';
 
       if (instr.operand3.has_value()) {
         auto op3 = anyToString(instr.operand3);
         out << op3;
-        out << '\0';
+      } else {
+        out << "";
       }
+      out << '\0';
 
       size_t blockSize = instr.block.size();
       out.write(reinterpret_cast<const char*>(&blockSize), sizeof(size_t));
@@ -275,20 +303,26 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
     default: {
       if (!instr.operand1.empty()) {
         out << instr.operand1;
-        out << '\0';
+      } else {
+        out << "";
       }
+      out << '\0';
 
       if (instr.operand2.has_value()) {
         auto op2 = anyToString(instr.operand2);
         out << op2;
-        out << '\0';
+      } else {
+        out << "";
       }
+      out << '\0';
 
       if (instr.operand3.has_value()) {
         auto op3 = anyToString(instr.operand3);
         out << op3;
-        out << '\0';
+      } else {
+        out << "";
       }
+      out << '\0';
       break;
     }
   }
