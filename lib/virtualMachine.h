@@ -18,8 +18,7 @@ class VirtualMachine {
   std::vector<Instruction> instructions;
   MemoryManager memoryManager;
   std::map<std::string, Instruction> functions;
-  bool isReturning;
-
+  bool isReturning = false;
  public:
   void loadFromFile(const std::string& filename);
   std::vector<Instruction> readNestedBlock(std::ifstream& in);
@@ -29,6 +28,7 @@ class VirtualMachine {
   bool conditions(const Instruction& instruction);
   long getOperandValue(const std::any& operand);
   std::vector<std::any> parseToListOfObjects(const std::any& input);
+  VirtualMachine() = default;
 };
 
 #endif
