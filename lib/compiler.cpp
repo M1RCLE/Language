@@ -252,7 +252,8 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
 
       if (instr.operand2.has_value()) {
         auto op2 = anyToStringCompiler(instr.operand2);
-        out << op2[0];
+        // out << op2[0];
+        out << op2;
       } else {
         out << "";
       }
