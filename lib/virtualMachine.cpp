@@ -1,7 +1,5 @@
 #include "virtualMachine.h"
 
-#include <bits/algorithmfwd.h>
-
 #include <fstream>
 #include <sstream>
 
@@ -11,15 +9,20 @@ std::string anyToStringVM(const std::any& value) {
   }
   if (value.type() == typeid(std::string)) {
     return std::any_cast<std::string>(value);
-  } else if (value.type() == typeid(int)) {
+  }
+  if (value.type() == typeid(int)) {
     return std::to_string(std::any_cast<int>(value));
-  } else if (value.type() == typeid(long)) {
+  }
+  if (value.type() == typeid(long)) {
     return std::to_string(std::any_cast<long>(value));
-  } else if (value.type() == typeid(float)) {
+  }
+  if (value.type() == typeid(float)) {
     return std::to_string(std::any_cast<float>(value));
-  } else if (value.type() == typeid(double)) {
+  }
+  if (value.type() == typeid(double)) {
     return std::to_string(std::any_cast<double>(value));
-  } else if (value.type() == typeid(Instruction::OpCode)) {
+  }
+  if (value.type() == typeid(Instruction::OpCode)) {
     return Instruction::opCodeToString(
         std::any_cast<Instruction::OpCode>(value));
   }
@@ -84,7 +87,7 @@ void VirtualMachine::loadFromFile(const std::string& filename) {
                 block.push_back(Instruction(Instruction::OpCode::RETURN,
                                             returnValue, nestedInstruction));
               } else if (nestedOpCode == Instruction::OpCode::IF ||
-                         nestedOpCode == Instruction::OpCode::LOOP) {
+                         nestedOpCode == Instruction::OpCode::WHILE) {
                 std::string operand1, operand2, operand3;
                 std::getline(file, operand1, '\0');
 
@@ -136,7 +139,7 @@ void VirtualMachine::loadFromFile(const std::string& filename) {
 
       std::vector<Instruction> block;
       if (opCode == Instruction::OpCode::IF ||
-          opCode == Instruction::OpCode::LOOP) {
+          opCode == Instruction::OpCode::WHILE) {
         block = readNestedBlock(file);
         auto operandCompare = static_cast<Instruction::OpCode>(operand2[0]);
         instructions.push_back(
@@ -185,7 +188,7 @@ std::vector<Instruction> VirtualMachine::readNestedBlock(std::ifstream& file) {
         block.emplace_back(
             Instruction(Instruction::OpCode::RETURN, returnValue, instruction));
       } else if (nestedOpCode == Instruction::OpCode::IF ||
-                 nestedOpCode == Instruction::OpCode::LOOP) {
+                 nestedOpCode == Instruction::OpCode::WHILE) {
         std::string operand1, operand2, operand3;
         std::getline(file, operand1, '\0');
         std::getline(file, operand2, '\0');
@@ -376,7 +379,7 @@ void VirtualMachine::execute(const Instruction& instruction) {
       }
       break;
     }
-    case Instruction::OpCode::LOOP: {
+    case Instruction::OpCode::WHILE: {
       while (conditions(instruction)) {
         if (!instruction.block.empty()) {
           run(instruction.block);
@@ -522,7 +525,7 @@ void VirtualMachine::execute(const Instruction& instruction) {
 void VirtualMachine::run(const std::vector<Instruction>& block) {
   for (const auto& instruction : block) {
     if (isReturning) {
-      break;  // Завершаем выполнение текущего блока при возвращении из функции
+      break;
     }
     execute(instruction);
   }
@@ -533,33 +536,39 @@ bool VirtualMachine::conditions(const Instruction& instruction) {
   if (conditionType == "LESS") {
     return getOperandValue(instruction.operand1) <
            getOperandValue(instruction.operand3);
-  } else if (conditionType == "GREATER") {
+  }
+  if (conditionType == "GREATER") {
     return getOperandValue(instruction.operand1) >
            getOperandValue(instruction.operand3);
-  } else if (conditionType == "EQUALS") {
+  }
+  if (conditionType == "EQUALS") {
     return getOperandValue(instruction.operand1) ==
            getOperandValue(instruction.operand3);
-  } else if (conditionType == "NOT_EQUALS") {
+  }
+  if (conditionType == "NOT_EQUALS") {
     return getOperandValue(instruction.operand1) !=
            getOperandValue(instruction.operand3);
-  } else {
-    throw std::runtime_error("Unknown condition: " + conditionType);
   }
+  throw std::runtime_error("Unknown condition: " + conditionType);
 }
 
 long VirtualMachine::getOperandValue(const std::any& operand) {
   if (operand.type() == typeid(long)) {
     return std::any_cast<long>(operand);
-  } else if (operand.type() == typeid(int)) {
+  }
+  if (operand.type() == typeid(int)) {
     return std::any_cast<int>(operand);
-  } else if (operand.type() == typeid(std::string)) {
+  }
+  if (operand.type() == typeid(std::string)) {
     std::string varName = std::any_cast<std::string>(operand);
     auto value = memoryManager.getValue(varName);
     if (value.type() == typeid(int)) {
       return std::any_cast<int>(value);
-    } else if (value.type() == typeid(long)) {
+    }
+    if (value.type() == typeid(long)) {
       return std::any_cast<long>(value);
-    } else if (value.type() == typeid(std::string)) {
+    }
+    if (value.type() == typeid(std::string)) {
       try {
         return std::stol(std::any_cast<std::string>(value));
       } catch (const std::invalid_argument&) {
@@ -567,21 +576,22 @@ long VirtualMachine::getOperandValue(const std::any& operand) {
             "Variable " + varName +
             " is not a valid number: " + std::any_cast<std::string>(value));
       }
-    } else if (value.type() == typeid(nullptr)) {
+    }
+    if (value.type() == typeid(nullptr)) {
       try {
         return std::stol(varName);
       } catch (const std::invalid_argument&) {
         throw std::runtime_error("Variable " + varName +
                                  " is not a valid number");
       }
-    } else if (value.type() == typeid(std::vector<std::any>)) {
+    }
+    if (value.type() == typeid(std::vector<std::any>)) {
       throw std::runtime_error("Variable " + varName +
                                " is an array, not an Integer");
     }
     throw std::runtime_error("Variable " + varName + " has unsupported type");
-  } else {
-    throw std::runtime_error("Invalid operand type");
   }
+  throw std::runtime_error("Invalid operand type");
 }
 
 bool is_number(const std::string& s) {

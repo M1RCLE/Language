@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 
     Compiler compiler(instructions);
     std::string compiledFile =
-        filename.substr(0, filename.find_last_of('.')) + ".sosl";
+        filename.substr(0, filename.find_last_of('.')) + ".bytecel";
     compiler.saveToFile(compiledFile);
 
     VirtualMachine vm;

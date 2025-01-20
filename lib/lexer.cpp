@@ -55,7 +55,7 @@ std::vector<Token> Lexer::tokenize() {
       } else if (id == "if") {
         tokens.push_back(Token(Token::Type::IF, id));
       } else if (id == "loop") {
-        tokens.push_back(Token(Token::Type::LOOP, id));
+        tokens.push_back(Token(Token::Type::WHILE, id));
       } else if (id == "fun") {
         tokens.push_back(Token(Token::Type::FUN, id));
       } else if (id == "return") {

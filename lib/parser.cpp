@@ -202,7 +202,7 @@ std::vector<Instruction> Parser::parseConditionalStatement() {
 
 std::vector<Instruction> Parser::parseLoopStatement() {
   std::vector<Instruction> instructions;
-  eat(Token::Type::LOOP);
+  eat(Token::Type::WHILE);
   eat(Token::Type::LEFT_BRACKET);
   std::any conditionOperand1 = currentToken().value;
   eat(currentToken().type);
@@ -240,11 +240,10 @@ std::vector<Instruction> Parser::parseLoopStatement() {
       break;
     default:
       throw std::runtime_error("Unsupported comparison operator");
-      break;
   }
 
   instructions.push_back(Instruction(
-      Instruction::OpCode::LOOP, std::any_cast<std::string>(conditionOperand1),
+      Instruction::OpCode::WHILE, std::any_cast<std::string>(conditionOperand1),
       comparisonOpCode, conditionOperand2, blockInstructions));
   return instructions;
 }
@@ -321,7 +320,7 @@ Instruction Parser::parseFunctionDeclaration() {
       auto conditionalStmt = parseConditionalStatement();
       instructions.insert(instructions.end(), conditionalStmt.begin(),
                           conditionalStmt.end());
-    } else if (currentToken().type == Token::Type::LOOP) {
+    } else if (currentToken().type == Token::Type::WHILE) {
       auto loopStmt = parseLoopStatement();
       instructions.insert(instructions.end(), loopStmt.begin(), loopStmt.end());
     } else {
@@ -361,7 +360,7 @@ std::vector<Instruction> Parser::parseSingle() {
     auto conditionalStmt = parseConditionalStatement();
     instructions.insert(instructions.end(), conditionalStmt.begin(),
                         conditionalStmt.end());
-  } else if (currentToken().type == Token::Type::LOOP) {
+  } else if (currentToken().type == Token::Type::WHILE) {
     auto loopStmt = parseLoopStatement();
     instructions.insert(instructions.end(), loopStmt.begin(), loopStmt.end());
   } else {
@@ -400,7 +399,7 @@ std::vector<Instruction> Parser::parse() {
                           conditionalStmt.end());
     } else if (currentToken().type == Token::Type::RETURN) {
       instructions.push_back(parseReturnStatement());
-    } else if (currentToken().type == Token::Type::LOOP) {
+    } else if (currentToken().type == Token::Type::WHILE) {
       auto loopStmt = parseLoopStatement();
       instructions.insert(instructions.end(), loopStmt.begin(), loopStmt.end());
     } else {

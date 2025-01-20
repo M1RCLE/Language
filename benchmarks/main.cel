@@ -1,9 +1,9 @@
 let a = 1;
 let c = 2;
-if [ c < 6 ] 
+loop [ c < 6 ]
 [ 
   let c = c + 1;
   if [ c > 2 ] [
-    print [a];
+    print [c];
   ]
 ]

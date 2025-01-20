@@ -23,7 +23,7 @@ class Token {
     EQUALS,
     NOT_EQUALS,
     IF,
-    LOOP,
+    WHILE,
     FUN,
     RETURN,
     NEW,

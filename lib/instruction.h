@@ -21,7 +21,7 @@ class Instruction {
     EQUALS,
     NOT_EQUALS,
     IF,
-    LOOP,
+    WHILE,
     FUN,
     RETURN,
     NEW,
@@ -40,7 +40,6 @@ class Instruction {
   std::string target;
   std::vector<std::string> parameters;
 
-  // Constructor for simple operations (store, print)
   Instruction(OpCode opCode, const std::string& operand1)
       : opCode(opCode),
         operand1(operand1),
@@ -59,7 +58,6 @@ class Instruction {
         target(),
         parameters() {}
 
-  // Constructor for unary operations (like STORE with a single value)
   Instruction(OpCode opCode, const std::string& target,
               const std::string& operand1)
       : opCode(opCode),
@@ -70,7 +68,6 @@ class Instruction {
         block(),
         parameters() {}
 
-  // Constructor for binary operations (add, sub, mul, comparisons)
   Instruction(OpCode opCode, const std::string& operand1, std::any operand2,
               std::any operand3)
       : opCode(opCode),
@@ -91,7 +88,6 @@ class Instruction {
         target(),
         parameters() {}
 
-  // Constructor for function declarations
   Instruction(OpCode opCode, const std::string& operand1,
               const std::vector<std::string>& parameters)
       : opCode(opCode),
@@ -124,7 +120,6 @@ class Instruction {
         target(),
         parameters(parameters) {}
 
-  // Default constructor
   Instruction()
       : opCode(OpCode::STORE),
         operand1(),
@@ -134,7 +129,6 @@ class Instruction {
         target(),
         parameters() {}
 
-  // Function instruction
   static Instruction FunctionInstruction(
       const std::string& functionName,
       const std::vector<std::string>& parameters,
@@ -147,7 +141,6 @@ class Instruction {
     return newInstruction;
   }
 
-  // Convert instruction to string
   std::string toString() const {
     std::string result = opCodeToString(opCode) + " " + operand1;
     if (operand2.type() == typeid(std::string)) {
@@ -198,8 +191,8 @@ class Instruction {
         return "NOT_EQUALS";
       case OpCode::IF:
         return "IF";
-      case OpCode::LOOP:
-        return "LOOP";
+      case OpCode::WHILE:
+        return "WHILE";
       case OpCode::FUN:
         return "FUN";
       case OpCode::RETURN:

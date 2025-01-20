@@ -6,20 +6,26 @@ std::string anyToStringCompiler(const std::any& value) {
   }
   if (value.type() == typeid(std::string)) {
     return std::any_cast<std::string>(value);
-  } else if (value.type() == typeid(int)) {
+  }
+  if (value.type() == typeid(int)) {
     return std::to_string(std::any_cast<int>(value));
-  } else if (value.type() == typeid(long)) {
+  }
+  if (value.type() == typeid(long)) {
     return std::to_string(std::any_cast<long>(value));
-  } else if (value.type() == typeid(float)) {
+  }
+  if (value.type() == typeid(float)) {
     return std::to_string(std::any_cast<float>(value));
-  } else if (value.type() == typeid(double)) {
+  }
+  if (value.type() == typeid(double)) {
     return std::to_string(std::any_cast<double>(value));
-  } else if (value.type() == typeid(Instruction::OpCode)) {
+  }
+  if (value.type() == typeid(Instruction::OpCode)) {
     auto opCode = std::any_cast<Instruction::OpCode>(value);
     auto c = static_cast<char>(opCode);
     std::string s(1, c);
     return s;
-  } else if (value.type() == typeid(std::vector<std::string>)) {
+  }
+  if (value.type() == typeid(std::vector<std::string>)) {
     std::string res;
     auto vec = std::any_cast<std::vector<std::string>>(value);
     for (int i = 0; i < vec.size(); ++i) {
@@ -55,7 +61,7 @@ bool Compiler::isInteger(const std::string& str) {
 }
 
 Instruction Compiler::compileLoop(const Instruction& loopInstruction) {
-  return Instruction(Instruction::OpCode::LOOP, loopInstruction.operand1,
+  return Instruction(Instruction::OpCode::WHILE, loopInstruction.operand1,
                      loopInstruction.operand2, loopInstruction.operand3,
                      loopInstruction.block);
 }
@@ -81,7 +87,7 @@ std::vector<Instruction> Compiler::preprocessInstructions(
         preprocessedInstructions.push_back(instruction);
         break;
 
-      case Instruction::OpCode::LOOP:
+      case Instruction::OpCode::WHILE:
         if (!instruction.block.empty()) {
           processedBlock = preprocessInstructions(instruction.block);
           instruction.block = processedBlock;
@@ -183,7 +189,7 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
       }
       break;
     }
-    case Instruction::OpCode::LOOP: {
+    case Instruction::OpCode::WHILE: {
       if (!instr.operand1.empty()) {
         out << instr.operand1;
       } else {
