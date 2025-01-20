@@ -72,7 +72,7 @@ std::vector<Instruction> Compiler::preprocessInstructions(
   for (auto& instruction : instructions) {
     std::vector<Instruction> processedBlock;
     switch (instruction.opCode) {
-      case Instruction::OpCode::FUN:
+      case Instruction::OpCode::FUNC:
         functions[instruction.operand1] = instruction;
         processedBlock = preprocessInstructions(instruction.block);
         preprocessedInstructions.emplace_back(Instruction::FunctionInstruction(
@@ -126,7 +126,7 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
   out << '\0';
 
   switch (instr.opCode) {
-    case Instruction::OpCode::FUN: {
+    case Instruction::OpCode::FUNC: {
       if (!instr.operand1.empty()) {
         out << instr.operand1;
       } else {

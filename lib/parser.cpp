@@ -281,7 +281,7 @@ Instruction Parser::parseReturnStatement() {
 
 Instruction Parser::parseFunctionDeclaration() {
   std::vector<Instruction> instructions;
-  eat(Token::Type::FUN);
+  eat(Token::Type::FUNC);
   std::string functionName = currentToken().value;
   eat(Token::Type::IDENTIFIER);
 
@@ -352,7 +352,7 @@ std::vector<Instruction> Parser::parseSingle() {
   } else if (currentToken().type == Token::Type::PRINT) {
     auto printStmt = parsePrintStatement();
     instructions.insert(instructions.end(), printStmt.begin(), printStmt.end());
-  } else if (currentToken().type == Token::Type::FUN) {
+  } else if (currentToken().type == Token::Type::FUNC) {
     instructions.push_back(parseFunctionDeclaration());
   } else if (currentToken().type == Token::Type::RETURN) {
     instructions.push_back(parseReturnStatement());
@@ -372,7 +372,7 @@ std::vector<Instruction> Parser::parseSingle() {
 std::vector<Instruction> Parser::parse() {
   std::vector<Instruction> instructions;
   while (pos < tokens.size()) {
-    if (currentToken().type == Token::Type::FUN) {
+    if (currentToken().type == Token::Type::FUNC) {
       Instruction instruction = parseFunctionDeclaration();
       instructions.push_back(instruction);
     } else if (currentToken().type == Token::Type::LET) {

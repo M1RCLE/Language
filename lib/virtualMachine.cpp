@@ -42,7 +42,7 @@ void VirtualMachine::loadFromFile(const std::string& filename) {
       auto opCode = static_cast<Instruction::OpCode>(opCodeOrdinal[0]);
 
       switch (opCode) {
-        case Instruction::OpCode::FUN: {
+        case Instruction::OpCode::FUNC: {
           std::string functionName;
           std::getline(file, functionName, '\0');
 
@@ -387,12 +387,12 @@ void VirtualMachine::execute(const Instruction& instruction) {
       }
       break;
     }
-    case Instruction::OpCode::FUN: {
+    case Instruction::OpCode::FUNC: {
       std::string functionName = instruction.operand1;
       std::vector<std::string> params = instruction.parameters;
       std::vector<Instruction> functionBody = instruction.block;
       Instruction functionInstr = Instruction(
-          Instruction::OpCode::FUN, functionName, params, functionBody);
+          Instruction::OpCode::FUNC, functionName, params, functionBody);
       functions[functionName] = functionInstr;
       break;
     }

@@ -24,7 +24,7 @@ class Token {
     NOT_EQUALS,
     IF,
     WHILE,
-    FUN,
+    FUNC,
     RETURN,
     NEW,
     WRITE_INDEX,

@@ -22,7 +22,7 @@ class Instruction {
     NOT_EQUALS,
     IF,
     WHILE,
-    FUN,
+    FUNC,
     RETURN,
     NEW,
     READ_INDEX,
@@ -134,7 +134,7 @@ class Instruction {
       const std::vector<std::string>& parameters,
       const std::vector<Instruction>& instructions) {
     Instruction newInstruction;
-    newInstruction.opCode = OpCode::FUN;
+    newInstruction.opCode = OpCode::FUNC;
     newInstruction.operand1 = functionName;
     newInstruction.block = instructions;
     newInstruction.parameters = parameters;
@@ -193,8 +193,8 @@ class Instruction {
         return "IF";
       case OpCode::WHILE:
         return "WHILE";
-      case OpCode::FUN:
-        return "FUN";
+      case OpCode::FUNC:
+        return "FUNC";
       case OpCode::RETURN:
         return "RETURN";
       case OpCode::NEW:
