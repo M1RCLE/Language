@@ -89,7 +89,7 @@ std::vector<Instruction> Parser::parseAssignment(const std::string& varName) {
     } else if (currentToken().type == Token::Type::CALL_FUN_OPEN) {
       eat(Token::Type::CALL_FUN_OPEN);
       std::string functionName = std::any_cast<std::string>(operand1);
-      std::vector<std::any> arguments;
+      std::vector<std::string> arguments;
       while (currentToken().type != Token::Type::CALL_FUN_CLOSE) {
         if (currentToken().type == Token::Type::NUMBER ||
             currentToken().type == Token::Type::IDENTIFIER) {

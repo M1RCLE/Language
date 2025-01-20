@@ -19,6 +19,13 @@ std::string anyToStringCompiler(const std::any& value) {
     auto c = static_cast<char>(opCode);
     std::string s(1, c);
     return s;
+  } else if (value.type() == typeid(std::vector<std::string>)) {
+    std::string res;
+    auto vec = std::any_cast<std::vector<std::string>>(value);
+    for (int i = 0; i < vec.size(); ++i) {
+      res += vec[i];
+    }
+    return res;
   }
   return "";
 }
@@ -252,8 +259,7 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
 
       if (instr.operand2.has_value()) {
         auto op2 = anyToStringCompiler(instr.operand2);
-        // out << op2[0];
-        out << op2;
+        out << op2[0];
       } else {
         out << "";
       }
@@ -284,7 +290,7 @@ void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
 
       if (instr.operand2.has_value()) {
         auto op2 = anyToStringCompiler(instr.operand2);
-        out << op2;
+        out << op2[0];
       } else {
         out << "";
       }
