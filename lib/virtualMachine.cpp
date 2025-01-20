@@ -444,9 +444,9 @@ void VirtualMachine::execute(const Instruction& instruction) {
       isReturning = false;
 
       if (instruction.operand3.has_value()) {
-        if (!returnValue.has_value()) {
-          throw std::runtime_error("Function did not return a value");
-        }
+        // if (!returnValue.has_value()) {
+        //   throw std::runtime_error("Function did not return a value");
+        // }
         memoryManager.allocate(std::any_cast<std::string>(instruction.operand3),
                                returnValue);
       }

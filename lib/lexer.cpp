@@ -94,22 +94,55 @@ std::vector<Token> Lexer::tokenize() {
     } else if (currentChar == ';') {
       tokens.push_back(Token(Token::Type::SEMICOLON, ";"));
       advance();
-    } else if (currentChar == '(') {
-      tokens.push_back(Token(Token::Type::LEFT_BRACKET, "("));
+    }
+    // else if (currentChar == '(') {
+    //   tokens.push_back(Token(Token::Type::LEFT_BRACKET, "("));
+    //   advance();
+    // } else if (currentChar == ')') {
+    //   tokens.push_back(Token(Token::Type::RIGHT_BRACKET, ")"));
+    //   advance();
+    // } else if (currentChar == '[') {
+    //   tokens.push_back(Token(Token::Type::CALL_FUN_OPEN, "["));
+    //   advance();
+    // } else if (currentChar == ']') {
+    //   tokens.push_back(Token(Token::Type::CALL_FUN_CLOSE, "]"));
+    //   advance();
+    // } else if (currentChar == ',') {
+    //   tokens.push_back(Token(Token::Type::COMMA, ","));
+    //   advance();
+    // }
+    else if (currentChar == '(') {
+      if (!tokens.empty() && (tokens.back().type == Token::Type::IF ||
+                              tokens.back().type == Token::Type::WHILE ||
+                              tokens.back().type == Token::Type::PRINT ||
+                              tokens.back().type == Token::Type::IDENTIFIER)) {
+        tokens.push_back(Token(Token::Type::LEFT_PAREN, "("));  // Обычные скобки
+        } else {
+          throw std::runtime_error("Unexpected '(' - Use '{' for code blocks.");
+        }
       advance();
-    } else if (currentChar == ')') {
-      tokens.push_back(Token(Token::Type::RIGHT_BRACKET, ")"));
+    }
+    else if (currentChar == ')') {
+      tokens.push_back(Token(Token::Type::RIGHT_PAREN, ")"));
       advance();
-    } else if (currentChar == '[') {
-      tokens.push_back(Token(Token::Type::CALL_FUN_OPEN, "["));
+    }
+    else if (currentChar == '{') {
+      tokens.push_back(Token(Token::Type::BLOCK_OPEN, "{"));
       advance();
-    } else if (currentChar == ']') {
-      tokens.push_back(Token(Token::Type::CALL_FUN_CLOSE, "]"));
+    }
+    else if (currentChar == '}') {
+      tokens.push_back(Token(Token::Type::BLOCK_CLOSE, "}"));
       advance();
-    } else if (currentChar == ',') {
-      tokens.push_back(Token(Token::Type::COMMA, ","));
+    }
+    else if (currentChar == '[') {
+      tokens.push_back(Token(Token::Type::LEFT_BRACKET, "["));
       advance();
-    } else if (currentChar == '!') {
+    }
+    else if (currentChar == ']') {
+      tokens.push_back(Token(Token::Type::RIGHT_BRACKET, "]"));
+      advance();
+    }
+    else if (currentChar == '!') {
       advance();
       if (currentChar == '=') {
         tokens.push_back(Token(Token::Type::NOT_EQUALS, "!="));

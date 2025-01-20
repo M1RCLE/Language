@@ -86,11 +86,11 @@ std::vector<Instruction> Parser::parseAssignment(const std::string& varName) {
       std::any operand2 = parseOperand();
       instructions.push_back(Instruction(Instruction::OpCode::NOT_EQUALS,
                                          varName, operand1, operand2));
-    } else if (currentToken().type == Token::Type::CALL_FUN_OPEN) {
-      eat(Token::Type::CALL_FUN_OPEN);
+    } else if (currentToken().type == Token::Type::LEFT_PAREN) {
+      eat(Token::Type::LEFT_PAREN);
       std::string functionName = std::any_cast<std::string>(operand1);
       std::vector<std::string> arguments;
-      while (currentToken().type != Token::Type::CALL_FUN_CLOSE) {
+      while (currentToken().type != Token::Type::RIGHT_PAREN) {
         if (currentToken().type == Token::Type::NUMBER ||
             currentToken().type == Token::Type::IDENTIFIER) {
           arguments.push_back(currentToken().value);
@@ -99,7 +99,7 @@ std::vector<Instruction> Parser::parseAssignment(const std::string& varName) {
           eat(Token::Type::COMMA);
         }
       }
-      eat(Token::Type::CALL_FUN_CLOSE);
+      eat(Token::Type::RIGHT_PAREN);
       instructions.push_back(Instruction(Instruction::OpCode::CALL,
                                          functionName, arguments, varName));
     } else {
@@ -130,22 +130,22 @@ std::vector<Instruction> Parser::parseArrayAssignment(
 std::vector<Instruction> Parser::parsePrintStatement() {
   std::vector<Instruction> instructions;
   eat(Token::Type::PRINT);
-  eat(Token::Type::LEFT_BRACKET);
+  eat(Token::Type::LEFT_PAREN);
   std::string varName = currentToken().value;
   eat(Token::Type::IDENTIFIER);
-  if (currentToken().type == Token::Type::LEFT_BRACKET) {
-    eat(Token::Type::LEFT_BRACKET);
+  if (currentToken().type == Token::Type::LEFT_PAREN) {
+    eat(Token::Type::LEFT_PAREN);
     std::string index = currentToken().value;
     eat(currentToken().type);
-    eat(Token::Type::RIGHT_BRACKET);
-    eat(Token::Type::RIGHT_BRACKET);
+    eat(Token::Type::RIGHT_PAREN);
+    eat(Token::Type::RIGHT_PAREN);
     eat(Token::Type::SEMICOLON);
     instructions.push_back(
         Instruction(Instruction::OpCode::READ_INDEX, varName, index));
     return instructions;
   }
 
-  eat(Token::Type::RIGHT_BRACKET);
+  eat(Token::Type::RIGHT_PAREN);
   eat(Token::Type::SEMICOLON);
   instructions.push_back(Instruction(Instruction::OpCode::PRINT, varName));
   return instructions;
@@ -154,23 +154,23 @@ std::vector<Instruction> Parser::parsePrintStatement() {
 std::vector<Instruction> Parser::parseConditionalStatement() {
   std::vector<Instruction> instructions;
   eat(Token::Type::IF);
-  eat(Token::Type::LEFT_BRACKET);
+  eat(Token::Type::LEFT_PAREN);
   std::any conditionOperand1 = currentToken().value;
   eat(currentToken().type);
   Token::Type comparisonType = currentToken().type;
   eat(comparisonType);
   std::any conditionOperand2 = currentToken().value;
   eat(currentToken().type);
-  eat(Token::Type::RIGHT_BRACKET);
+  eat(Token::Type::RIGHT_PAREN);
 
   std::vector<Instruction> blockInstructions;
-  eat(Token::Type::LEFT_BRACKET);
-  while (currentToken().type != Token::Type::RIGHT_BRACKET) {
+  eat(Token::Type::BLOCK_OPEN);
+  while (currentToken().type != Token::Type::BLOCK_CLOSE) {
     auto single = parseSingle();
     blockInstructions.insert(blockInstructions.end(), single.begin(),
                              single.end());
   }
-  eat(Token::Type::RIGHT_BRACKET);
+  eat(Token::Type::BLOCK_CLOSE);
 
   Instruction::OpCode comparisonOpCode;
   switch (comparisonType) {
@@ -200,26 +200,26 @@ std::vector<Instruction> Parser::parseConditionalStatement() {
   return instructions;
 }
 
-std::vector<Instruction> Parser::parseLoopStatement() {
+std::vector<Instruction> Parser::parseWhileStatement() {
   std::vector<Instruction> instructions;
   eat(Token::Type::WHILE);
-  eat(Token::Type::LEFT_BRACKET);
+  eat(Token::Type::LEFT_PAREN);
   std::any conditionOperand1 = currentToken().value;
   eat(currentToken().type);
   Token::Type comparisonType = currentToken().type;
   eat(comparisonType);
   std::any conditionOperand2 = currentToken().value;
   eat(currentToken().type);
-  eat(Token::Type::RIGHT_BRACKET);
+  eat(Token::Type::RIGHT_PAREN);
 
   std::vector<Instruction> blockInstructions;
-  eat(Token::Type::LEFT_BRACKET);
-  while (currentToken().type != Token::Type::RIGHT_BRACKET) {
+  eat(Token::Type::BLOCK_OPEN);
+  while (currentToken().type != Token::Type::BLOCK_CLOSE) {
     auto single = parseSingle();
     blockInstructions.insert(blockInstructions.end(), single.begin(),
                              single.end());
   }
-  eat(Token::Type::RIGHT_BRACKET);
+  eat(Token::Type::BLOCK_CLOSE);
 
   Instruction::OpCode comparisonOpCode;
   switch (comparisonType) {
@@ -285,9 +285,9 @@ Instruction Parser::parseFunctionDeclaration() {
   std::string functionName = currentToken().value;
   eat(Token::Type::IDENTIFIER);
 
-  eat(Token::Type::LEFT_BRACKET);
+  eat(Token::Type::LEFT_PAREN);
   std::vector<std::string> parameters;
-  while (currentToken().type != Token::Type::RIGHT_BRACKET) {
+  while (currentToken().type != Token::Type::RIGHT_PAREN) {
     eat(Token::Type::LET);
     parameters.push_back(currentToken().value);
     eat(Token::Type::IDENTIFIER);
@@ -295,9 +295,10 @@ Instruction Parser::parseFunctionDeclaration() {
       eat(Token::Type::COMMA);
     }
   }
-  eat(Token::Type::RIGHT_BRACKET);
+  eat(Token::Type::RIGHT_PAREN);
+  eat(Token::Type::BLOCK_OPEN);
 
-  while (currentToken().type != Token::Type::RETURN) {
+  while (currentToken().type != Token::Type::BLOCK_CLOSE) {
     if (currentToken().type == Token::Type::LET) {
       eat(Token::Type::LET);
       std::string varName = currentToken().value;
@@ -321,13 +322,15 @@ Instruction Parser::parseFunctionDeclaration() {
       instructions.insert(instructions.end(), conditionalStmt.begin(),
                           conditionalStmt.end());
     } else if (currentToken().type == Token::Type::WHILE) {
-      auto loopStmt = parseLoopStatement();
+      auto loopStmt = parseWhileStatement();
       instructions.insert(instructions.end(), loopStmt.begin(), loopStmt.end());
+    } else if (currentToken().type == Token::Type::RETURN) {
+      instructions.push_back(parseReturnStatement());
     } else {
       throw std::runtime_error("Unknown statement");
     }
   }
-  instructions.push_back(parseReturnStatement());
+  eat(Token::Type::BLOCK_CLOSE);
 
   return Instruction::FunctionInstruction(functionName, parameters,
                                           instructions);
@@ -361,7 +364,7 @@ std::vector<Instruction> Parser::parseSingle() {
     instructions.insert(instructions.end(), conditionalStmt.begin(),
                         conditionalStmt.end());
   } else if (currentToken().type == Token::Type::WHILE) {
-    auto loopStmt = parseLoopStatement();
+    auto loopStmt = parseWhileStatement();
     instructions.insert(instructions.end(), loopStmt.begin(), loopStmt.end());
   } else {
     throw std::runtime_error("Unknown statement");
@@ -400,7 +403,7 @@ std::vector<Instruction> Parser::parse() {
     } else if (currentToken().type == Token::Type::RETURN) {
       instructions.push_back(parseReturnStatement());
     } else if (currentToken().type == Token::Type::WHILE) {
-      auto loopStmt = parseLoopStatement();
+      auto loopStmt = parseWhileStatement();
       instructions.insert(instructions.end(), loopStmt.begin(), loopStmt.end());
     } else {
       throw std::runtime_error("Unknown statement");

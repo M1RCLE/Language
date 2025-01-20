@@ -19,7 +19,7 @@ class Parser {
   std::vector<Instruction> parseArrayAssignment(const std::string& varName);
   std::vector<Instruction> parsePrintStatement();
   std::vector<Instruction> parseConditionalStatement();
-  std::vector<Instruction> parseLoopStatement();
+  std::vector<Instruction> parseWhileStatement();
   Instruction parseReturnStatement();
   Instruction parseFunctionDeclaration();
 
