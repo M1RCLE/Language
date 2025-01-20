@@ -114,106 +114,6 @@ std::vector<Instruction> Compiler::preprocessInstructions(
   return preprocessedInstructions;
 }
 
-std::vector<Instruction> Compiler::optimizeInstructions(
-    const std::vector<Instruction>& instructions) {
-  std::vector<Instruction> optimizeInstructions;
-  for (size_t i = 0; i < instructions.size(); ++i) {
-    Instruction current = instructions[i];
-
-    if (i + 1 < instructions.size()) {
-      Instruction next = instructions[i + 1];
-      if (current.opCode == Instruction::OpCode::STORE &&
-          next.opCode == Instruction::OpCode::STORE &&
-          current.target == next.operand1 &&
-          anyToStringCompiler(next.operand2) == next.operand1) {
-        optimizeInstructions.push_back(current);
-        i++;
-      } else {
-        optimizeInstructions.push_back(current);
-      }
-    } else {
-      optimizeInstructions.push_back(current);
-    }
-  }
-
-  return optimizeInstructions;
-}
-
-std::vector<Instruction> Compiler::filterDeadCode(
-    std::vector<Instruction>& instructions) {
-  std::vector<Instruction> optimizedInstructions;
-
-  for (auto it = instructions.rbegin(); it != instructions.rend(); ++it) {
-    auto& instruction = *it;
-    switch (instruction.opCode) {
-      case Instruction::OpCode::PRINT:
-        usedVariables.insert(instruction.operand1);
-        optimizedInstructions.push_back(instruction);
-        break;
-
-      case Instruction::OpCode::ADD:
-      case Instruction::OpCode::SUB:
-      case Instruction::OpCode::MUL:
-      case Instruction::OpCode::MOD:
-        if (!instruction.target.empty() &&
-                usedVariables.contains(instruction.target) ||
-            usedVariables.contains(instruction.operand1)) {
-          usedVariables.insert(anyToStringCompiler(instruction.operand2));
-          usedVariables.insert(anyToStringCompiler(instruction.operand3));
-          optimizedInstructions.push_back(instruction);
-        }
-        break;
-
-      case Instruction::OpCode::STORE:
-        if (!instruction.target.empty() &&
-                usedVariables.contains(instruction.target) ||
-            usedVariables.contains(instruction.operand1)) {
-          addUsedVariable(instruction.operand2);
-          optimizedInstructions.push_back(instruction);
-        }
-        break;
-
-      case Instruction::OpCode::IF:
-      case Instruction::OpCode::LOOP:
-        usedVariables.insert(instruction.operand1);
-        addUsedVariable(instruction.operand3);
-        if (!instruction.block.empty()) {
-          std::vector<Instruction> reversedBlock =
-              filterDeadCode(instruction.block);
-          std::reverse(reversedBlock.begin(), reversedBlock.end());
-          instruction.block = reversedBlock;
-        }
-        optimizedInstructions.push_back(instruction);
-        break;
-
-      case Instruction::OpCode::CALL:
-        if (instruction.operand2.type() == typeid(std::vector<std::any>)) {
-          const auto& args =
-              std::any_cast<std::vector<std::any>>(instruction.operand2);
-          for (const auto& arg : args) {
-            addUsedVariable(arg);
-          }
-        }
-        optimizedInstructions.push_back(instruction);
-        break;
-      case Instruction::OpCode::STORE_ARRAY_VAR:
-        if (!instruction.target.empty() &&
-            usedVariables.contains(instruction.target)) {
-          usedVariables.insert(instruction.operand1);
-          usedVariables.insert(
-              std::any_cast<std::string>(instruction.operand2));
-          optimizedInstructions.push_back(instruction);
-        }
-
-      default:
-        optimizedInstructions.push_back(instruction);
-        break;
-    }
-  }
-
-  return optimizedInstructions;
-}
-
 void Compiler::writeInstruction(std::ofstream& out, const Instruction& instr) {
   auto c = static_cast<char>(instr.opCode);
   out << c;
@@ -351,10 +251,7 @@ void Compiler::saveToFile(const std::string& filename) {
     throw std::runtime_error("Error opening file for writing");
   }
 
-  auto preporcessedInstructions = preprocessInstructions(instructions);
-  auto filteredInstructions = filterDeadCode(preporcessedInstructions);
-  std::reverse(filteredInstructions.begin(), filteredInstructions.end());
-  auto optimizedInstructions = optimizeInstructions(filteredInstructions);
+  auto optimizedInstructions = preprocessInstructions(instructions);
 
   for (const auto& instr : optimizedInstructions) {
     writeInstruction(out, instr);

@@ -1,3 +1,4 @@
+let a = 5;
 fun x[let a]
     let name = 1;
     if [a < 2] [
@@ -7,6 +8,5 @@ fun x[let a]
     let tmpa = x(b);
     let tmp = a * tmpa;
     return tmp;
-let a = 3;
 let result = x(a);
 print[result];
