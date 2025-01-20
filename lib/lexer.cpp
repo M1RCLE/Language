@@ -54,9 +54,9 @@ std::vector<Token> Lexer::tokenize() {
         tokens.push_back(Token(Token::Type::PRINT, id));
       } else if (id == "if") {
         tokens.push_back(Token(Token::Type::IF, id));
-      } else if (id == "loop") {
+      } else if (id == "while") {
         tokens.push_back(Token(Token::Type::WHILE, id));
-      } else if (id == "fun") {
+      } else if (id == "func") {
         tokens.push_back(Token(Token::Type::FUNC, id));
       } else if (id == "return") {
         tokens.push_back(Token(Token::Type::RETURN, id));
@@ -94,17 +94,17 @@ std::vector<Token> Lexer::tokenize() {
     } else if (currentChar == ';') {
       tokens.push_back(Token(Token::Type::SEMICOLON, ";"));
       advance();
-    } else if (currentChar == '[') {
-      tokens.push_back(Token(Token::Type::LEFT_BRACKET, "["));
-      advance();
-    } else if (currentChar == ']') {
-      tokens.push_back(Token(Token::Type::RIGHT_BRACKET, "]"));
-      advance();
     } else if (currentChar == '(') {
-      tokens.push_back(Token(Token::Type::CALL_FUN_OPEN, "("));
+      tokens.push_back(Token(Token::Type::LEFT_BRACKET, "("));
       advance();
     } else if (currentChar == ')') {
-      tokens.push_back(Token(Token::Type::CALL_FUN_CLOSE, ")"));
+      tokens.push_back(Token(Token::Type::RIGHT_BRACKET, ")"));
+      advance();
+    } else if (currentChar == '[') {
+      tokens.push_back(Token(Token::Type::CALL_FUN_OPEN, "["));
+      advance();
+    } else if (currentChar == ']') {
+      tokens.push_back(Token(Token::Type::CALL_FUN_CLOSE, "]"));
       advance();
     } else if (currentChar == ',') {
       tokens.push_back(Token(Token::Type::COMMA, ","));

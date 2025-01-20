@@ -31,6 +31,10 @@ class Token {
     STORE_ARRAY_VAR,
     CALL_FUN_OPEN,
     CALL_FUN_CLOSE,
+    LEFT_PAREN,
+    RIGHT_PAREN,
+    BLOCK_OPEN,
+    BLOCK_CLOSE,
     MOD
   };
 
