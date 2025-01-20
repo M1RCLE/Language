@@ -23,6 +23,9 @@ std::string anyToStringCompiler(const std::any& value) {
     std::string res;
     auto vec = std::any_cast<std::vector<std::string>>(value);
     for (int i = 0; i < vec.size(); ++i) {
+      if (!res.empty()) {
+        res += ',';
+      }
       res += vec[i];
     }
     return res;

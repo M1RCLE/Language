@@ -484,18 +484,21 @@ long VirtualMachine::getOperandValue(const std::any& operand) {
   }
 }
 
+bool is_number(const std::string &s) {
+  return !s.empty() && std::all_of(s.begin(), s.end(), ::isdigit);
+}
+
 std::vector<std::any> VirtualMachine::parseToListOfObjects(
     const std::any& input) {
   std::string str = std::any_cast<std::string>(input);
-  std::string trimmed = str.substr(1, str.length() - 2);
-  trimmed.erase(trimmed.find_last_not_of(" \t\n\r\f\v") + 1);
+  str.erase(str.find_last_not_of(" \t\n\r\f\v") + 1);
 
-  if (trimmed.empty()) {
+  if (str.empty()) {
     return {};
   }
 
   std::vector<std::any> result;
-  std::stringstream ss(trimmed);
+  std::stringstream ss(str);
   std::string item;
 
   while (std::getline(ss, item, ',')) {
@@ -524,9 +527,10 @@ std::vector<std::any> VirtualMachine::parseToListOfObjects(
       }
       result.push_back(objectArray);
     } else {
-      try {
-        result.push_back(std::stol(trimmedItem));
-      } catch (const std::invalid_argument&) {
+      if (is_number(trimmedItem)) {
+        auto stolTrimmedItem = std::stol(trimmedItem);
+        result.push_back(stolTrimmedItem);
+      } else {
         result.push_back(trimmedItem);
       }
     }
