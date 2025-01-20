@@ -1,5 +1,7 @@
 #include "virtualMachine.h"
 
+#include <bits/algorithmfwd.h>
+
 #include <fstream>
 #include <sstream>
 
@@ -42,8 +44,7 @@ void VirtualMachine::loadFromFile(const std::string& filename) {
           std::getline(file, functionName, '\0');
 
           int64_t parameterCount;
-          file.read(reinterpret_cast<char*>(&parameterCount),
-                    sizeof(int64_t));
+          file.read(reinterpret_cast<char*>(&parameterCount), sizeof(int64_t));
           std::vector<std::string> parameters(parameterCount);
           for (int64_t i = 0; i < parameterCount; ++i) {
             std::getline(file, parameters[i], '\0');
@@ -56,7 +57,8 @@ void VirtualMachine::loadFromFile(const std::string& filename) {
             for (int64_t i = 0; i < blockSize; ++i) {
               std::string opCodeOrdinal;
               std::getline(file, opCodeOrdinal, '\0');
-              auto nestedOpCode = static_cast<Instruction::OpCode>(opCodeOrdinal[0]);
+              auto nestedOpCode =
+                  static_cast<Instruction::OpCode>(opCodeOrdinal[0]);
 
               if (nestedOpCode == Instruction::OpCode::RETURN) {
                 std::string returnValue;
@@ -66,7 +68,8 @@ void VirtualMachine::loadFromFile(const std::string& filename) {
                 if (returnValue.empty()) {
                   std::string opCodeOrdinal;
                   std::getline(file, opCodeOrdinal, '\0');
-                  auto nestedOpCode = static_cast<Instruction::OpCode>(opCodeOrdinal[0]);
+                  auto nestedOpCode =
+                      static_cast<Instruction::OpCode>(opCodeOrdinal[0]);
 
                   std::string nestedOperand1, nestedOperand2, nestedOperand3;
                   std::getline(file, nestedOperand1, '\0');
@@ -163,7 +166,8 @@ std::vector<Instruction> VirtualMachine::readNestedBlock(std::ifstream& file) {
         if (returnValue.empty()) {
           std::string opCodeOrdinal;
           std::getline(file, opCodeOrdinal, '\0');
-          auto nestedOpCode = static_cast<Instruction::OpCode>(opCodeOrdinal[0]);
+          auto nestedOpCode =
+              static_cast<Instruction::OpCode>(opCodeOrdinal[0]);
 
           std::string nestedOperand1, nestedOperand2, nestedOperand3;
           std::getline(file, nestedOperand1, '\0');
@@ -375,10 +379,18 @@ void VirtualMachine::execute(const Instruction& instruction) {
       break;
     }
     case Instruction::OpCode::FUN: {
-      functions[instruction.operand1] = instruction;
+      std::string functionName = instruction.operand1;
+      std::vector<std::string> params = instruction.parameters;
+      std::vector<Instruction> functionBody = instruction.block;
+      Instruction functionInstr = Instruction(
+          Instruction::OpCode::FUN, functionName, params, functionBody);
+      functions[functionName] = functionInstr;
       break;
     }
     case Instruction::OpCode::CALL: {
+      if (!functions.contains(instruction.operand1)) {
+        throw std::runtime_error("Unknown function");
+      }
       auto& functionInstruction = functions[instruction.operand1];
 
       std::vector<std::string> params = functionInstruction.parameters;
@@ -395,23 +407,105 @@ void VirtualMachine::execute(const Instruction& instruction) {
                                  std::to_string(arguments.size()));
       }
 
-      for (size_t i = 0; i < params.size(); ++i) {
+      for (int i = 0; i < params.size(); ++i) {
         std::any argument = arguments[i];
+        std::any valueToAllocate;
+
+        if (argument.type() == typeid(std::string)) {
+          std::string varName = std::any_cast<std::string>(argument);
+          valueToAllocate = memoryManager.getValue(varName);
+          if (!valueToAllocate.has_value()) {
+            valueToAllocate = argument;
+          }
+        } else {
+          valueToAllocate = argument;
+        }
+        valsForAlloc.push_back(valueToAllocate);
       }
       memoryManager.enterFunction();
 
-      for (size_t i = 0; i < functionInstruction.parameters.size(); ++i) {
-        memoryManager.allocate(functionInstruction.parameters[i],
-                               instruction.parameters[i]);
+      for (int i = 0; i < params.size(); ++i) {
+        memoryManager.allocate(params[i], valsForAlloc[i]);
       }
 
-      run(functionInstruction.block);
+      run(functionBody);
 
+      std::any returnValue = memoryManager.getReturnValue();
       memoryManager.exitFunction();
+      isReturning = false;
+
+      if (instruction.operand3.has_value()) {
+        if (!returnValue.has_value()) {
+          throw std::runtime_error("Function did not return a value");
+        }
+        memoryManager.allocate(std::any_cast<std::string>(instruction.operand3),
+                               returnValue);
+      }
       break;
     }
     case Instruction::OpCode::RETURN: {
-      memoryManager.setReturnValue(instruction.operand1);
+      if (instruction.operand1.empty()) {
+        Instruction instruction1 =
+            std::any_cast<Instruction>(instruction.operand2);
+        std::string functionName = instruction1.operand1;
+        if (!functions.contains(functionName)) {
+          throw std::runtime_error("Unknown function");
+        }
+        Instruction functionInstruction = functions[functionName];
+
+        std::vector<std::string> parameters = functionInstruction.parameters;
+        std::vector<Instruction> functionBody = functionInstruction.block;
+
+        std::string args = std::any_cast<std::string>(instruction1.operand2);
+        std::vector<std::any> arguments = parseToListOfObjects(args);
+        if (parameters.size() != arguments.size()) {
+          throw std::runtime_error("Function " + functionName + " expects " +
+                                   std::to_string(parameters.size()) +
+                                   " arguments, but got " +
+                                   std::to_string(arguments.size()));
+        }
+
+        std::vector<std::any> operandValues;
+        for (long i = 0; i < parameters.size(); i++) {
+          std::any argument = arguments[i];
+          std::any valueToAllocate;
+
+          if (argument.type() == typeid(std::string)) {
+            std::string varName = std::any_cast<std::string>(argument);
+            valueToAllocate = memoryManager.getValue(varName);
+            if (!valueToAllocate.has_value()) {
+              valueToAllocate = argument;
+            }
+          } else {
+            valueToAllocate = argument;
+          }
+          operandValues.push_back(valueToAllocate);
+        }
+
+        memoryManager.enterFunction();
+        for (long i = 0; i < parameters.size(); i++) {
+          memoryManager.allocate(parameters[i], operandValues[i]);
+        }
+        run(functionBody);
+        std::any returnValue = memoryManager.getReturnValue();
+        memoryManager.exitFunction();
+        isReturning = false;
+
+        if (instruction1.operand3.has_value()) {
+          if (!returnValue.has_value()) {
+            throw std::runtime_error("Function did not return a value");
+          }
+          memoryManager.allocate(
+              std::any_cast<std::string>(instruction1.operand3), returnValue);
+        }
+        return;  // важно выйти из кейса return
+      }
+      std::any returnValue = memoryManager.getValue(instruction.operand1);
+      if (!returnValue.has_value()) {
+        throw std::runtime_error("Return value not found");
+      }
+      memoryManager.setReturnValue(returnValue);
+      isReturning = true;
       break;
     }
     default:
@@ -484,7 +578,7 @@ long VirtualMachine::getOperandValue(const std::any& operand) {
   }
 }
 
-bool is_number(const std::string &s) {
+bool is_number(const std::string& s) {
   return !s.empty() && std::all_of(s.begin(), s.end(), ::isdigit);
 }
 
