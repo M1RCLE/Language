@@ -92,9 +92,13 @@ void VirtualMachine::loadFromFile(const std::string& filename) {
 
                 std::getline(file, operand3, '\0');
 
+                auto operandCompare =
+                    static_cast<Instruction::OpCode>(operand2[0]);
+
                 std::vector<Instruction> nestedBlock = readNestedBlock(file);
-                block.push_back(Instruction(nestedOpCode, operand1, operand2,
-                                            operand3, nestedBlock));
+                block.push_back(Instruction(nestedOpCode, operand1,
+                                            operandCompare, operand3,
+                                            nestedBlock));
               } else {
                 std::string nestedOperand1, nestedOperand2, nestedOperand3;
                 std::getline(file, nestedOperand1, '\0');
@@ -187,8 +191,10 @@ std::vector<Instruction> VirtualMachine::readNestedBlock(std::ifstream& file) {
         std::getline(file, operand2, '\0');
         std::getline(file, operand3, '\0');
 
+        auto operandCompare = static_cast<Instruction::OpCode>(operand2[0]);
+
         std::vector<Instruction> nestedBlock = readNestedBlock(file);
-        block.emplace_back(Instruction(nestedOpCode, operand1, operand2,
+        block.emplace_back(Instruction(nestedOpCode, operand1, operandCompare,
                                        operand3, nestedBlock));
       } else {
         std::string nestedOperand1, nestedOperand2, nestedOperand3;
