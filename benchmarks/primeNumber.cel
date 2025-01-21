@@ -1,6 +1,6 @@
-let a = 10000;
+let a = 100000;
 let size = a + 1;
-let arr = new[10001];
+let arr = new[100001];
 let i = 0;
 while (i < size) {
     let arr[i] = i;

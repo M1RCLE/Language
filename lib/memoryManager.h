@@ -30,7 +30,7 @@ class MemoryManager {
   void allocate(const std::string& name, const std::any& value);
   void addReference(const std::string& name);
   void releaseReference(const std::string& name);
-  std::any getValue(const std::string& name);
+  std::any* getValue(const std::string& name);
   void allocateArray(const std::string& name, long size);
   void allocateArray(const std::string& name,
                      const std::vector<std::any>& array);

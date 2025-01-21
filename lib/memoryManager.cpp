@@ -52,9 +52,9 @@ void MemoryManager::releaseReference(const std::string& name) {
   }
 }
 
-std::any MemoryManager::getValue(const std::string& name) {
+std::any* MemoryManager::getValue(const std::string& name) {
   ObjectEntry* entry = getMemoryEntry(name);
-  return entry ? entry->value : std::any(nullptr);
+  return entry ? &entry->value : nullptr;
 }
 
 void MemoryManager::allocateArray(const std::string& name, long size) {
@@ -67,9 +67,9 @@ void MemoryManager::allocateArray(const std::string& name,
 }
 
 std::vector<std::any>& MemoryManager::getArray(const std::string& name) {
-  std::any value = getValue(name);
-  if (value.type() == typeid(std::vector<std::any>)) {
-    return std::any_cast<std::vector<std::any>&>(value);
+  auto* value = getValue(name);
+  if (value->type() == typeid(std::vector<std::any>)) {
+    return std::any_cast<std::vector<std::any>&>(*value);
   }
   throw std::runtime_error("Variable " + name + " is not an array");
 }

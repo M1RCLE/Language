@@ -9,6 +9,6 @@ func x(let a) {
     return tmp;
 }
 
-let a = 5;
+let a = 10;
 let result = x(a);
 print(result);

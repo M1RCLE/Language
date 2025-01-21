@@ -231,8 +231,9 @@ void VirtualMachine::execute(const Instruction& instruction) {
     }
     case Instruction::OpCode::PRINT: {
       auto value = memoryManager.getValue(instruction.operand1);
-      if (value.has_value()) {
-        std::cout << anyToStringVM(value) << std::endl;
+      auto hui2 = anyToStringVM(*value);
+      if (value->has_value()) {
+        std::cout << anyToStringVM(*value) << std::endl;
       } else {
         throw std::runtime_error("Variable not found: " + instruction.operand1);
       }
@@ -352,6 +353,7 @@ void VirtualMachine::execute(const Instruction& instruction) {
     case Instruction::OpCode::STORE_ARRAY_VAR: {
       auto value = memoryManager.getArrayElement(
           instruction.operand1, getOperandValue(instruction.operand2));
+      auto hui = anyToStringVM(value);
       if (!value.has_value()) {
         throw std::runtime_error("Variable not found: " + instruction.operand1);
       }
@@ -418,18 +420,18 @@ void VirtualMachine::execute(const Instruction& instruction) {
 
       for (int i = 0; i < params.size(); ++i) {
         std::any argument = arguments[i];
-        std::any valueToAllocate;
+        std::any* valueToAllocate;
 
         if (argument.type() == typeid(std::string)) {
           std::string varName = std::any_cast<std::string>(argument);
           valueToAllocate = memoryManager.getValue(varName);
-          if (!valueToAllocate.has_value()) {
-            valueToAllocate = argument;
+          if (!valueToAllocate->has_value()) {
+            *valueToAllocate = argument;
           }
         } else {
-          valueToAllocate = argument;
+          *valueToAllocate = argument;
         }
-        valsForAlloc.push_back(valueToAllocate);
+        valsForAlloc.push_back(*valueToAllocate);
       }
       memoryManager.enterFunction();
 
@@ -444,9 +446,6 @@ void VirtualMachine::execute(const Instruction& instruction) {
       isReturning = false;
 
       if (instruction.operand3.has_value()) {
-        // if (!returnValue.has_value()) {
-        //   throw std::runtime_error("Function did not return a value");
-        // }
         memoryManager.allocate(std::any_cast<std::string>(instruction.operand3),
                                returnValue);
       }
@@ -477,18 +476,18 @@ void VirtualMachine::execute(const Instruction& instruction) {
         std::vector<std::any> operandValues;
         for (long i = 0; i < parameters.size(); i++) {
           std::any argument = arguments[i];
-          std::any valueToAllocate;
+          std::any* valueToAllocate;
 
           if (argument.type() == typeid(std::string)) {
             std::string varName = std::any_cast<std::string>(argument);
             valueToAllocate = memoryManager.getValue(varName);
-            if (!valueToAllocate.has_value()) {
-              valueToAllocate = argument;
+            if (!valueToAllocate->has_value()) {
+              *valueToAllocate = argument;
             }
           } else {
-            valueToAllocate = argument;
+            *valueToAllocate = argument;
           }
-          operandValues.push_back(valueToAllocate);
+          operandValues.push_back(*valueToAllocate);
         }
 
         memoryManager.enterFunction();
@@ -507,13 +506,13 @@ void VirtualMachine::execute(const Instruction& instruction) {
           memoryManager.allocate(
               std::any_cast<std::string>(instruction1.operand3), returnValue);
         }
-        return;  // важно выйти из кейса return
+        return;
       }
-      std::any returnValue = memoryManager.getValue(instruction.operand1);
-      if (!returnValue.has_value()) {
+      std::any* returnValue = memoryManager.getValue(instruction.operand1);
+      if (!returnValue->has_value()) {
         throw std::runtime_error("Return value not found");
       }
-      memoryManager.setReturnValue(returnValue);
+      memoryManager.setReturnValue(*returnValue);
       isReturning = true;
       break;
     }
@@ -562,22 +561,22 @@ long VirtualMachine::getOperandValue(const std::any& operand) {
   if (operand.type() == typeid(std::string)) {
     std::string varName = std::any_cast<std::string>(operand);
     auto value = memoryManager.getValue(varName);
-    if (value.type() == typeid(int)) {
-      return std::any_cast<int>(value);
+    if (value != nullptr && value->type() == typeid(int)) {
+      return std::any_cast<int>(*value);
     }
-    if (value.type() == typeid(long)) {
-      return std::any_cast<long>(value);
+    if (value != nullptr && value->type() == typeid(long)) {
+      return std::any_cast<long>(*value);
     }
-    if (value.type() == typeid(std::string)) {
+    if (value != nullptr && value->type() == typeid(std::string)) {
       try {
-        return std::stol(std::any_cast<std::string>(value));
+        return std::stol(std::any_cast<std::string>(*value));
       } catch (const std::invalid_argument&) {
         throw std::runtime_error(
             "Variable " + varName +
-            " is not a valid number: " + std::any_cast<std::string>(value));
+            " is not a valid number: " + std::any_cast<std::string>(*value));
       }
     }
-    if (value.type() == typeid(nullptr)) {
+    if (value == nullptr) {
       try {
         return std::stol(varName);
       } catch (const std::invalid_argument&) {
@@ -585,7 +584,7 @@ long VirtualMachine::getOperandValue(const std::any& operand) {
                                  " is not a valid number");
       }
     }
-    if (value.type() == typeid(std::vector<std::any>)) {
+    if (value->type() == typeid(std::vector<std::any>)) {
       throw std::runtime_error("Variable " + varName +
                                " is an array, not an Integer");
     }
