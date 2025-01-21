@@ -592,7 +592,9 @@ long VirtualMachine::getOperandValue(const std::any& operand) {
 }
 
 bool is_number(const std::string& s) {
-  return !s.empty() && std::all_of(s.begin(), s.end(), ::isdigit);
+  std::string::const_iterator it = s.begin();
+  while (it != s.end() && std::isdigit(*it)) ++it;
+  return !s.empty() && it == s.end();
 }
 
 std::vector<std::any> VirtualMachine::parseToListOfObjects(
