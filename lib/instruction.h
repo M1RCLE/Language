@@ -29,7 +29,8 @@ class Instruction {
     WRITE_INDEX,
     STORE_ARRAY_VAR,
     CALL,
-    MOD
+    MOD,
+    COMMA
   };
 
   OpCode opCode;
@@ -209,6 +210,8 @@ class Instruction {
         return "CALL";
       case OpCode::MOD:
         return "MOD";
+      case OpCode::COMMA:
+        return "COMMA";
       default:
         return "UNKNOWN";
     }

@@ -95,22 +95,6 @@ std::vector<Token> Lexer::tokenize() {
       tokens.push_back(Token(Token::Type::SEMICOLON, ";"));
       advance();
     }
-    // else if (currentChar == '(') {
-    //   tokens.push_back(Token(Token::Type::LEFT_BRACKET, "("));
-    //   advance();
-    // } else if (currentChar == ')') {
-    //   tokens.push_back(Token(Token::Type::RIGHT_BRACKET, ")"));
-    //   advance();
-    // } else if (currentChar == '[') {
-    //   tokens.push_back(Token(Token::Type::CALL_FUN_OPEN, "["));
-    //   advance();
-    // } else if (currentChar == ']') {
-    //   tokens.push_back(Token(Token::Type::CALL_FUN_CLOSE, "]"));
-    //   advance();
-    // } else if (currentChar == ',') {
-    //   tokens.push_back(Token(Token::Type::COMMA, ","));
-    //   advance();
-    // }
     else if (currentChar == '(') {
       if (!tokens.empty() && (tokens.back().type == Token::Type::IF ||
                               tokens.back().type == Token::Type::WHILE ||
@@ -140,6 +124,10 @@ std::vector<Token> Lexer::tokenize() {
     }
     else if (currentChar == ']') {
       tokens.push_back(Token(Token::Type::RIGHT_BRACKET, "]"));
+      advance();
+    }
+    else if (currentChar == ',') {
+      tokens.push_back(Token(Token::Type::COMMA, ","));
       advance();
     }
     else if (currentChar == '!') {

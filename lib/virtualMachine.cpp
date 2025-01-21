@@ -231,7 +231,6 @@ void VirtualMachine::execute(const Instruction& instruction) {
     }
     case Instruction::OpCode::PRINT: {
       auto value = memoryManager.getValue(instruction.operand1);
-      auto hui2 = anyToStringVM(*value);
       if (value->has_value()) {
         std::cout << anyToStringVM(*value) << std::endl;
       } else {
@@ -353,7 +352,6 @@ void VirtualMachine::execute(const Instruction& instruction) {
     case Instruction::OpCode::STORE_ARRAY_VAR: {
       auto value = memoryManager.getArrayElement(
           instruction.operand1, getOperandValue(instruction.operand2));
-      auto hui = anyToStringVM(value);
       if (!value.has_value()) {
         throw std::runtime_error("Variable not found: " + instruction.operand1);
       }
