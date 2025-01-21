@@ -1,8 +1,10 @@
 #include <sstream>
+#include <chrono>
 
 #include "lib/lib.h"
 
 int main(int argc, char* argv[]) {
+  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
   if (argc < 2) {
     std::cerr << "Usage: " << argv[0] << " <filename>" << std::endl;
     return 1;
@@ -40,6 +42,10 @@ int main(int argc, char* argv[]) {
     std::cerr << "Error executing program: " << e.what() << std::endl;
     return 3;
   }
+
+  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+  std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << std::endl;
 
   return 0;
 }

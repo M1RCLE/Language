@@ -20,34 +20,49 @@ func fillRandom(let arr, let size, let min, let max) {
         let arr[i] = randomValue;
         let i = i + 1;
     }
-    let r = 0;
-    return r;
+    return arr;
 }
 
-func bubbleSort(let arr, let n) {
-    let i = 0;
-    let j = 0;
-    while (i < n - 1) {
-        while (j < n - i - 1) {
-            if (arr[j] > arr[j + 1]) {
-                let tmp = arr[j];
-                let arr[j] = arr[j + 1];
-                let arr[j + 1] = tmp;
+func insertionSort (let arr, let size) {
+    let i = 1;
+    while (i < size) {
+        let key = arr[i];
+        let j = i - 1;
+        let shouldContinue = 1;
+
+        while (shouldContinue == 1) {
+            let check = 0;
+            let jStop = 0 - 1;
+            if (j > jStop) {
+                let f = arr[j];
+                if (f > key) {
+                    let nextJ = j + 1;
+                    let arr[nextJ] = f;
+                    let j = j - 1;
+                    let check = 1;
+                }
             }
-            let j = j + 1;
+            if (check == 0) {
+                let shouldContinue = 0;
+            }
         }
+
+        let nextJ = j + 1;
+        let arr[nextJ] = key;
         let i = i + 1;
     }
+
+    return arr;
 }
 
 let arr = new[10000];
 let size = 10000;
 let min = 1;
-let max = 100;
-let res = fillRandom(arr, size, min, max);
-let size = size - 1;
+let max = 1000;
+let arr = fillRandom(arr, size, min, max);
 
-let c = bubbleSort(arr, size);
+let arr = insertionSort(arr, size);
+
 let i = 0;
 while (i < size) {
     let curr = arr[i];

@@ -7,9 +7,10 @@ while (c < 6) {
   }
 }
 
+let p = 5;
 func pr() {
-    let p = 5;
-    print(p);
+    let p = 6;
 }
 
 let resul = pr();
+print(p);
