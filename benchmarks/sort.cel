@@ -1,71 +1,71 @@
-func random(let seed) {
-    let a = 1103515245;
-    let c = 12345;
-    let m = 2000000001;
-    let temp = a * seed;
-    let temp = temp + c;
-    let seed = temp + m;
+def random(var seed) {
+    var a = 1103515245;
+    var c = 12345;
+    var m = 2000000001;
+    var temp = a * seed;
+    var temp = temp + c;
+    var seed = temp + m;
     return seed;
 }
 
-func fillRandom(let arr, let size, let min, let max) {
-    let seed = 12345;
-    let i = 0;
+def fillRandom(var arr, var size, var min, var max) {
+    var seed = 12345;
+    var i = 0;
     while (i < size) {
-        let seed = random(seed);
-        let diff = max - min;
-        let diff = diff + 1;
-        let random = seed % diff;
-        let randomValue = min + random;
-        let arr[i] = randomValue;
-        let i = i + 1;
+        var seed = random(seed);
+        var diff = max - min;
+        var diff = diff + 1;
+        var random = seed % diff;
+        var randomValue = min + random;
+        var arr[i] = randomValue;
+        var i = i + 1;
     }
     return arr;
 }
 
-func insertionSort (let arr, let size) {
-    let i = 1;
+def insertionSort (var arr, var size) {
+    var i = 1;
     while (i < size) {
-        let key = arr[i];
-        let j = i - 1;
-        let shouldContinue = 1;
+        var key = arr[i];
+        var j = i - 1;
+        var shouldContinue = 1;
 
         while (shouldContinue == 1) {
-            let check = 0;
-            let jStop = 0 - 1;
+            var check = 0;
+            var jStop = 0 - 1;
             if (j > jStop) {
-                let f = arr[j];
+                var f = arr[j];
                 if (f > key) {
-                    let nextJ = j + 1;
-                    let arr[nextJ] = f;
-                    let j = j - 1;
-                    let check = 1;
+                    var nextJ = j + 1;
+                    var arr[nextJ] = f;
+                    var j = j - 1;
+                    var check = 1;
                 }
             }
             if (check == 0) {
-                let shouldContinue = 0;
+                var shouldContinue = 0;
             }
         }
 
-        let nextJ = j + 1;
-        let arr[nextJ] = key;
-        let i = i + 1;
+        var nextJ = j + 1;
+        var arr[nextJ] = key;
+        var i = i + 1;
     }
 
     return arr;
 }
 
-let arr = new[10000];
-let size = 10000;
-let min = 1;
-let max = 1000;
-let arr = fillRandom(arr, size, min, max);
+var arr = new[10000];
+var size = 10000;
+var min = 1;
+var max = 1000;
+var arr = fillRandom(arr, size, min, max);
 
-let arr = insertionSort(arr, size);
+var arr = insertionSort(arr, size);
 
-let i = 0;
+var i = 0;
 while (i < size) {
-    let curr = arr[i];
+    var curr = arr[i];
     print(curr);
-    let i = i + 1;
+    var i = i + 1;
 }

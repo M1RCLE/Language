@@ -30,7 +30,7 @@ void MemoryManager::allocate(const std::string &name, const std::any &value) {
 void MemoryManager::addReference(const std::string &name) {
     ObjectEntry *entry = getMemoryEntry(name);
     if (entry) {
-        entry->refCount++;
+        ++entry->refCount;
     } else {
         throw std::runtime_error("Variable " + name + " does not exist");
     }
@@ -39,7 +39,7 @@ void MemoryManager::addReference(const std::string &name) {
 void MemoryManager::releaseReference(const std::string &name) {
     ObjectEntry *entry = getMemoryEntry(name);
     if (entry) {
-        entry->refCount--;
+        --entry->refCount;
         if (entry->refCount <= 0) {
             if (isInFunction() && callStack.top().count(name)) {
                 callStack.top().erase(name);

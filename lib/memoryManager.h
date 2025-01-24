@@ -23,7 +23,7 @@ private:
 
     static const long MAX_STACK_DEPTH = 1000;
 
-    bool isInFunction() const;
+    [[nodiscard]] bool isInFunction() const;
 
     std::unordered_map<std::string, ObjectEntry> &getCurrentMemory();
 

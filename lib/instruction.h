@@ -8,9 +8,9 @@
 
 class Instruction {
 public:
-    enum class OpCode {
+    enum class OperationCode {
         EMPTY,
-        STORE,
+        SAVE,
         PRINT,
         ARRAY,
         ADD,
@@ -27,13 +27,13 @@ public:
         NEW,
         READ_INDEX,
         WRITE_INDEX,
-        STORE_ARRAY_VAR,
+        ARRAY_VARIABLE_STORAGE,
         CALL,
         MOD,
         COMMA
     };
 
-    OpCode opCode;
+    OperationCode operationCode;
     std::string operand1;
     std::any operand2;
     std::any operand3;
@@ -41,8 +41,8 @@ public:
     std::string target;
     std::vector<std::string> parameters;
 
-    Instruction(OpCode opCode, const std::string &operand1)
-            : opCode(opCode),
+    Instruction(OperationCode opCode, const std::string &operand1)
+            : operationCode(opCode),
               operand1(operand1),
               operand2(),
               operand3(),
@@ -50,8 +50,8 @@ public:
               target(),
               parameters() {}
 
-    Instruction(OpCode opCode, const std::string &operand1, std::any operand2)
-            : opCode(opCode),
+    Instruction(OperationCode opCode, const std::string &operand1, std::any operand2)
+            : operationCode(opCode),
               operand1(operand1),
               operand2(operand2),
               operand3(),
@@ -59,9 +59,9 @@ public:
               target(),
               parameters() {}
 
-    Instruction(OpCode opCode, const std::string &target,
+    Instruction(OperationCode opCode, const std::string &target,
                 const std::string &operand1)
-            : opCode(opCode),
+            : operationCode(opCode),
               target(target),
               operand1(operand1),
               operand2(),
@@ -69,9 +69,9 @@ public:
               block(),
               parameters() {}
 
-    Instruction(OpCode opCode, const std::string &operand1, std::any operand2,
+    Instruction(OperationCode opCode, const std::string &operand1, std::any operand2,
                 std::any operand3)
-            : opCode(opCode),
+            : operationCode(opCode),
               operand1(operand1),
               operand2(operand2),
               operand3(operand3),
@@ -79,9 +79,9 @@ public:
               target(),
               parameters() {}
 
-    Instruction(OpCode opCode, const std::string &operand1, std::any operand2,
+    Instruction(OperationCode opCode, const std::string &operand1, std::any operand2,
                 const std::vector<Instruction> &blockInstructions)
-            : opCode(opCode),
+            : operationCode(opCode),
               operand1(operand1),
               operand2(operand2),
               operand3(),
@@ -89,9 +89,9 @@ public:
               target(),
               parameters() {}
 
-    Instruction(OpCode opCode, const std::string &operand1,
+    Instruction(OperationCode opCode, const std::string &operand1,
                 const std::vector<std::string> &parameters)
-            : opCode(opCode),
+            : operationCode(opCode),
               operand1(operand1),
               operand2(),
               operand3(),
@@ -99,10 +99,10 @@ public:
               target(),
               parameters(parameters) {}
 
-    Instruction(OpCode opCode, const std::string &operand1, std::any operand2,
+    Instruction(OperationCode opCode, const std::string &operand1, std::any operand2,
                 std::any operand3,
                 const std::vector<Instruction> &blockInstructions)
-            : opCode(opCode),
+            : operationCode(opCode),
               operand1(operand1),
               operand2(operand2),
               operand3(operand3),
@@ -110,10 +110,10 @@ public:
               target(),
               parameters() {}
 
-    Instruction(OpCode opCode, const std::string &operand1,
+    Instruction(OperationCode opCode, const std::string &operand1,
                 const std::vector<Instruction> &blockInstructions,
                 const std::vector<std::string> &parameters)
-            : opCode(opCode),
+            : operationCode(opCode),
               operand1(operand1),
               operand2(),
               operand3(),
@@ -122,7 +122,7 @@ public:
               parameters(parameters) {}
 
     Instruction()
-            : opCode(OpCode::STORE),
+            : operationCode(OperationCode::SAVE),
               operand1(),
               operand2(),
               operand3(),
@@ -135,7 +135,7 @@ public:
             const std::vector<std::string> &parameters,
             const std::vector<Instruction> &instructions) {
         Instruction newInstruction;
-        newInstruction.opCode = OpCode::FUNC;
+        newInstruction.operationCode = OperationCode::FUNC;
         newInstruction.operand1 = functionName;
         newInstruction.block = instructions;
         newInstruction.parameters = parameters;
@@ -143,7 +143,7 @@ public:
     }
 
     std::string toString() const {
-        std::string result = opCodeToString(opCode) + " " + operand1;
+        std::string result = opCodeToString(operationCode) + " " + operand1;
         if (operand2.type() == typeid(std::string)) {
             result += " " + std::any_cast<std::string>(operand2);
         } else if (operand2.type() == typeid(int)) {
@@ -168,49 +168,49 @@ public:
         return result;
     }
 
-    static std::string opCodeToString(OpCode opCode) {
+    static std::string opCodeToString(OperationCode opCode) {
         switch (opCode) {
-            case OpCode::STORE:
+            case OperationCode::SAVE:
                 return "STORE";
-            case OpCode::PRINT:
+            case OperationCode::PRINT:
                 return "PRINT";
-            case OpCode::ARRAY:
+            case OperationCode::ARRAY:
                 return "ARRAY";
-            case OpCode::ADD:
+            case OperationCode::ADD:
                 return "ADD";
-            case OpCode::SUB:
+            case OperationCode::SUB:
                 return "SUB";
-            case OpCode::MUL:
+            case OperationCode::MUL:
                 return "MUL";
-            case OpCode::LESS:
+            case OperationCode::LESS:
                 return "LESS";
-            case OpCode::GREATER:
+            case OperationCode::GREATER:
                 return "GREATER";
-            case OpCode::EQUALS:
+            case OperationCode::EQUALS:
                 return "EQUALS";
-            case OpCode::NOT_EQUALS:
+            case OperationCode::NOT_EQUALS:
                 return "NOT_EQUALS";
-            case OpCode::IF:
+            case OperationCode::IF:
                 return "IF";
-            case OpCode::WHILE:
+            case OperationCode::WHILE:
                 return "WHILE";
-            case OpCode::FUNC:
+            case OperationCode::FUNC:
                 return "FUNC";
-            case OpCode::RETURN:
+            case OperationCode::RETURN:
                 return "RETURN";
-            case OpCode::NEW:
+            case OperationCode::NEW:
                 return "NEW";
-            case OpCode::READ_INDEX:
+            case OperationCode::READ_INDEX:
                 return "READ_INDEX";
-            case OpCode::WRITE_INDEX:
+            case OperationCode::WRITE_INDEX:
                 return "WRITE_INDEX";
-            case OpCode::STORE_ARRAY_VAR:
+            case OperationCode::ARRAY_VARIABLE_STORAGE:
                 return "STORE_ARRAY_VAR";
-            case OpCode::CALL:
+            case OperationCode::CALL:
                 return "CALL";
-            case OpCode::MOD:
+            case OperationCode::MOD:
                 return "MOD";
-            case OpCode::COMMA:
+            case OperationCode::COMMA:
                 return "COMMA";
             default:
                 return "UNKNOWN";

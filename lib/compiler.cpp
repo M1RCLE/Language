@@ -19,8 +19,8 @@ std::string anyToStringCompiler(const std::any &value) {
     if (value.type() == typeid(double)) {
         return std::to_string(std::any_cast<double>(value));
     }
-    if (value.type() == typeid(Instruction::OpCode)) {
-        auto opCode = std::any_cast<Instruction::OpCode>(value);
+    if (value.type() == typeid(Instruction::OperationCode)) {
+        auto opCode = std::any_cast<Instruction::OperationCode>(value);
         auto c = static_cast<char>(opCode);
         std::string s(1, c);
         return s;
@@ -28,11 +28,11 @@ std::string anyToStringCompiler(const std::any &value) {
     if (value.type() == typeid(std::vector<std::string>)) {
         std::string res;
         auto vec = std::any_cast<std::vector<std::string>>(value);
-        for (int i = 0; i < vec.size(); ++i) {
+        for (const auto &i: vec) {
             if (!res.empty()) {
                 res += ',';
             }
-            res += vec[i];
+            res += i;
         }
         return res;
     }
@@ -40,10 +40,10 @@ std::string anyToStringCompiler(const std::any &value) {
 }
 
 long Compiler::getVariableIndex(const std::string &variableName) {
-    if (variableIndexes.find(variableName) == variableIndexes.end()) {
-        variableIndexes[variableName] = nextVariableIndex++;
+    if (_variableIndexes.find(variableName) == _variableIndexes.end()) {
+        _variableIndexes[variableName] = nextVariableIndex++;
     }
-    return variableIndexes[variableName];
+    return _variableIndexes[variableName];
 }
 
 void Compiler::addUsedVariable(const std::any &operand) {
@@ -61,54 +61,54 @@ bool Compiler::isInteger(const std::string &str) {
 }
 
 Instruction Compiler::compileLoop(const Instruction &loopInstruction) {
-    return Instruction(Instruction::OpCode::WHILE, loopInstruction.operand1,
+    return Instruction(Instruction::OperationCode::WHILE, loopInstruction.operand1,
                        loopInstruction.operand2, loopInstruction.operand3,
                        loopInstruction.block);
 }
 
-std::vector<Instruction> Compiler::preprocessInstructions(
+std::vector<Instruction> Compiler::adaptInstructions(
         std::vector<Instruction> &instructions) {
     std::vector<Instruction> preprocessedInstructions;
     for (auto &instruction: instructions) {
         std::vector<Instruction> processedBlock;
-        switch (instruction.opCode) {
-            case Instruction::OpCode::FUNC:
-                functions[instruction.operand1] = instruction;
-                processedBlock = preprocessInstructions(instruction.block);
+        switch (instruction.operationCode) {
+            case Instruction::OperationCode::FUNC:
+                _functions[instruction.operand1] = instruction;
+                processedBlock = adaptInstructions(instruction.block);
                 preprocessedInstructions.emplace_back(Instruction::FunctionInstruction(
                         instruction.operand1, instruction.parameters, processedBlock));
                 break;
 
-            case Instruction::OpCode::IF:
+            case Instruction::OperationCode::IF:
                 if (!instruction.block.empty()) {
-                    processedBlock = preprocessInstructions(instruction.block);
+                    processedBlock = adaptInstructions(instruction.block);
                     instruction.block = processedBlock;
                 }
                 preprocessedInstructions.push_back(instruction);
                 break;
 
-            case Instruction::OpCode::WHILE:
+            case Instruction::OperationCode::WHILE:
                 if (!instruction.block.empty()) {
-                    processedBlock = preprocessInstructions(instruction.block);
+                    processedBlock = adaptInstructions(instruction.block);
                     instruction.block = processedBlock;
                 }
                 preprocessedInstructions.push_back(compileLoop(instruction));
                 break;
-            case Instruction::OpCode::ADD:
-            case Instruction::OpCode::SUB:
-            case Instruction::OpCode::MUL:
-            case Instruction::OpCode::MOD:
-            case Instruction::OpCode::STORE:
-            case Instruction::OpCode::LESS:
-            case Instruction::OpCode::GREATER:
-            case Instruction::OpCode::EQUALS:
-            case Instruction::OpCode::NOT_EQUALS:
-            case Instruction::OpCode::NEW:
-            case Instruction::OpCode::WRITE_INDEX:
+            case Instruction::OperationCode::ADD:
+            case Instruction::OperationCode::SUB:
+            case Instruction::OperationCode::MUL:
+            case Instruction::OperationCode::MOD:
+            case Instruction::OperationCode::SAVE:
+            case Instruction::OperationCode::LESS:
+            case Instruction::OperationCode::GREATER:
+            case Instruction::OperationCode::EQUALS:
+            case Instruction::OperationCode::NOT_EQUALS:
+            case Instruction::OperationCode::NEW:
+            case Instruction::OperationCode::WRITE_INDEX:
                 instruction.target = instruction.operand1;
                 preprocessedInstructions.push_back(instruction);
                 break;
-            case Instruction::OpCode::STORE_ARRAY_VAR:
+            case Instruction::OperationCode::ARRAY_VARIABLE_STORAGE:
                 instruction.target = anyToStringCompiler(instruction.operand3);
                 preprocessedInstructions.push_back(instruction);
                 break;
@@ -121,12 +121,12 @@ std::vector<Instruction> Compiler::preprocessInstructions(
 }
 
 void Compiler::writeInstruction(std::ofstream &out, const Instruction &instr) {
-    auto c = static_cast<char>(instr.opCode);
+    auto c = static_cast<char>(instr.operationCode);
     out << c;
     out << '\0';
 
-    switch (instr.opCode) {
-        case Instruction::OpCode::FUNC: {
+    switch (instr.operationCode) {
+        case Instruction::OperationCode::FUNC: {
             if (!instr.operand1.empty()) {
                 out << instr.operand1;
             } else {
@@ -146,7 +146,7 @@ void Compiler::writeInstruction(std::ofstream &out, const Instruction &instr) {
             }
             break;
         }
-        case Instruction::OpCode::RETURN: {
+        case Instruction::OperationCode::RETURN: {
             if (!instr.operand1.empty()) {
                 out << instr.operand1;
             } else {
@@ -158,7 +158,7 @@ void Compiler::writeInstruction(std::ofstream &out, const Instruction &instr) {
             }
             break;
         }
-        case Instruction::OpCode::IF: {
+        case Instruction::OperationCode::IF: {
             if (!instr.operand1.empty()) {
                 out << instr.operand1;
             } else {
@@ -189,7 +189,7 @@ void Compiler::writeInstruction(std::ofstream &out, const Instruction &instr) {
             }
             break;
         }
-        case Instruction::OpCode::WHILE: {
+        case Instruction::OperationCode::WHILE: {
             if (!instr.operand1.empty()) {
                 out << instr.operand1;
             } else {
@@ -249,7 +249,7 @@ void Compiler::writeInstruction(std::ofstream &out, const Instruction &instr) {
 }
 
 Compiler::Compiler(const std::vector<Instruction> &instructions)
-        : instructions(instructions) {}
+        : _instructions(instructions) {}
 
 void Compiler::saveToFile(const std::string &filename) {
     std::ofstream out(filename, std::ios::binary);
@@ -257,9 +257,11 @@ void Compiler::saveToFile(const std::string &filename) {
         throw std::runtime_error("Error opening file for writing");
     }
 
-    auto optimizedInstructions = preprocessInstructions(instructions);
+    auto optimizedInstructions = adaptInstructions(_instructions);
 
     for (const auto &instr: optimizedInstructions) {
         writeInstruction(out, instr);
     }
 }
+
+

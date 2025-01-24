@@ -1,21 +1,21 @@
-let a = 100000;
-let size = a + 1;
-let arr = new[100001];
-let i = 0;
+var a = 100000;
+var size = a + 1;
+var arr = new[100001];
+var i = 0;
 while (i < size) {
-    let arr[i] = i;
-    let i = i + 1;
+    var arr[i] = i;
+    var i = i + 1;
 }
-let i = 2;
+var i = 2;
 while (i < size) {
-    let b = arr[i];
+    var b = arr[i];
     if (b != 0) {
         print(b);
-        let j = i * i;
+        var j = i * i;
         while (j < size) {
-            let arr[j] = 0;
-            let j = j + i;
+            var arr[j] = 0;
+            var j = j + i;
         }
     }
-    let i = i + 1;
+    var i = i + 1;
 }

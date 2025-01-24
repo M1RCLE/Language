@@ -14,9 +14,9 @@
 
 class Compiler {
 private:
-    std::vector<Instruction> instructions;
-    std::map<std::string, Instruction> functions;
-    std::map<std::string, long> variableIndexes;
+    std::vector<Instruction> _instructions;
+    std::map<std::string, Instruction> _functions;
+    std::map<std::string, long> _variableIndexes;
     long nextVariableIndex = 0;
 
     std::set<std::string> usedVariables;
@@ -29,7 +29,7 @@ private:
 
     Instruction compileLoop(const Instruction &loopInstruction);
 
-    std::vector<Instruction> preprocessInstructions(
+    std::vector<Instruction> adaptInstructions(
             std::vector<Instruction> &instructions);
 
     std::vector<Instruction> optimizeInstructions(

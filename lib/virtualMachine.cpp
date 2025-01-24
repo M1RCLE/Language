@@ -22,9 +22,9 @@ std::string anyToStringVM(const std::any &value) {
     if (value.type() == typeid(double)) {
         return std::to_string(std::any_cast<double>(value));
     }
-    if (value.type() == typeid(Instruction::OpCode)) {
+    if (value.type() == typeid(Instruction::OperationCode)) {
         return Instruction::opCodeToString(
-                std::any_cast<Instruction::OpCode>(value));
+                std::any_cast<Instruction::OperationCode>(value));
     }
     return "";
 }
@@ -39,10 +39,10 @@ void VirtualMachine::loadFromFile(const std::string &filename) {
         while (file.peek() != EOF) {
             std::string opCodeOrdinal;
             std::getline(file, opCodeOrdinal, '\0');
-            auto opCode = static_cast<Instruction::OpCode>(opCodeOrdinal[0]);
+            auto opCode = static_cast<Instruction::OperationCode>(opCodeOrdinal[0]);
 
             switch (opCode) {
-                case Instruction::OpCode::FUNC: {
+                case Instruction::OperationCode::FUNC: {
                     std::string functionName;
                     std::getline(file, functionName, '\0');
 
@@ -61,9 +61,9 @@ void VirtualMachine::loadFromFile(const std::string &filename) {
                             std::string opCodeOrdinalCpy;
                             std::getline(file, opCodeOrdinalCpy, '\0');
                             auto nestedOpCode =
-                                    static_cast<Instruction::OpCode>(opCodeOrdinalCpy[0]);
+                                    static_cast<Instruction::OperationCode>(opCodeOrdinalCpy[0]);
 
-                            if (nestedOpCode == Instruction::OpCode::RETURN) {
+                            if (nestedOpCode == Instruction::OperationCode::RETURN) {
                                 std::string returnValue;
                                 std::getline(file, returnValue, '\0');
 
@@ -72,7 +72,7 @@ void VirtualMachine::loadFromFile(const std::string &filename) {
                                     std::string opCodeOrdinalCpyTwo;
                                     std::getline(file, opCodeOrdinalCpyTwo, '\0');
                                     auto nestedOpCodeCpy =
-                                            static_cast<Instruction::OpCode>(opCodeOrdinalCpyTwo[0]);
+                                            static_cast<Instruction::OperationCode>(opCodeOrdinalCpyTwo[0]);
 
                                     std::string nestedOperand1, nestedOperand2, nestedOperand3;
                                     std::getline(file, nestedOperand1, '\0');
@@ -84,10 +84,10 @@ void VirtualMachine::loadFromFile(const std::string &filename) {
                                                         nestedOperand3);
                                 }
 
-                                block.emplace_back(Instruction::OpCode::RETURN,
+                                block.emplace_back(Instruction::OperationCode::RETURN,
                                                             returnValue, nestedInstruction);
-                            } else if (nestedOpCode == Instruction::OpCode::IF ||
-                                       nestedOpCode == Instruction::OpCode::WHILE) {
+                            } else if (nestedOpCode == Instruction::OperationCode::IF ||
+                                       nestedOpCode == Instruction::OperationCode::WHILE) {
                                 std::string operand1, operand2, operand3;
                                 std::getline(file, operand1, '\0');
 
@@ -96,7 +96,7 @@ void VirtualMachine::loadFromFile(const std::string &filename) {
                                 std::getline(file, operand3, '\0');
 
                                 auto operandCompare =
-                                        static_cast<Instruction::OpCode>(operand2[0]);
+                                        static_cast<Instruction::OperationCode>(operand2[0]);
 
                                 std::vector<Instruction> nestedBlock = readNestedBlock(file);
                                 block.emplace_back(nestedOpCode, operand1,
@@ -122,13 +122,16 @@ void VirtualMachine::loadFromFile(const std::string &filename) {
                     continue;
                 }
 
-                case Instruction::OpCode::RETURN: {
+                case Instruction::OperationCode::RETURN: {
                     std::string returnValue;
                     std::getline(file, returnValue, '\0');
 
-                    instructions.emplace_back(Instruction::OpCode::RETURN, returnValue);
+                    instructions.emplace_back(Instruction::OperationCode::RETURN, returnValue);
                     continue;
                 }
+
+                default:
+                    break;
             }
 
             std::string operand1, operand2, operand3;
@@ -137,10 +140,10 @@ void VirtualMachine::loadFromFile(const std::string &filename) {
             std::getline(file, operand3, '\0');
 
             std::vector<Instruction> block;
-            if (opCode == Instruction::OpCode::IF ||
-                opCode == Instruction::OpCode::WHILE) {
+            if (opCode == Instruction::OperationCode::IF ||
+                opCode == Instruction::OperationCode::WHILE) {
                 block = readNestedBlock(file);
-                auto operandCompare = static_cast<Instruction::OpCode>(operand2[0]);
+                auto operandCompare = static_cast<Instruction::OperationCode>(operand2[0]);
                 instructions.emplace_back(opCode, operand1, operandCompare, operand3, block);
             } else {
                 instructions.emplace_back(opCode, operand1, operand2, operand3, block);
@@ -160,9 +163,9 @@ std::vector<Instruction> VirtualMachine::readNestedBlock(std::ifstream &file) {
         for (int64_t i = 0; i < blockSize; ++i) {
             std::string opCodeOrdinal;
             std::getline(file, opCodeOrdinal, '\0');
-            auto nestedOpCode = static_cast<Instruction::OpCode>(opCodeOrdinal[0]);
+            auto nestedOpCode = static_cast<Instruction::OperationCode>(opCodeOrdinal[0]);
 
-            if (nestedOpCode == Instruction::OpCode::RETURN) {
+            if (nestedOpCode == Instruction::OperationCode::RETURN) {
                 std::string returnValue;
                 std::getline(file, returnValue, '\0');
 
@@ -171,7 +174,7 @@ std::vector<Instruction> VirtualMachine::readNestedBlock(std::ifstream &file) {
                     std::string opCodeOrdinalCpyOne;
                     std::getline(file, opCodeOrdinalCpyOne, '\0');
                     auto nestedOpCodeCpy =
-                            static_cast<Instruction::OpCode>(opCodeOrdinalCpyOne[0]);
+                            static_cast<Instruction::OperationCode>(opCodeOrdinalCpyOne[0]);
 
                     std::string nestedOperand1, nestedOperand2, nestedOperand3;
                     std::getline(file, nestedOperand1, '\0');
@@ -183,15 +186,15 @@ std::vector<Instruction> VirtualMachine::readNestedBlock(std::ifstream &file) {
                 }
 
                 block.emplace_back(
-                        Instruction::OpCode::RETURN, returnValue, instruction);
-            } else if (nestedOpCode == Instruction::OpCode::IF ||
-                       nestedOpCode == Instruction::OpCode::WHILE) {
+                        Instruction::OperationCode::RETURN, returnValue, instruction);
+            } else if (nestedOpCode == Instruction::OperationCode::IF ||
+                       nestedOpCode == Instruction::OperationCode::WHILE) {
                 std::string operand1, operand2, operand3;
                 std::getline(file, operand1, '\0');
                 std::getline(file, operand2, '\0');
                 std::getline(file, operand3, '\0');
 
-                auto operandCompare = static_cast<Instruction::OpCode>(operand2[0]);
+                auto operandCompare = static_cast<Instruction::OperationCode>(operand2[0]);
 
                 std::vector<Instruction> nestedBlock = readNestedBlock(file);
                 block.emplace_back(nestedOpCode, operand1, operandCompare,
@@ -217,8 +220,8 @@ void VirtualMachine::run() {
 }
 
 void VirtualMachine::execute(const Instruction &instruction) {
-    switch (instruction.opCode) {
-        case Instruction::OpCode::STORE: {
+    switch (instruction.operationCode) {
+        case Instruction::OperationCode::SAVE: {
             if (!instruction.target.empty()) {
                 memoryManager.allocate(instruction.target, instruction.operand2);
             } else {
@@ -226,7 +229,7 @@ void VirtualMachine::execute(const Instruction &instruction) {
             }
             break;
         }
-        case Instruction::OpCode::PRINT: {
+        case Instruction::OperationCode::PRINT: {
             auto value = memoryManager.getValue(instruction.operand1);
             if (value != nullptr) {
                 std::cout << anyToStringVM(*value) << std::endl;
@@ -235,7 +238,7 @@ void VirtualMachine::execute(const Instruction &instruction) {
             }
             break;
         }
-        case Instruction::OpCode::ADD: {
+        case Instruction::OperationCode::ADD: {
             auto result = getOperandValue(instruction.operand2) +
                           getOperandValue(instruction.operand3);
             if (!instruction.target.empty()) {
@@ -245,7 +248,7 @@ void VirtualMachine::execute(const Instruction &instruction) {
             }
             break;
         }
-        case Instruction::OpCode::SUB: {
+        case Instruction::OperationCode::SUB: {
             auto result = getOperandValue(instruction.operand2) -
                           getOperandValue(instruction.operand3);
             if (!instruction.target.empty()) {
@@ -255,7 +258,7 @@ void VirtualMachine::execute(const Instruction &instruction) {
             }
             break;
         }
-        case Instruction::OpCode::MUL: {
+        case Instruction::OperationCode::MUL: {
             auto result = getOperandValue(instruction.operand2) *
                           getOperandValue(instruction.operand3);
             if (!instruction.target.empty()) {
@@ -265,7 +268,7 @@ void VirtualMachine::execute(const Instruction &instruction) {
             }
             break;
         }
-        case Instruction::OpCode::MOD: {
+        case Instruction::OperationCode::MOD: {
             auto result = getOperandValue(instruction.operand2) %
                           getOperandValue(instruction.operand3);
             if (!instruction.target.empty()) {
@@ -275,7 +278,7 @@ void VirtualMachine::execute(const Instruction &instruction) {
             }
             break;
         }
-        case Instruction::OpCode::LESS: {
+        case Instruction::OperationCode::LESS: {
             auto result = getOperandValue(instruction.operand2) <
                           getOperandValue(instruction.operand3);
             if (!instruction.target.empty()) {
@@ -285,7 +288,7 @@ void VirtualMachine::execute(const Instruction &instruction) {
             }
             break;
         }
-        case Instruction::OpCode::GREATER: {
+        case Instruction::OperationCode::GREATER: {
             auto result = getOperandValue(instruction.operand2) >
                           getOperandValue(instruction.operand3);
             if (!instruction.target.empty()) {
@@ -295,7 +298,7 @@ void VirtualMachine::execute(const Instruction &instruction) {
             }
             break;
         }
-        case Instruction::OpCode::EQUALS: {
+        case Instruction::OperationCode::EQUALS: {
             auto result = getOperandValue(instruction.operand2) ==
                           getOperandValue(instruction.operand3);
             if (!instruction.target.empty()) {
@@ -305,7 +308,7 @@ void VirtualMachine::execute(const Instruction &instruction) {
             }
             break;
         }
-        case Instruction::OpCode::NOT_EQUALS: {
+        case Instruction::OperationCode::NOT_EQUALS: {
             auto result = getOperandValue(instruction.operand2) !=
                           getOperandValue(instruction.operand3);
             if (!instruction.target.empty()) {
@@ -315,7 +318,7 @@ void VirtualMachine::execute(const Instruction &instruction) {
             }
             break;
         }
-        case Instruction::OpCode::NEW: {
+        case Instruction::OperationCode::NEW: {
             std::any size = instruction.operand2;
             if (size.type() == typeid(std::string)) {
                 auto arraySize = std::stol(std::any_cast<std::string>(size));
@@ -336,7 +339,7 @@ void VirtualMachine::execute(const Instruction &instruction) {
             }
             break;
         }
-        case Instruction::OpCode::WRITE_INDEX: {
+        case Instruction::OperationCode::WRITE_INDEX: {
             auto index = getOperandValue(instruction.operand2);
             auto value = getOperandValue(instruction.operand3);
             if (!instruction.target.empty()) {
@@ -346,7 +349,7 @@ void VirtualMachine::execute(const Instruction &instruction) {
             }
             break;
         }
-        case Instruction::OpCode::STORE_ARRAY_VAR: {
+        case Instruction::OperationCode::ARRAY_VARIABLE_STORAGE: {
             auto value = memoryManager.getArrayElement(
                     instruction.operand1, getOperandValue(instruction.operand2));
             if (!value.has_value()) {
@@ -360,7 +363,7 @@ void VirtualMachine::execute(const Instruction &instruction) {
             }
             break;
         }
-        case Instruction::OpCode::READ_INDEX: {
+        case Instruction::OperationCode::READ_INDEX: {
             auto value = memoryManager.getArrayElement(
                     instruction.operand1, getOperandValue(instruction.operand2));
             if (value.has_value()) {
@@ -370,13 +373,13 @@ void VirtualMachine::execute(const Instruction &instruction) {
             }
             break;
         }
-        case Instruction::OpCode::IF: {
+        case Instruction::OperationCode::IF: {
             if (conditions(instruction) && !instruction.block.empty()) {
                 run(instruction.block);
             }
             break;
         }
-        case Instruction::OpCode::WHILE: {
+        case Instruction::OperationCode::WHILE: {
             while (conditions(instruction)) {
                 if (!instruction.block.empty()) {
                     run(instruction.block);
@@ -384,16 +387,16 @@ void VirtualMachine::execute(const Instruction &instruction) {
             }
             break;
         }
-        case Instruction::OpCode::FUNC: {
+        case Instruction::OperationCode::FUNC: {
             std::string functionName = instruction.operand1;
             std::vector<std::string> params = instruction.parameters;
             std::vector<Instruction> functionBody = instruction.block;
             Instruction functionInstr = Instruction(
-                    Instruction::OpCode::FUNC, functionName, params, functionBody);
+                    Instruction::OperationCode::FUNC, functionName, params, functionBody);
             functions[functionName] = functionInstr;
             break;
         }
-        case Instruction::OpCode::CALL: {
+        case Instruction::OperationCode::CALL: {
             if (!functions.contains(instruction.operand1)) {
                 throw std::runtime_error("Unknown function");
             }
@@ -446,7 +449,7 @@ void VirtualMachine::execute(const Instruction &instruction) {
             }
             break;
         }
-        case Instruction::OpCode::RETURN: {
+        case Instruction::OperationCode::RETURN: {
             if (instruction.operand1.empty()) {
                 auto instruction1 =
                         std::any_cast<Instruction>(instruction.operand2);

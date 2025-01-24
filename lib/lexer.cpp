@@ -48,16 +48,16 @@ std::vector<Token> Lexer::tokenize() {
             tokens.push_back(Token(Token::Type::NUMBER, collectNumber()));
         } else if (isalpha(currentChar)) {
             std::string id = collectIdentifier();
-            if (id == "let") {
-                tokens.push_back(Token(Token::Type::LET, id));
+            if (id == "var") {
+                tokens.push_back(Token(Token::Type::VAR, id));
             } else if (id == "print") {
                 tokens.push_back(Token(Token::Type::PRINT, id));
             } else if (id == "if") {
                 tokens.push_back(Token(Token::Type::IF, id));
             } else if (id == "while") {
                 tokens.push_back(Token(Token::Type::WHILE, id));
-            } else if (id == "func") {
-                tokens.push_back(Token(Token::Type::FUNC, id));
+            } else if (id == "def") {
+                tokens.push_back(Token(Token::Type::DEF, id));
             } else if (id == "return") {
                 tokens.push_back(Token(Token::Type::RETURN, id));
             } else if (id == "new") {
@@ -80,7 +80,7 @@ std::vector<Token> Lexer::tokenize() {
             tokens.push_back(Token(Token::Type::MINUS, "-"));
             advance();
         } else if (currentChar == '*') {
-            tokens.push_back(Token(Token::Type::STAR, "*"));
+            tokens.push_back(Token(Token::Type::MULT, "*"));
             advance();
         } else if (currentChar == '%') {
             tokens.push_back(Token(Token::Type::MOD, "%"));

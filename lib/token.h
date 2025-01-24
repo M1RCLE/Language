@@ -6,7 +6,7 @@
 class Token {
 public:
     enum class Type {
-        LET,
+        VAR,
         IDENTIFIER,
         NUMBER,
         EQUAL,
@@ -17,14 +17,14 @@ public:
         RIGHT_BRACKET,
         COMMA,
         MINUS,
-        STAR,
+        MULT,
         LESS,
         GREATER,
         EQUALS,
         NOT_EQUALS,
         IF,
         WHILE,
-        FUNC,
+        DEF,
         RETURN,
         NEW,
         WRITE_INDEX,

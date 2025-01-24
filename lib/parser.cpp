@@ -32,7 +32,7 @@ std::vector<Instruction> Parser::parseAssignment(const std::string &varName) {
         std::any amount = currentToken().value;
         eat(Token::Type::NUMBER);
         eat(Token::Type::RIGHT_BRACKET);
-        instructions.emplace_back(Instruction::OpCode::NEW, varName, amount);
+        instructions.emplace_back(Instruction::OperationCode::NEW, varName, amount);
     } else if (currentToken().type == Token::Type::NUMBER ||
                currentToken().type == Token::Type::IDENTIFIER) {
         std::any operand1 = parseOperand();
@@ -42,48 +42,48 @@ std::vector<Instruction> Parser::parseAssignment(const std::string &varName) {
             std::any index = currentToken().value;
             eat(currentToken().type);
             eat(Token::Type::RIGHT_BRACKET);
-            instructions.emplace_back(Instruction::OpCode::STORE_ARRAY_VAR,
+            instructions.emplace_back(Instruction::OperationCode::ARRAY_VARIABLE_STORAGE,
                                                std::any_cast<std::string>(operand1),
                                                index, varName);
         } else if (currentToken().type == Token::Type::PLUS) {
             eat(Token::Type::PLUS);
             std::any operand2 = parseOperand();
             instructions.emplace_back(
-                    Instruction::OpCode::ADD, varName, operand1, operand2);
+                    Instruction::OperationCode::ADD, varName, operand1, operand2);
         } else if (currentToken().type == Token::Type::MINUS) {
             eat(Token::Type::MINUS);
             std::any operand2 = parseOperand();
             instructions.emplace_back(
-                    Instruction::OpCode::SUB, varName, operand1, operand2);
-        } else if (currentToken().type == Token::Type::STAR) {
-            eat(Token::Type::STAR);
+                    Instruction::OperationCode::SUB, varName, operand1, operand2);
+        } else if (currentToken().type == Token::Type::MULT) {
+            eat(Token::Type::MULT);
             std::any operand2 = parseOperand();
             instructions.emplace_back(
-                    Instruction::OpCode::MUL, varName, operand1, operand2);
+                    Instruction::OperationCode::MUL, varName, operand1, operand2);
         } else if (currentToken().type == Token::Type::MOD) {
             eat(Token::Type::MOD);
             std::any operand2 = parseOperand();
             instructions.emplace_back(
-                    Instruction::OpCode::MOD, varName, operand1, operand2);
+                    Instruction::OperationCode::MOD, varName, operand1, operand2);
         } else if (currentToken().type == Token::Type::LESS) {
             eat(Token::Type::LESS);
             std::any operand2 = parseOperand();
             instructions.emplace_back(
-                    Instruction::OpCode::LESS, varName, operand1, operand2);
+                    Instruction::OperationCode::LESS, varName, operand1, operand2);
         } else if (currentToken().type == Token::Type::GREATER) {
             eat(Token::Type::GREATER);
             std::any operand2 = parseOperand();
-            instructions.emplace_back(Instruction::OpCode::GREATER, varName,
-                                               operand1, operand2);
+            instructions.emplace_back(Instruction::OperationCode::GREATER, varName,
+                                      operand1, operand2);
         } else if (currentToken().type == Token::Type::EQUALS) {
             eat(Token::Type::EQUALS);
             std::any operand2 = parseOperand();
-            instructions.emplace_back(Instruction::OpCode::EQUALS, varName,
-                                               operand1, operand2);
+            instructions.emplace_back(Instruction::OperationCode::EQUALS, varName,
+                                      operand1, operand2);
         } else if (currentToken().type == Token::Type::NOT_EQUALS) {
             eat(Token::Type::NOT_EQUALS);
             std::any operand2 = parseOperand();
-            instructions.emplace_back(Instruction::OpCode::NOT_EQUALS,
+            instructions.emplace_back(Instruction::OperationCode::NOT_EQUALS,
                                                varName, operand1, operand2);
         } else if (currentToken().type == Token::Type::LEFT_PAREN) {
             eat(Token::Type::LEFT_PAREN);
@@ -99,11 +99,11 @@ std::vector<Instruction> Parser::parseAssignment(const std::string &varName) {
                 }
             }
             eat(Token::Type::RIGHT_PAREN);
-            instructions.emplace_back(Instruction::OpCode::CALL,
+            instructions.emplace_back(Instruction::OperationCode::CALL,
                                                functionName, arguments, varName);
         } else {
             instructions.emplace_back(
-                    Instruction::OpCode::STORE, varName, operand1);
+                    Instruction::OperationCode::SAVE, varName, operand1);
         }
     }
     eat(Token::Type::SEMICOLON);
@@ -120,7 +120,7 @@ std::vector<Instruction> Parser::parseArrayAssignment(
     eat(Token::Type::EQUAL);
     std::any value = currentToken().value;
     eat(currentToken().type);
-    instructions.emplace_back(Instruction::OpCode::WRITE_INDEX, varName, index, value);
+    instructions.emplace_back(Instruction::OperationCode::WRITE_INDEX, varName, index, value);
     eat(Token::Type::SEMICOLON);
     return instructions;
 }
@@ -138,13 +138,13 @@ std::vector<Instruction> Parser::parsePrintStatement() {
         eat(Token::Type::RIGHT_PAREN);
         eat(Token::Type::RIGHT_PAREN);
         eat(Token::Type::SEMICOLON);
-        instructions.emplace_back(Instruction::OpCode::READ_INDEX, varName, index);
+        instructions.emplace_back(Instruction::OperationCode::READ_INDEX, varName, index);
         return instructions;
     }
 
     eat(Token::Type::RIGHT_PAREN);
     eat(Token::Type::SEMICOLON);
-    instructions.emplace_back(Instruction::OpCode::PRINT, varName);
+    instructions.emplace_back(Instruction::OperationCode::PRINT, varName);
     return instructions;
 }
 
@@ -169,29 +169,29 @@ std::vector<Instruction> Parser::parseConditionalStatement() {
     }
     eat(Token::Type::BLOCK_CLOSE);
 
-    Instruction::OpCode comparisonOpCode;
+    Instruction::OperationCode comparisonOpCode;
     switch (comparisonType) {
         case Token::Type::LESS:
-            comparisonOpCode = Instruction::OpCode::LESS;
+            comparisonOpCode = Instruction::OperationCode::LESS;
             break;
         case Token::Type::GREATER:
-            comparisonOpCode = Instruction::OpCode::GREATER;
+            comparisonOpCode = Instruction::OperationCode::GREATER;
             break;
         case Token::Type::EQUALS:
-            comparisonOpCode = Instruction::OpCode::EQUALS;
+            comparisonOpCode = Instruction::OperationCode::EQUALS;
             break;
         case Token::Type::NOT_EQUALS:
-            comparisonOpCode = Instruction::OpCode::NOT_EQUALS;
+            comparisonOpCode = Instruction::OperationCode::NOT_EQUALS;
             break;
         case Token::Type::RETURN:
-            comparisonOpCode = Instruction::OpCode::RETURN;
+            comparisonOpCode = Instruction::OperationCode::RETURN;
             break;
         default:
             throw std::runtime_error("Unsupported comparison operator");
     }
 
     instructions.emplace_back(
-            Instruction::OpCode::IF, std::any_cast<std::string>(conditionOperand1),
+            Instruction::OperationCode::IF, std::any_cast<std::string>(conditionOperand1),
             comparisonOpCode, conditionOperand2, blockInstructions);
     return instructions;
 }
@@ -217,29 +217,29 @@ std::vector<Instruction> Parser::parseWhileStatement() {
     }
     eat(Token::Type::BLOCK_CLOSE);
 
-    Instruction::OpCode comparisonOpCode;
+    Instruction::OperationCode comparisonOpCode;
     switch (comparisonType) {
         case Token::Type::LESS:
-            comparisonOpCode = Instruction::OpCode::LESS;
+            comparisonOpCode = Instruction::OperationCode::LESS;
             break;
         case Token::Type::GREATER:
-            comparisonOpCode = Instruction::OpCode::GREATER;
+            comparisonOpCode = Instruction::OperationCode::GREATER;
             break;
         case Token::Type::EQUALS:
-            comparisonOpCode = Instruction::OpCode::EQUALS;
+            comparisonOpCode = Instruction::OperationCode::EQUALS;
             break;
         case Token::Type::NOT_EQUALS:
-            comparisonOpCode = Instruction::OpCode::NOT_EQUALS;
+            comparisonOpCode = Instruction::OperationCode::NOT_EQUALS;
             break;
         case Token::Type::RETURN:
-            comparisonOpCode = Instruction::OpCode::RETURN;
+            comparisonOpCode = Instruction::OperationCode::RETURN;
             break;
         default:
             throw std::runtime_error("Unsupported comparison operator");
     }
 
     instructions.emplace_back(
-            Instruction::OpCode::WHILE, std::any_cast<std::string>(conditionOperand1),
+            Instruction::OperationCode::WHILE, std::any_cast<std::string>(conditionOperand1),
             comparisonOpCode, conditionOperand2, blockInstructions);
     return instructions;
 }
@@ -267,24 +267,24 @@ Instruction Parser::parseReturnStatement() {
         eat(Token::Type::CALL_FUN_CLOSE);
 
         Instruction instruction =
-                Instruction(Instruction::OpCode::CALL, returnValue, arguments, nullptr);
+                Instruction(Instruction::OperationCode::CALL, returnValue, arguments, nullptr);
         eat(Token::Type::SEMICOLON);
-        return Instruction(Instruction::OpCode::RETURN, nullptr, instruction);
+        return Instruction(Instruction::OperationCode::RETURN, nullptr, instruction);
     }
     eat(Token::Type::SEMICOLON);
-    return Instruction(Instruction::OpCode::RETURN, returnValue);
+    return Instruction(Instruction::OperationCode::RETURN, returnValue);
 }
 
 Instruction Parser::parseFunctionDeclaration() {
     std::vector<Instruction> instructions;
-    eat(Token::Type::FUNC);
+    eat(Token::Type::DEF);
     std::string functionName = currentToken().value;
     eat(Token::Type::IDENTIFIER);
 
     eat(Token::Type::LEFT_PAREN);
     std::vector<std::string> parameters;
     while (currentToken().type != Token::Type::RIGHT_PAREN) {
-        eat(Token::Type::LET);
+        eat(Token::Type::VAR);
         parameters.push_back(currentToken().value);
         eat(Token::Type::IDENTIFIER);
         if (currentToken().type == Token::Type::COMMA) {
@@ -295,8 +295,8 @@ Instruction Parser::parseFunctionDeclaration() {
     eat(Token::Type::BLOCK_OPEN);
 
     while (currentToken().type != Token::Type::BLOCK_CLOSE) {
-        if (currentToken().type == Token::Type::LET) {
-            eat(Token::Type::LET);
+        if (currentToken().type == Token::Type::VAR) {
+            eat(Token::Type::VAR);
             std::string varName = currentToken().value;
             eat(Token::Type::IDENTIFIER);
 
@@ -334,8 +334,8 @@ Instruction Parser::parseFunctionDeclaration() {
 
 std::vector<Instruction> Parser::parseSingle() {
     std::vector<Instruction> instructions;
-    if (currentToken().type == Token::Type::LET) {
-        eat(Token::Type::LET);
+    if (currentToken().type == Token::Type::VAR) {
+        eat(Token::Type::VAR);
         std::string varName = currentToken().value;
         eat(Token::Type::IDENTIFIER);
 
@@ -351,7 +351,7 @@ std::vector<Instruction> Parser::parseSingle() {
     } else if (currentToken().type == Token::Type::PRINT) {
         auto printStmt = parsePrintStatement();
         instructions.insert(instructions.end(), printStmt.begin(), printStmt.end());
-    } else if (currentToken().type == Token::Type::FUNC) {
+    } else if (currentToken().type == Token::Type::DEF) {
         instructions.push_back(parseFunctionDeclaration());
     } else if (currentToken().type == Token::Type::RETURN) {
         instructions.push_back(parseReturnStatement());
@@ -371,11 +371,11 @@ std::vector<Instruction> Parser::parseSingle() {
 std::vector<Instruction> Parser::parse() {
     std::vector<Instruction> instructions;
     while (pos < tokens.size()) {
-        if (currentToken().type == Token::Type::FUNC) {
+        if (currentToken().type == Token::Type::DEF) {
             Instruction instruction = parseFunctionDeclaration();
             instructions.push_back(instruction);
-        } else if (currentToken().type == Token::Type::LET) {
-            eat(Token::Type::LET);
+        } else if (currentToken().type == Token::Type::VAR) {
+            eat(Token::Type::VAR);
             std::string varName = currentToken().value;
             eat(Token::Type::IDENTIFIER);
 
