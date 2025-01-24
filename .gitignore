@@ -1,5 +1,7 @@
 # Prerequisites
 *.d
+antlr4-module
+
 
 # Compiled Object files
 *.slo

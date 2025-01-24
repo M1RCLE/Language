@@ -13,30 +13,37 @@
 #include "instruction.h"
 
 class Compiler {
- private:
-  std::vector<Instruction> instructions;
-  std::map<std::string, Instruction> functions;
-  std::map<std::string, long> variableIndexes;
-  long nextVariableIndex = 0;
+private:
+    std::vector<Instruction> instructions;
+    std::map<std::string, Instruction> functions;
+    std::map<std::string, long> variableIndexes;
+    long nextVariableIndex = 0;
 
-  std::set<std::string> usedVariables;
+    std::set<std::string> usedVariables;
 
-  long getVariableIndex(const std::string& variableName);
-  void addUsedVariable(const std::any& operand);
-  bool isInteger(const std::string& str);
-  Instruction compileLoop(const Instruction& loopInstruction);
-  std::vector<Instruction> preprocessInstructions(
-      std::vector<Instruction>& instructions);
-  std::vector<Instruction> optimizeInstructions(
-      const std::vector<Instruction>& instructions);
-  std::vector<Instruction> filterDeadCode(
-      std::vector<Instruction>& instructions);
-  void writeInstruction(std::ofstream& out, const Instruction& instr);
+    long getVariableIndex(const std::string &variableName);
 
- public:
-  Compiler(const std::vector<Instruction>& instructions);
+    void addUsedVariable(const std::any &operand);
 
-  void saveToFile(const std::string& filename);
+    bool isInteger(const std::string &str);
+
+    Instruction compileLoop(const Instruction &loopInstruction);
+
+    std::vector<Instruction> preprocessInstructions(
+            std::vector<Instruction> &instructions);
+
+    std::vector<Instruction> optimizeInstructions(
+            const std::vector<Instruction> &instructions);
+
+    std::vector<Instruction> filterDeadCode(
+            std::vector<Instruction> &instructions);
+
+    void writeInstruction(std::ofstream &out, const Instruction &instr);
+
+public:
+    Compiler(const std::vector<Instruction> &instructions);
+
+    void saveToFile(const std::string &filename);
 };
 
 #endif

@@ -14,21 +14,29 @@
 #include "memoryManager.h"
 
 class VirtualMachine {
- private:
-  std::vector<Instruction> instructions;
-  MemoryManager memoryManager;
-  std::map<std::string, Instruction> functions;
-  bool isReturning = false;
- public:
-  void loadFromFile(const std::string& filename);
-  std::vector<Instruction> readNestedBlock(std::ifstream& in);
-  void run();
-  void execute(const Instruction& instruction);
-  void run(const std::vector<Instruction>& block);
-  bool conditions(const Instruction& instruction);
-  long getOperandValue(const std::any& operand);
-  std::vector<std::any> parseToListOfObjects(const std::any& input);
-  VirtualMachine() = default;
+private:
+    std::vector<Instruction> instructions;
+    MemoryManager memoryManager;
+    std::map<std::string, Instruction> functions;
+    bool isReturning = false;
+public:
+    void loadFromFile(const std::string &filename);
+
+    std::vector<Instruction> readNestedBlock(std::ifstream &in);
+
+    void run();
+
+    void execute(const Instruction &instruction);
+
+    void run(const std::vector<Instruction> &block);
+
+    bool conditions(const Instruction &instruction);
+
+    long getOperandValue(const std::any &operand);
+
+    std::vector<std::any> parseToListOfObjects(const std::any &input);
+
+    VirtualMachine() = default;
 };
 
 #endif
