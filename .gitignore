@@ -1,5 +1,7 @@
 # Prerequisites
 *.d
+antlr4-module
+
 
 # Compiled Object files
 *.slo
@@ -33,3 +35,7 @@
 
 .idea
 cmake-build-debug
+cmake-build-release
+
+build/
+.vscode/

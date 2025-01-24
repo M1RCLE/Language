@@ -1,0 +1,71 @@
+def random(var seed) {
+    var a = 1103515245;
+    var c = 12345;
+    var m = 2000000001;
+    var temp = a * seed;
+    var temp = temp + c;
+    var seed = temp + m;
+    return seed;
+}
+
+def fillRandom(var arr, var size, var min, var max) {
+    var seed = 12345;
+    var i = 0;
+    while (i < size) {
+        var seed = random(seed);
+        var diff = max - min;
+        var diff = diff + 1;
+        var random = seed % diff;
+        var randomValue = min + random;
+        var arr[i] = randomValue;
+        var i = i + 1;
+    }
+    return arr;
+}
+
+def insertionSort (var arr, var size) {
+    var i = 1;
+    while (i < size) {
+        var key = arr[i];
+        var j = i - 1;
+        var shouldContinue = 1;
+
+        while (shouldContinue == 1) {
+            var check = 0;
+            var jStop = 0 - 1;
+            if (j > jStop) {
+                var f = arr[j];
+                if (f > key) {
+                    var nextJ = j + 1;
+                    var arr[nextJ] = f;
+                    var j = j - 1;
+                    var check = 1;
+                }
+            }
+            if (check == 0) {
+                var shouldContinue = 0;
+            }
+        }
+
+        var nextJ = j + 1;
+        var arr[nextJ] = key;
+        var i = i + 1;
+    }
+
+    return arr;
+}
+
+var arr = new[1000];
+var size = 1000;
+var min = 1;
+var max = 1000;
+var arr = fillRandom(arr, size, min, max);
+
+var arr = insertionSort(arr, size);
+
+var i = 0;
+while (i < size) {
+    var curr = arr[i];
+    print(curr);
+    var i = i + 1;
+}

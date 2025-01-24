@@ -1,0 +1,16 @@
+var a = 1;
+var c = 2;
+while (c < 6) {
+  var c = c + 1;
+  if (c > 2) {
+    print(c);
+  }
+}
+
+var p = 5;
+def pr() {
+    var p = 6;
+}
+
+var resul = pr();
+print(p);
