@@ -97,7 +97,7 @@ void MemoryManager::enterFunction() {
     if (callStack.size() >= MAX_STACK_DEPTH) {
         throw std::overflow_error("Maximum recursion depth exceeded");
     }
-    callStack.push({});
+    callStack.emplace();
 }
 
 void MemoryManager::exitFunction() {

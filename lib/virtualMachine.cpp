@@ -58,10 +58,10 @@ void VirtualMachine::loadFromFile(const std::string &filename) {
                     file.read(reinterpret_cast<char *>(&blockSize), sizeof(blockSize));
                     if (blockSize > 0) {
                         for (int64_t i = 0; i < blockSize; ++i) {
-                            std::string opCodeOrdinal;
-                            std::getline(file, opCodeOrdinal, '\0');
+                            std::string opCodeOrdinalCpy;
+                            std::getline(file, opCodeOrdinalCpy, '\0');
                             auto nestedOpCode =
-                                    static_cast<Instruction::OpCode>(opCodeOrdinal[0]);
+                                    static_cast<Instruction::OpCode>(opCodeOrdinalCpy[0]);
 
                             if (nestedOpCode == Instruction::OpCode::RETURN) {
                                 std::string returnValue;
@@ -69,10 +69,10 @@ void VirtualMachine::loadFromFile(const std::string &filename) {
 
                                 Instruction nestedInstruction;
                                 if (returnValue.empty()) {
-                                    std::string opCodeOrdinal;
-                                    std::getline(file, opCodeOrdinal, '\0');
-                                    auto nestedOpCode =
-                                            static_cast<Instruction::OpCode>(opCodeOrdinal[0]);
+                                    std::string opCodeOrdinalCpyTwo;
+                                    std::getline(file, opCodeOrdinalCpyTwo, '\0');
+                                    auto nestedOpCodeCpy =
+                                            static_cast<Instruction::OpCode>(opCodeOrdinalCpyTwo[0]);
 
                                     std::string nestedOperand1, nestedOperand2, nestedOperand3;
                                     std::getline(file, nestedOperand1, '\0');
@@ -80,7 +80,7 @@ void VirtualMachine::loadFromFile(const std::string &filename) {
                                     std::getline(file, nestedOperand3, '\0');
 
                                     nestedInstruction =
-                                            Instruction(nestedOpCode, nestedOperand1, nestedOperand2,
+                                            Instruction(nestedOpCodeCpy, nestedOperand1, nestedOperand2,
                                                         nestedOperand3);
                                 }
 
@@ -168,17 +168,17 @@ std::vector<Instruction> VirtualMachine::readNestedBlock(std::ifstream &file) {
 
                 Instruction instruction;
                 if (returnValue.empty()) {
-                    std::string opCodeOrdinal;
-                    std::getline(file, opCodeOrdinal, '\0');
-                    auto nestedOpCode =
-                            static_cast<Instruction::OpCode>(opCodeOrdinal[0]);
+                    std::string opCodeOrdinalCpyOne;
+                    std::getline(file, opCodeOrdinalCpyOne, '\0');
+                    auto nestedOpCodeCpy =
+                            static_cast<Instruction::OpCode>(opCodeOrdinalCpyOne[0]);
 
                     std::string nestedOperand1, nestedOperand2, nestedOperand3;
                     std::getline(file, nestedOperand1, '\0');
                     std::getline(file, nestedOperand2, '\0');
                     std::getline(file, nestedOperand3, '\0');
 
-                    instruction = Instruction(nestedOpCode, nestedOperand1,
+                    instruction = Instruction(nestedOpCodeCpy, nestedOperand1,
                                               nestedOperand2, nestedOperand3);
                 }
 
@@ -228,7 +228,7 @@ void VirtualMachine::execute(const Instruction &instruction) {
         }
         case Instruction::OpCode::PRINT: {
             auto value = memoryManager.getValue(instruction.operand1);
-            if (value->has_value()) {
+            if (value != nullptr) {
                 std::cout << anyToStringVM(*value) << std::endl;
             } else {
                 throw std::runtime_error("Variable not found: " + instruction.operand1);
@@ -418,13 +418,13 @@ void VirtualMachine::execute(const Instruction &instruction) {
                 std::any *valueToAllocate;
 
                 if (argument.type() == typeid(std::string)) {
-                    std::string varName = std::any_cast<std::string>(argument);
+                    auto varName = std::any_cast<std::string>(argument);
                     valueToAllocate = memoryManager.getValue(varName);
                     if (!valueToAllocate->has_value()) {
-                        *valueToAllocate = argument;
+                        valueToAllocate = &argument;
                     }
                 } else {
-                    *valueToAllocate = argument;
+                    valueToAllocate = &argument;
                 }
                 valsForAlloc.push_back(*valueToAllocate);
             }
