@@ -32,16 +32,13 @@ private:
     std::vector<Instruction> adaptInstructions(
             std::vector<Instruction> &instructions);
 
-    std::vector<Instruction> optimizeInstructions(
+    std::vector<Instruction> instructionsOptimizations(
             const std::vector<Instruction> &instructions);
-
-    std::vector<Instruction> filterDeadCode(
-            std::vector<Instruction> &instructions);
 
     void writeInstruction(std::ofstream &out, const Instruction &instr);
 
 public:
-    Compiler(const std::vector<Instruction> &instructions);
+    explicit Compiler(const std::vector<Instruction> &instructions);
 
     void saveToFile(const std::string &filename);
 };

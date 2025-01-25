@@ -12,16 +12,16 @@ private:
     size_t pos;
     char currentChar;
 
-    void advance();
+    void step();
 
-    void skipWhitespace();
+    void ignoreWhitespaces();
 
     std::string collectNumber();
 
     std::string collectIdentifier();
 
 public:
-    Lexer(const std::string &input);
+    explicit Lexer(const std::string &input);
 
     std::vector<Token> tokenize();
 };

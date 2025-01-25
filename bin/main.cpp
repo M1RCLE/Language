@@ -3,49 +3,50 @@
 
 #include "lib/lib.h"
 
-int main(int argc, char* argv[]) {
-  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-  if (argc < 2) {
-    std::cerr << "Usage: " << argv[0] << " <filename>" << std::endl;
-    return 1;
-  }
-
-  std::string filename = argv[1];
-  try {
-    std::ifstream file(filename);
-    if (!file) {
-      throw std::ios_base::failure("Error reading file");
+int main(int argc, char *argv[]) {
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    if (argc < 2) {
+        std::cerr << "Usage: " << argv[0] << " <filename>" << std::endl;
+        return 1;
     }
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    std::string code = buffer.str();
 
-    Lexer lexer(code);
-    std::vector<Token> tokens = lexer.tokenize();
+    std::string filename = argv[1];
+    try {
+        std::ifstream file(filename);
+        if (!file) {
+            throw std::ios_base::failure("Error reading file");
+        }
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        std::string code = buffer.str();
 
-    Parser parser(tokens);
-    std::vector<Instruction> instructions = parser.parse();
+        Lexer lexer(code);
+        std::vector<Token> tokens = lexer.tokenize();
 
-    Compiler compiler(instructions);
-    std::string compiledFile =
-        filename.substr(0, filename.find_last_of('.')) + ".bytecel";
-    compiler.saveToFile(compiledFile);
+        Parser parser(tokens);
+        std::vector<Instruction> instructions = parser.parse();
 
-    VirtualMachine vm;
-    vm.loadFromFile(compiledFile);
-    vm.run();
+        Compiler compiler(instructions);
+        std::string compiledFile =
+                filename.substr(0, filename.find_last_of('.')) + ".bytecel";
+        compiler.saveToFile(compiledFile);
 
-  } catch (const std::ios_base::failure& e) {
-    std::cerr << "Error reading or writing file: " << e.what() << std::endl;
-    return 2;
-  } catch (const std::exception& e) {
-    std::cerr << "Error executing program: " << e.what() << std::endl;
-    return 3;
-  }
+        VirtualMachine vm;
+        vm.loadFromFile(compiledFile);
+        vm.run();
 
-  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    } catch (const std::ios_base::failure &e) {
+        std::cerr << "Error reading or writing file: " << e.what() << std::endl;
+        return 2;
+    } catch (const std::exception &e) {
+        std::cerr << "Error executing program: " << e.what() << std::endl;
+        return 3;
+    }
 
-  std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << std::endl;
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
-  return 0;
+    std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+              << std::endl;
+
+    return 0;
 }

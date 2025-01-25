@@ -4,6 +4,7 @@
 #include <any>
 #include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 
 class Instruction {
@@ -34,98 +35,98 @@ public:
     };
 
     OperationCode operationCode;
-    std::string operand1;
-    std::any operand2;
-    std::any operand3;
+    std::string register1;
+    std::any register2;
+    std::any register3;
     std::vector<Instruction> block;
     std::string target;
     std::vector<std::string> parameters;
 
-    Instruction(OperationCode opCode, const std::string &operand1)
+    Instruction(OperationCode opCode, std::string operand1)
             : operationCode(opCode),
-              operand1(operand1),
-              operand2(),
-              operand3(),
+              register1(std::move(operand1)),
+              register2(),
+              register3(),
               block(),
               target(),
               parameters() {}
 
-    Instruction(OperationCode opCode, const std::string &operand1, std::any operand2)
+    Instruction(OperationCode opCode, std::string operand1, std::any operand2)
             : operationCode(opCode),
-              operand1(operand1),
-              operand2(operand2),
-              operand3(),
+              register1(std::move(operand1)),
+              register2(std::move(operand2)),
+              register3(),
               block(),
               target(),
               parameters() {}
 
-    Instruction(OperationCode opCode, const std::string &target,
-                const std::string &operand1)
+    Instruction(OperationCode opCode, std::string target,
+                std::string operand1)
             : operationCode(opCode),
-              target(target),
-              operand1(operand1),
-              operand2(),
-              operand3(),
+              target(std::move(target)),
+              register1(std::move(operand1)),
+              register2(),
+              register3(),
               block(),
               parameters() {}
 
-    Instruction(OperationCode opCode, const std::string &operand1, std::any operand2,
+    Instruction(OperationCode opCode, std::string operand1, std::any operand2,
                 std::any operand3)
             : operationCode(opCode),
-              operand1(operand1),
-              operand2(operand2),
-              operand3(operand3),
+              register1(std::move(operand1)),
+              register2(std::move(operand2)),
+              register3(std::move(operand3)),
               block(),
               target(),
               parameters() {}
 
-    Instruction(OperationCode opCode, const std::string &operand1, std::any operand2,
+    Instruction(OperationCode opCode, std::string operand1, std::any operand2,
                 const std::vector<Instruction> &blockInstructions)
             : operationCode(opCode),
-              operand1(operand1),
-              operand2(operand2),
-              operand3(),
+              register1(std::move(operand1)),
+              register2(std::move(operand2)),
+              register3(),
               block(blockInstructions),
               target(),
               parameters() {}
 
-    Instruction(OperationCode opCode, const std::string &operand1,
+    Instruction(OperationCode opCode, std::string operand1,
                 const std::vector<std::string> &parameters)
             : operationCode(opCode),
-              operand1(operand1),
-              operand2(),
-              operand3(),
+              register1(std::move(operand1)),
+              register2(),
+              register3(),
               block(),
               target(),
               parameters(parameters) {}
 
-    Instruction(OperationCode opCode, const std::string &operand1, std::any operand2,
+    Instruction(OperationCode opCode, std::string operand1, std::any operand2,
                 std::any operand3,
                 const std::vector<Instruction> &blockInstructions)
             : operationCode(opCode),
-              operand1(operand1),
-              operand2(operand2),
-              operand3(operand3),
+              register1(std::move(operand1)),
+              register2(std::move(operand2)),
+              register3(std::move(operand3)),
               block(blockInstructions),
               target(),
               parameters() {}
 
-    Instruction(OperationCode opCode, const std::string &operand1,
+    Instruction(OperationCode opCode, std::string operand1,
                 const std::vector<Instruction> &blockInstructions,
                 const std::vector<std::string> &parameters)
             : operationCode(opCode),
-              operand1(operand1),
-              operand2(),
-              operand3(),
+              register1(std::move(operand1)),
+              register2(),
+              register3(),
               block(blockInstructions),
               target(),
               parameters(parameters) {}
 
     Instruction()
             : operationCode(OperationCode::SAVE),
-              operand1(),
-              operand2(),
-              operand3(),
+              register1(),
+              register2(),
+              register3(),
               block(),
               target(),
               parameters() {}
@@ -136,27 +137,27 @@ public:
             const std::vector<Instruction> &instructions) {
         Instruction newInstruction;
         newInstruction.operationCode = OperationCode::FUNC;
-        newInstruction.operand1 = functionName;
+        newInstruction.register1 = functionName;
         newInstruction.block = instructions;
         newInstruction.parameters = parameters;
         return newInstruction;
     }
 
     std::string toString() const {
-        std::string result = opCodeToString(operationCode) + " " + operand1;
-        if (operand2.type() == typeid(std::string)) {
-            result += " " + std::any_cast<std::string>(operand2);
-        } else if (operand2.type() == typeid(int)) {
-            result += " " + std::to_string(std::any_cast<int>(operand2));
-        } else if (operand2.type() == typeid(float)) {
-            result += " " + std::to_string(std::any_cast<float>(operand2));
+        std::string result = opCodeToString(operationCode) + " " + register1;
+        if (register2.type() == typeid(std::string)) {
+            result += " " + std::any_cast<std::string>(register2);
+        } else if (register2.type() == typeid(int)) {
+            result += " " + std::to_string(std::any_cast<int>(register2));
+        } else if (register2.type() == typeid(float)) {
+            result += " " + std::to_string(std::any_cast<float>(register2));
         }
-        if (operand3.type() == typeid(std::string)) {
-            result += " " + std::any_cast<std::string>(operand3);
-        } else if (operand3.type() == typeid(int)) {
-            result += " " + std::to_string(std::any_cast<int>(operand3));
-        } else if (operand3.type() == typeid(float)) {
-            result += " " + std::to_string(std::any_cast<float>(operand3));
+        if (register3.type() == typeid(std::string)) {
+            result += " " + std::any_cast<std::string>(register3);
+        } else if (register3.type() == typeid(int)) {
+            result += " " + std::to_string(std::any_cast<int>(register3));
+        } else if (register3.type() == typeid(float)) {
+            result += " " + std::to_string(std::any_cast<float>(register3));
         }
         if (!block.empty()) {
             result += " [";

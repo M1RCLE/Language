@@ -6,7 +6,7 @@
 Lexer::Lexer(const std::string &input)
         : input(input), pos(0), currentChar(input[0]) {}
 
-void Lexer::advance() {
+void Lexer::step() {
     pos++;
     if (pos < input.size()) {
         currentChar = input[pos];
@@ -15,9 +15,9 @@ void Lexer::advance() {
     }
 }
 
-void Lexer::skipWhitespace() {
+void Lexer::ignoreWhitespaces() {
     while (isspace(currentChar)) {
-        advance();
+        step();
     }
 }
 
@@ -25,7 +25,7 @@ std::string Lexer::collectNumber() {
     std::string number;
     while (isdigit(currentChar)) {
         number += currentChar;
-        advance();
+        step();
     }
     return number;
 }
@@ -34,7 +34,7 @@ std::string Lexer::collectIdentifier() {
     std::string identifier;
     while (isalnum(currentChar)) {
         identifier += currentChar;
-        advance();
+        step();
     }
     return identifier;
 }
@@ -42,98 +42,98 @@ std::string Lexer::collectIdentifier() {
 std::vector<Token> Lexer::tokenize() {
     std::vector<Token> tokens;
     while (currentChar != '\0') {
-        if (isspace(currentChar)) {
-            skipWhitespace();
-        } else if (isdigit(currentChar)) {
-            tokens.push_back(Token(Token::Type::NUMBER, collectNumber()));
-        } else if (isalpha(currentChar)) {
-            std::string id = collectIdentifier();
-            if (id == "var") {
-                tokens.push_back(Token(Token::Type::VAR, id));
-            } else if (id == "print") {
-                tokens.push_back(Token(Token::Type::PRINT, id));
-            } else if (id == "if") {
-                tokens.push_back(Token(Token::Type::IF, id));
-            } else if (id == "while") {
-                tokens.push_back(Token(Token::Type::WHILE, id));
-            } else if (id == "def") {
-                tokens.push_back(Token(Token::Type::DEF, id));
-            } else if (id == "return") {
-                tokens.push_back(Token(Token::Type::RETURN, id));
-            } else if (id == "new") {
-                tokens.push_back(Token(Token::Type::NEW, id));
-            } else {
-                tokens.push_back(Token(Token::Type::IDENTIFIER, id));
-            }
-        } else if (currentChar == '=') {
-            advance();
+        if (currentChar == '=') {
+            step();
             if (currentChar == '=') {
-                tokens.push_back(Token(Token::Type::EQUALS, "=="));
-                advance();
+                tokens.emplace_back(Token::Type::EQUALS, "==");
+                step();
             } else {
-                tokens.push_back(Token(Token::Type::EQUAL, "="));
+                tokens.emplace_back(Token::Type::EQUAL, "=");
             }
         } else if (currentChar == '+') {
-            tokens.push_back(Token(Token::Type::PLUS, "+"));
-            advance();
+            tokens.emplace_back(Token::Type::PLUS, "+");
+            step();
         } else if (currentChar == '-') {
-            tokens.push_back(Token(Token::Type::MINUS, "-"));
-            advance();
+            tokens.emplace_back(Token::Type::MINUS, "-");
+            step();
         } else if (currentChar == '*') {
-            tokens.push_back(Token(Token::Type::MULT, "*"));
-            advance();
+            tokens.emplace_back(Token::Type::MULT, "*");
+            step();
         } else if (currentChar == '%') {
-            tokens.push_back(Token(Token::Type::MOD, "%"));
-            advance();
+            tokens.emplace_back(Token::Type::MOD, "%");
+            step();
         } else if (currentChar == '<') {
-            tokens.push_back(Token(Token::Type::LESS, "<"));
-            advance();
+            tokens.emplace_back(Token::Type::LESS, "<");
+            step();
         } else if (currentChar == '>') {
-            tokens.push_back(Token(Token::Type::GREATER, ">"));
-            advance();
+            tokens.emplace_back(Token::Type::GREATER, ">");
+            step();
         } else if (currentChar == ';') {
-            tokens.push_back(Token(Token::Type::SEMICOLON, ";"));
-            advance();
+            tokens.emplace_back(Token::Type::SEMICOLON, ";");
+            step();
         } else if (currentChar == '(') {
             if (!tokens.empty() && (tokens.back().type == Token::Type::IF ||
                                     tokens.back().type == Token::Type::WHILE ||
                                     tokens.back().type == Token::Type::PRINT ||
                                     tokens.back().type == Token::Type::IDENTIFIER)) {
-                tokens.push_back(Token(Token::Type::LEFT_PAREN, "("));  // Обычные скобки
+                tokens.emplace_back(Token::Type::LEFT_ELEMENT, "(");
             } else {
                 throw std::runtime_error("Unexpected '(' - Use '{' for code blocks.");
             }
-            advance();
+            step();
         } else if (currentChar == ')') {
-            tokens.push_back(Token(Token::Type::RIGHT_PAREN, ")"));
-            advance();
+            tokens.emplace_back(Token::Type::RIGHT_ELEMENT, ")");
+            step();
         } else if (currentChar == '{') {
-            tokens.push_back(Token(Token::Type::BLOCK_OPEN, "{"));
-            advance();
+            tokens.emplace_back(Token::Type::BLOCK_OPEN, "{");
+            step();
         } else if (currentChar == '}') {
-            tokens.push_back(Token(Token::Type::BLOCK_CLOSE, "}"));
-            advance();
+            tokens.emplace_back(Token::Type::BLOCK_CLOSE, "}");
+            step();
         } else if (currentChar == '[') {
-            tokens.push_back(Token(Token::Type::LEFT_BRACKET, "["));
-            advance();
+            tokens.emplace_back(Token::Type::LEFT_BRACKET, "[");
+            step();
         } else if (currentChar == ']') {
-            tokens.push_back(Token(Token::Type::RIGHT_BRACKET, "]"));
-            advance();
+            tokens.emplace_back(Token::Type::RIGHT_BRACKET, "]");
+            step();
         } else if (currentChar == ',') {
-            tokens.push_back(Token(Token::Type::COMMA, ","));
-            advance();
+            tokens.emplace_back(Token::Type::COMMA, ",");
+            step();
         } else if (currentChar == '!') {
-            advance();
+            step();
             if (currentChar == '=') {
-                tokens.push_back(Token(Token::Type::NOT_EQUALS, "!="));
-                advance();
+                tokens.emplace_back(Token::Type::NOT_EQUALS, "!=");
+                step();
             } else {
                 throw std::runtime_error("Unexpected character: !");
             }
+        } else if (isspace(currentChar)) {
+            ignoreWhitespaces();
+        } else if (isdigit(currentChar)) {
+            tokens.emplace_back(Token::Type::NUMBER, collectNumber());
+        } else if (isalpha(currentChar)) {
+            std::string id = collectIdentifier();
+            if (id == "var") {
+                tokens.emplace_back(Token::Type::VAR, id);
+            } else if (id == "print") {
+                tokens.emplace_back(Token::Type::PRINT, id);
+            } else if (id == "if") {
+                tokens.emplace_back(Token::Type::IF, id);
+            } else if (id == "while") {
+                tokens.emplace_back(Token::Type::WHILE, id);
+            } else if (id == "def") {
+                tokens.emplace_back(Token::Type::DEF, id);
+            } else if (id == "return") {
+                tokens.emplace_back(Token::Type::RETURN, id);
+            } else if (id == "new") {
+                tokens.emplace_back(Token::Type::NEW, id);
+            } else {
+                tokens.emplace_back(Token::Type::IDENTIFIER, id);
+            }
         } else {
-            throw std::runtime_error("Unexpected character: " +
-                                     std::string(1, currentChar));
+            throw std::runtime_error("Unexpected character: " + std::string(1, currentChar));
         }
+
     }
     return tokens;
 }

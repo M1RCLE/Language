@@ -14,26 +14,27 @@ private:
 
     Token currentToken();
 
-    void eat(Token::Type type);
+    void take(Token::Type type);
 
-    std::any parseOperand();
+    std::any operandParser();
 
-    std::vector<Instruction> parseAssignment(const std::string &varName);
+    std::vector<Instruction> assignmentParser(const std::string &varName);
 
-    std::vector<Instruction> parseArrayAssignment(const std::string &varName);
+    std::vector<Instruction> arrayAssignmentParser(const std::string &varName);
 
-    std::vector<Instruction> parsePrintStatement();
+    std::vector<Instruction> printParser();
 
-    std::vector<Instruction> parseConditionalStatement();
+    std::vector<Instruction> conditionalStatementParser();
 
-    std::vector<Instruction> parseWhileStatement();
+    std::vector<Instruction> whileStatementParser();
 
-    Instruction parseReturnStatement();
+    Instruction returnStatementParser();
 
-    Instruction parseFunctionDeclaration();
+    Instruction functionDeclarationParser();
+
 
 public:
-    Parser(const std::vector<Token> &tokens);
+    explicit Parser(const std::vector<Token> &tokens);
 
     std::vector<Instruction> parseSingle();
 

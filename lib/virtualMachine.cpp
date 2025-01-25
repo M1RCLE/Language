@@ -223,116 +223,116 @@ void VirtualMachine::execute(const Instruction &instruction) {
     switch (instruction.operationCode) {
         case Instruction::OperationCode::SAVE: {
             if (!instruction.target.empty()) {
-                memoryManager.allocate(instruction.target, instruction.operand2);
+                memoryManager.allocate(instruction.target, instruction.register2);
             } else {
-                memoryManager.allocate(instruction.operand1, instruction.operand2);
+                memoryManager.allocate(instruction.register1, instruction.register2);
             }
             break;
         }
         case Instruction::OperationCode::PRINT: {
-            auto value = memoryManager.getValue(instruction.operand1);
+            auto value = memoryManager.getValue(instruction.register1);
             if (value != nullptr) {
                 std::cout << anyToStringVM(*value) << std::endl;
             } else {
-                throw std::runtime_error("Variable not found: " + instruction.operand1);
+                throw std::runtime_error("Variable not found: " + instruction.register1);
             }
             break;
         }
         case Instruction::OperationCode::ADD: {
-            auto result = getOperandValue(instruction.operand2) +
-                          getOperandValue(instruction.operand3);
+            auto result = getOperandValue(instruction.register2) +
+                          getOperandValue(instruction.register3);
             if (!instruction.target.empty()) {
                 memoryManager.allocate(instruction.target, result);
             } else {
-                memoryManager.allocate(instruction.operand1, result);
+                memoryManager.allocate(instruction.register1, result);
             }
             break;
         }
         case Instruction::OperationCode::SUB: {
-            auto result = getOperandValue(instruction.operand2) -
-                          getOperandValue(instruction.operand3);
+            auto result = getOperandValue(instruction.register2) -
+                          getOperandValue(instruction.register3);
             if (!instruction.target.empty()) {
                 memoryManager.allocate(instruction.target, result);
             } else {
-                memoryManager.allocate(instruction.operand1, result);
+                memoryManager.allocate(instruction.register1, result);
             }
             break;
         }
         case Instruction::OperationCode::MUL: {
-            auto result = getOperandValue(instruction.operand2) *
-                          getOperandValue(instruction.operand3);
+            auto result = getOperandValue(instruction.register2) *
+                          getOperandValue(instruction.register3);
             if (!instruction.target.empty()) {
                 memoryManager.allocate(instruction.target, result);
             } else {
-                memoryManager.allocate(instruction.operand1, result);
+                memoryManager.allocate(instruction.register1, result);
             }
             break;
         }
         case Instruction::OperationCode::MOD: {
-            auto result = getOperandValue(instruction.operand2) %
-                          getOperandValue(instruction.operand3);
+            auto result = getOperandValue(instruction.register2) %
+                          getOperandValue(instruction.register3);
             if (!instruction.target.empty()) {
                 memoryManager.allocate(instruction.target, result);
             } else {
-                memoryManager.allocate(instruction.operand1, result);
+                memoryManager.allocate(instruction.register1, result);
             }
             break;
         }
         case Instruction::OperationCode::LESS: {
-            auto result = getOperandValue(instruction.operand2) <
-                          getOperandValue(instruction.operand3);
+            auto result = getOperandValue(instruction.register2) <
+                          getOperandValue(instruction.register3);
             if (!instruction.target.empty()) {
                 memoryManager.allocate(instruction.target, result);
             } else {
-                memoryManager.allocate(instruction.operand1, result);
+                memoryManager.allocate(instruction.register1, result);
             }
             break;
         }
         case Instruction::OperationCode::GREATER: {
-            auto result = getOperandValue(instruction.operand2) >
-                          getOperandValue(instruction.operand3);
+            auto result = getOperandValue(instruction.register2) >
+                          getOperandValue(instruction.register3);
             if (!instruction.target.empty()) {
                 memoryManager.allocate(instruction.target, result);
             } else {
-                memoryManager.allocate(instruction.operand1, result);
+                memoryManager.allocate(instruction.register1, result);
             }
             break;
         }
         case Instruction::OperationCode::EQUALS: {
-            auto result = getOperandValue(instruction.operand2) ==
-                          getOperandValue(instruction.operand3);
+            auto result = getOperandValue(instruction.register2) ==
+                          getOperandValue(instruction.register3);
             if (!instruction.target.empty()) {
                 memoryManager.allocate(instruction.target, result);
             } else {
-                memoryManager.allocate(instruction.operand1, result);
+                memoryManager.allocate(instruction.register1, result);
             }
             break;
         }
         case Instruction::OperationCode::NOT_EQUALS: {
-            auto result = getOperandValue(instruction.operand2) !=
-                          getOperandValue(instruction.operand3);
+            auto result = getOperandValue(instruction.register2) !=
+                          getOperandValue(instruction.register3);
             if (!instruction.target.empty()) {
                 memoryManager.allocate(instruction.target, result);
             } else {
-                memoryManager.allocate(instruction.operand1, result);
+                memoryManager.allocate(instruction.register1, result);
             }
             break;
         }
         case Instruction::OperationCode::NEW: {
-            std::any size = instruction.operand2;
+            std::any size = instruction.register2;
             if (size.type() == typeid(std::string)) {
                 auto arraySize = std::stol(std::any_cast<std::string>(size));
                 if (!instruction.target.empty()) {
                     memoryManager.allocateArray(instruction.target, arraySize);
                 } else {
-                    memoryManager.allocateArray(instruction.operand1, arraySize);
+                    memoryManager.allocateArray(instruction.register1, arraySize);
                 }
             } else if (size.type() == typeid(std::vector<std::any>)) {
-                auto array = std::any_cast<std::vector<std::any>>(instruction.operand2);
+                auto array = std::any_cast<std::vector<std::any>>(instruction.register2);
                 if (!instruction.target.empty()) {
                     memoryManager.allocateArray(instruction.target, array);
                 } else {
-                    memoryManager.allocateArray(instruction.operand1, array);
+                    memoryManager.allocateArray(instruction.register1, array);
                 }
             } else {
                 throw std::runtime_error("Invalid array size");
@@ -340,32 +340,32 @@ void VirtualMachine::execute(const Instruction &instruction) {
             break;
         }
         case Instruction::OperationCode::WRITE_INDEX: {
-            auto index = getOperandValue(instruction.operand2);
-            auto value = getOperandValue(instruction.operand3);
+            auto index = getOperandValue(instruction.register2);
+            auto value = getOperandValue(instruction.register3);
             if (!instruction.target.empty()) {
                 memoryManager.setArrayElement(instruction.target, index, value);
             } else {
-                memoryManager.setArrayElement(instruction.operand1, index, value);
+                memoryManager.setArrayElement(instruction.register1, index, value);
             }
             break;
         }
         case Instruction::OperationCode::ARRAY_VARIABLE_STORAGE: {
             auto value = memoryManager.getArrayElement(
-                    instruction.operand1, getOperandValue(instruction.operand2));
+                    instruction.register1, getOperandValue(instruction.register2));
             if (!value.has_value()) {
-                throw std::runtime_error("Variable not found: " + instruction.operand1);
+                throw std::runtime_error("Variable not found: " + instruction.register1);
             }
             if (!instruction.target.empty()) {
                 memoryManager.allocate(instruction.target, value);
             } else {
-                memoryManager.allocate(std::any_cast<std::string>(instruction.operand3),
+                memoryManager.allocate(std::any_cast<std::string>(instruction.register3),
                                        value);
             }
             break;
         }
         case Instruction::OperationCode::READ_INDEX: {
             auto value = memoryManager.getArrayElement(
-                    instruction.operand1, getOperandValue(instruction.operand2));
+                    instruction.register1, getOperandValue(instruction.register2));
             if (value.has_value()) {
                 std::cout << std::any_cast<std::string>(value) << std::endl;
             } else {
@@ -388,7 +388,7 @@ void VirtualMachine::execute(const Instruction &instruction) {
             break;
         }
         case Instruction::OperationCode::FUNC: {
-            std::string functionName = instruction.operand1;
+            std::string functionName = instruction.register1;
             std::vector<std::string> params = instruction.parameters;
             std::vector<Instruction> functionBody = instruction.block;
             Instruction functionInstr = Instruction(
@@ -397,20 +397,20 @@ void VirtualMachine::execute(const Instruction &instruction) {
             break;
         }
         case Instruction::OperationCode::CALL: {
-            if (!functions.contains(instruction.operand1)) {
+            if (!functions.contains(instruction.register1)) {
                 throw std::runtime_error("Unknown function");
             }
-            auto &functionInstruction = functions[instruction.operand1];
+            auto &functionInstruction = functions[instruction.register1];
 
             std::vector<std::string> params = functionInstruction.parameters;
 
             std::vector<Instruction> functionBody = functionInstruction.block;
 
-            auto args = instruction.operand2;
+            auto args = instruction.register2;
             std::vector<std::any> valsForAlloc;
             std::vector<std::any> arguments = parseToListOfObjects(args);
             if (params.size() != arguments.size()) {
-                throw std::runtime_error("Function " + instruction.operand1 +
+                throw std::runtime_error("Function " + instruction.register1 +
                                          " expects " + std::to_string(params.size()) +
                                          " arguments, but got " +
                                          std::to_string(arguments.size()));
@@ -443,17 +443,17 @@ void VirtualMachine::execute(const Instruction &instruction) {
             memoryManager.exitFunction();
             isReturning = false;
 
-            if (instruction.operand3.has_value()) {
-                memoryManager.allocate(std::any_cast<std::string>(instruction.operand3),
+            if (instruction.register3.has_value()) {
+                memoryManager.allocate(std::any_cast<std::string>(instruction.register3),
                                        returnValue);
             }
             break;
         }
         case Instruction::OperationCode::RETURN: {
-            if (instruction.operand1.empty()) {
+            if (instruction.register1.empty()) {
                 auto instruction1 =
-                        std::any_cast<Instruction>(instruction.operand2);
-                std::string functionName = instruction1.operand1;
+                        std::any_cast<Instruction>(instruction.register2);
+                std::string functionName = instruction1.register1;
                 if (!functions.contains(functionName)) {
                     throw std::runtime_error("Unknown function");
                 }
@@ -462,7 +462,7 @@ void VirtualMachine::execute(const Instruction &instruction) {
                 std::vector<std::string> parameters = functionInstruction.parameters;
                 std::vector<Instruction> functionBody = functionInstruction.block;
 
-                auto args = std::any_cast<std::string>(instruction1.operand2);
+                auto args = std::any_cast<std::string>(instruction1.register2);
                 std::vector<std::any> arguments = parseToListOfObjects(args);
                 if (parameters.size() != arguments.size()) {
                     throw std::runtime_error("Function " + functionName + " expects " +
@@ -497,16 +497,16 @@ void VirtualMachine::execute(const Instruction &instruction) {
                 memoryManager.exitFunction();
                 isReturning = false;
 
-                if (instruction1.operand3.has_value()) {
+                if (instruction1.register3.has_value()) {
                     if (!returnValue.has_value()) {
                         throw std::runtime_error("Function did not return a value");
                     }
                     memoryManager.allocate(
-                            std::any_cast<std::string>(instruction1.operand3), returnValue);
+                            std::any_cast<std::string>(instruction1.register3), returnValue);
                 }
                 return;
             }
-            std::any *returnValue = memoryManager.getValue(instruction.operand1);
+            std::any *returnValue = memoryManager.getValue(instruction.register1);
             if (!returnValue->has_value()) {
                 throw std::runtime_error("Return value not found");
             }
@@ -529,22 +529,22 @@ void VirtualMachine::run(const std::vector<Instruction> &block) {
 }
 
 bool VirtualMachine::conditions(const Instruction &instruction) {
-    std::string conditionType = anyToStringVM(instruction.operand2);
+    std::string conditionType = anyToStringVM(instruction.register2);
     if (conditionType == "LESS") {
-        return getOperandValue(instruction.operand1) <
-               getOperandValue(instruction.operand3);
+        return getOperandValue(instruction.register1) <
+               getOperandValue(instruction.register3);
     }
     if (conditionType == "GREATER") {
-        return getOperandValue(instruction.operand1) >
-               getOperandValue(instruction.operand3);
+        return getOperandValue(instruction.register1) >
+               getOperandValue(instruction.register3);
     }
     if (conditionType == "EQUALS") {
-        return getOperandValue(instruction.operand1) ==
-               getOperandValue(instruction.operand3);
+        return getOperandValue(instruction.register1) ==
+               getOperandValue(instruction.register3);
     }
     if (conditionType == "NOT_EQUALS") {
-        return getOperandValue(instruction.operand1) !=
-               getOperandValue(instruction.operand3);
+        return getOperandValue(instruction.register1) !=
+               getOperandValue(instruction.register3);
     }
     throw std::runtime_error("Unknown condition: " + conditionType);
 }
