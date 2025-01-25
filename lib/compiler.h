@@ -32,8 +32,8 @@ private:
     std::vector<Instruction> adaptInstructions(
             std::vector<Instruction> &instructions);
 
-    std::vector<Instruction> instructionsOptimizations(
-            const std::vector<Instruction> &instructions);
+    static std::vector<Instruction> instructionsOptimizations(
+            std::vector<Instruction> &instructions);
 
     void writeInstruction(std::ofstream &out, const Instruction &instr);
 

@@ -42,80 +42,80 @@ public:
     std::string target;
     std::vector<std::string> parameters;
 
-    Instruction(OperationCode opCode, std::string operand1)
+    Instruction(OperationCode opCode, std::string reg1)
             : operationCode(opCode),
-              register1(std::move(operand1)),
+              register1(std::move(reg1)),
               register2(),
               register3(),
               block(),
               target(),
               parameters() {}
 
-    Instruction(OperationCode opCode, std::string operand1, std::any operand2)
+    Instruction(OperationCode opCode, std::string reg1, std::any reg2)
             : operationCode(opCode),
-              register1(std::move(operand1)),
-              register2(std::move(operand2)),
+              register1(std::move(reg1)),
+              register2(std::move(reg2)),
               register3(),
               block(),
               target(),
               parameters() {}
 
     Instruction(OperationCode opCode, std::string target,
-                std::string operand1)
+                std::string reg1)
             : operationCode(opCode),
               target(std::move(target)),
-              register1(std::move(operand1)),
+              register1(std::move(reg1)),
               register2(),
               register3(),
               block(),
               parameters() {}
 
-    Instruction(OperationCode opCode, std::string operand1, std::any operand2,
-                std::any operand3)
+    Instruction(OperationCode opCode, std::string reg1, std::any reg2,
+                std::any reg3)
             : operationCode(opCode),
-              register1(std::move(operand1)),
-              register2(std::move(operand2)),
-              register3(std::move(operand3)),
+              register1(std::move(reg1)),
+              register2(std::move(reg2)),
+              register3(std::move(reg3)),
               block(),
               target(),
               parameters() {}
 
-    Instruction(OperationCode opCode, std::string operand1, std::any operand2,
+    Instruction(OperationCode opCode, std::string reg1, std::any reg2,
                 const std::vector<Instruction> &blockInstructions)
             : operationCode(opCode),
-              register1(std::move(operand1)),
-              register2(std::move(operand2)),
+              register1(std::move(reg1)),
+              register2(std::move(reg2)),
               register3(),
               block(blockInstructions),
               target(),
               parameters() {}
 
-    Instruction(OperationCode opCode, std::string operand1,
+    Instruction(OperationCode opCode, std::string reg1,
                 const std::vector<std::string> &parameters)
             : operationCode(opCode),
-              register1(std::move(operand1)),
+              register1(std::move(reg1)),
               register2(),
               register3(),
               block(),
               target(),
               parameters(parameters) {}
 
-    Instruction(OperationCode opCode, std::string operand1, std::any operand2,
-                std::any operand3,
+    Instruction(OperationCode opCode, std::string reg1, std::any reg2,
+                std::any reg3,
                 const std::vector<Instruction> &blockInstructions)
             : operationCode(opCode),
-              register1(std::move(operand1)),
-              register2(std::move(operand2)),
-              register3(std::move(operand3)),
+              register1(std::move(reg1)),
+              register2(std::move(reg2)),
+              register3(std::move(reg3)),
               block(blockInstructions),
               target(),
               parameters() {}
 
-    Instruction(OperationCode opCode, std::string operand1,
+    Instruction(OperationCode opCode, std::string reg1,
                 const std::vector<Instruction> &blockInstructions,
                 const std::vector<std::string> &parameters)
             : operationCode(opCode),
-              register1(std::move(operand1)),
+              register1(std::move(reg1)),
               register2(),
               register3(),
               block(blockInstructions),

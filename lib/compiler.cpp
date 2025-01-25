@@ -69,30 +69,30 @@ Instruction Compiler::compileLoop(const Instruction &loopInstruction) {
 std::vector<Instruction> Compiler::adaptInstructions(
         std::vector<Instruction> &instructions) {
     std::vector<Instruction> adaptedInstructions;
-    for (auto &instruction: instructions) {
+    for (auto &instr: instructions) {
         std::vector<Instruction> processedBlock;
-        switch (instruction.operationCode) {
+        switch (instr.operationCode) {
             case Instruction::OperationCode::FUNC:
-                _functions[instruction.register1] = instruction;
-                processedBlock = adaptInstructions(instruction.block);
+                _functions[instr.register1] = instr;
+                processedBlock = adaptInstructions(instr.block);
                 adaptedInstructions.emplace_back(Instruction::FunctionInstruction(
-                        instruction.register1, instruction.parameters, processedBlock));
+                        instr.register1, instr.parameters, processedBlock));
                 break;
 
             case Instruction::OperationCode::IF:
-                if (!instruction.block.empty()) {
-                    processedBlock = adaptInstructions(instruction.block);
-                    instruction.block = processedBlock;
+                if (!instr.block.empty()) {
+                    processedBlock = adaptInstructions(instr.block);
+                    instr.block = processedBlock;
                 }
-                adaptedInstructions.push_back(instruction);
+                adaptedInstructions.push_back(instr);
                 break;
 
             case Instruction::OperationCode::WHILE:
-                if (!instruction.block.empty()) {
-                    processedBlock = adaptInstructions(instruction.block);
-                    instruction.block = processedBlock;
+                if (!instr.block.empty()) {
+                    processedBlock = adaptInstructions(instr.block);
+                    instr.block = processedBlock;
                 }
-                adaptedInstructions.push_back(compileLoop(instruction));
+                adaptedInstructions.push_back(compileLoop(instr));
                 break;
             case Instruction::OperationCode::ADD:
             case Instruction::OperationCode::SUB:
@@ -105,15 +105,15 @@ std::vector<Instruction> Compiler::adaptInstructions(
             case Instruction::OperationCode::NOT_EQUALS:
             case Instruction::OperationCode::NEW:
             case Instruction::OperationCode::WRITE_INDEX:
-                instruction.target = instruction.register1;
-                adaptedInstructions.push_back(instruction);
+                instr.target = instr.register1;
+                adaptedInstructions.push_back(instr);
                 break;
             case Instruction::OperationCode::ARRAY_VARIABLE_STORAGE:
-                instruction.target = anyToStringCompiler(instruction.register3);
-                adaptedInstructions.push_back(instruction);
+                instr.target = anyToStringCompiler(instr.register3);
+                adaptedInstructions.push_back(instr);
                 break;
             default:
-                adaptedInstructions.push_back(instruction);
+                adaptedInstructions.push_back(instr);
                 break;
         }
     }
@@ -265,11 +265,67 @@ void Compiler::saveToFile(const std::string &filename) {
     }
 }
 
-std::vector<Instruction> Compiler::instructionsOptimizations(const std::vector<Instruction> &instructions) {
+bool is_digits(std::string &str) {
+    for (char ch: str) {
+        if (!(ch >= 48 && ch <= 57)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+template<typename T>
+bool compareAny(const std::any &a, const std::any &b) {
+    if (a.type() != b.type()) {
+        return false;
+    }
+
+    if (a.type() == typeid(T)) {
+        T value1 = std::any_cast<T>(a);
+        T value2 = std::any_cast<T>(b);
+        return value1 == value2;
+    }
+
+    return false;
+}
+
+bool areIntOrLongLong(const std::any &value1, const std::any &value2) {
+    if (value1.type() == typeid(std::string) && value2.type() == typeid(std::string)) {
+        try {
+            auto first = std::any_cast<std::string>(value1);
+            auto second = std::any_cast<std::string>(value2);
+            std::stoll(first);
+            std::stoll(second);
+            return true;
+        } catch (const std::exception& ex) {
+            return false;
+        }
+    }
+    return (value1.type() == typeid(int) || value1.type() == typeid(long long)) &&
+           (value2.type() == typeid(int) || value2.type() == typeid(long long));
+}
+
+bool compareAnyValues(const std::any &a, const std::any &b) {
+    if (a.type() == b.type()) {
+        if (a.type() == typeid(int)) {
+            return compareAny<int>(a, b);
+        } else if (a.type() == typeid(double)) {
+            return compareAny<double>(a, b);
+        } else if (a.type() == typeid(std::string)) {
+            return compareAny<std::string>(a, b);
+        } else if (a.type() == typeid(long long)) {
+            return compareAny<long long>(a, b);
+        }
+    }
+    return false;
+}
+
+std::vector<Instruction> Compiler::instructionsOptimizations(std::vector<Instruction> &instructions) {
     std::vector<Instruction> optimizedInstructions;
 
     for (size_t i = 0; i < instructions.size(); ++i) {
-        const auto &instr = instructions[i];
+        auto &instr = instructions[i];
 
         if (instr.operationCode == Instruction::OperationCode::SAVE) {
             if (i + 1 < instructions.size() && instructions[i + 1].operationCode == Instruction::OperationCode::SAVE &&
@@ -278,62 +334,52 @@ std::vector<Instruction> Compiler::instructionsOptimizations(const std::vector<I
             }
         }
 
-        if (instr.operationCode == Instruction::OperationCode::ADD || instr.operationCode == Instruction::OperationCode::SUB) {
-            if (i + 1 < instructions.size()) {
-                const auto &nextInstr = instructions[i + 1];
-                if ((nextInstr.operationCode == Instruction::OperationCode::ADD && instr.operationCode == Instruction::OperationCode::SUB) ||
-                    (nextInstr.operationCode == Instruction::OperationCode::SUB && instr.operationCode == Instruction::OperationCode::ADD)) {
-                    if (instr.register1 == nextInstr.register1 && instr.register2.type() == nextInstr.register2.type()) {
-                        optimizedInstructions.push_back(instr);
-                        continue;
-                    }
+        if (instr.operationCode == Instruction::OperationCode::ADD ||
+            instr.operationCode == Instruction::OperationCode::SUB ||
+            instr.operationCode == Instruction::OperationCode::MUL ||
+            instr.operationCode == Instruction::OperationCode::MOD) {
+            if (i + 1 < instructions.size() && instructions[i + 1].operationCode == instr.operationCode &&
+                instr.register1 == instructions[i + 1].register1 &&
+                compareAnyValues(instr.register2, instructions[i + 1].register2)) {
+                continue;
+            }
+        }
+
+        if ((instr.operationCode == Instruction::OperationCode::ADD ||
+             instr.operationCode == Instruction::OperationCode::SUB ||
+             instr.operationCode == Instruction::OperationCode::MUL) &&
+             instr.register2.has_value() && instr.register3.has_value() &&
+             areIntOrLongLong(instr.register2, instr.register3)) {
+
+            try {
+                auto reg2_str = std::any_cast<std::string>(instr.register2);
+                auto reg3_str = std::any_cast<std::string>(instr.register3);
+                auto reg2 = std::stoi(reg2_str);
+                auto reg3 = std::stoi(reg3_str);
+
+                int result = 0;
+                switch (instr.operationCode) {
+                    case Instruction::OperationCode::ADD:
+                        result = reg2 + reg3;
+                        break;
+                    case Instruction::OperationCode::SUB:
+                        result = reg2 - reg3;
+                        break;
+                    case Instruction::OperationCode::MUL:
+                        result = reg2 * reg3;
+                        break;
+                    default:
+                        break;
                 }
+
+                optimizedInstructions.emplace_back(Instruction::OperationCode::SAVE, instr.register1, result);
+                continue;
+            } catch (const std::bad_any_cast &e) {
+                std::cerr << "Unknown error in optimisation" << std::endl;
             }
         }
 
-        if ((instr.operationCode == Instruction::OperationCode::ADD || instr.operationCode == Instruction::OperationCode::SUB ||
-             instr.operationCode == Instruction::OperationCode::MUL || instr.operationCode == Instruction::OperationCode::MOD) &&
-            instr.register2.type() == typeid(int) && instr.register3.type() == typeid(int)) {
-            int operand2 = std::any_cast<int>(instr.register2);
-            int operand3 = std::any_cast<int>(instr.register3);
-            int result = 0;
-
-            switch (instr.operationCode) {
-                case Instruction::OperationCode::ADD:
-                    result = operand2 + operand3;
-                    break;
-                case Instruction::OperationCode::SUB:
-                    result = operand2 - operand3;
-                    break;
-                case Instruction::OperationCode::MUL:
-                    result = operand2 * operand3;
-                    break;
-                case Instruction::OperationCode::MOD:
-                    if (operand3 != 0) {
-                        result = operand2 % operand3;
-                    } else {
-                        continue;
-                    }
-                    break;
-                default:
-                    break;
-            }
-
-            // Replace with simplified result
-            optimizedInstructions.push_back(Instruction(Instruction::OperationCode::SAVE, instr.register1, result));
-            continue; // Skip adding the original instruction
-        }
-
-        // Remove unused or redundant instructions (example: no-op, empty block, etc.)
-        if (instr.operationCode == Instruction::OperationCode::EMPTY || instr.register1.empty()) {
-            continue; // Skip this instruction
-        }
-
-        // Default: Add the current instruction
         optimizedInstructions.push_back(instr);
     }
-
-    // Further optimizations can go here, such as handling function calls, loops, etc.
-
     return optimizedInstructions;
 }

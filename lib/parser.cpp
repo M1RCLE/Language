@@ -35,7 +35,7 @@ std::vector<Instruction> Parser::assignmentParser(const std::string &varName) {
         instructions.emplace_back(Instruction::OperationCode::NEW, varName, amount);
     } else if (currentToken().type == Token::Type::NUMBER ||
                currentToken().type == Token::Type::IDENTIFIER) {
-        std::any operand1 = operandParser();
+        std::any reg1 = operandParser();
 
         if (currentToken().type == Token::Type::LEFT_BRACKET) {
             take(Token::Type::LEFT_BRACKET);
@@ -43,51 +43,51 @@ std::vector<Instruction> Parser::assignmentParser(const std::string &varName) {
             take(currentToken().type);
             take(Token::Type::RIGHT_BRACKET);
             instructions.emplace_back(Instruction::OperationCode::ARRAY_VARIABLE_STORAGE,
-                                               std::any_cast<std::string>(operand1),
+                                               std::any_cast<std::string>(reg1),
                                                index, varName);
         } else if (currentToken().type == Token::Type::PLUS) {
             take(Token::Type::PLUS);
-            std::any operand2 = operandParser();
+            std::any reg2 = operandParser();
             instructions.emplace_back(
-                    Instruction::OperationCode::ADD, varName, operand1, operand2);
+                    Instruction::OperationCode::ADD, varName, reg1, reg2);
         } else if (currentToken().type == Token::Type::MINUS) {
             take(Token::Type::MINUS);
-            std::any operand2 = operandParser();
+            std::any reg2 = operandParser();
             instructions.emplace_back(
-                    Instruction::OperationCode::SUB, varName, operand1, operand2);
+                    Instruction::OperationCode::SUB, varName, reg1, reg2);
         } else if (currentToken().type == Token::Type::MULT) {
             take(Token::Type::MULT);
-            std::any operand2 = operandParser();
+            std::any reg2 = operandParser();
             instructions.emplace_back(
-                    Instruction::OperationCode::MUL, varName, operand1, operand2);
+                    Instruction::OperationCode::MUL, varName, reg1, reg2);
         } else if (currentToken().type == Token::Type::MOD) {
             take(Token::Type::MOD);
-            std::any operand2 = operandParser();
+            std::any reg2 = operandParser();
             instructions.emplace_back(
-                    Instruction::OperationCode::MOD, varName, operand1, operand2);
+                    Instruction::OperationCode::MOD, varName, reg1, reg2);
         } else if (currentToken().type == Token::Type::LESS) {
             take(Token::Type::LESS);
-            std::any operand2 = operandParser();
+            std::any reg2 = operandParser();
             instructions.emplace_back(
-                    Instruction::OperationCode::LESS, varName, operand1, operand2);
+                    Instruction::OperationCode::LESS, varName, reg1, reg2);
         } else if (currentToken().type == Token::Type::GREATER) {
             take(Token::Type::GREATER);
-            std::any operand2 = operandParser();
+            std::any reg2 = operandParser();
             instructions.emplace_back(Instruction::OperationCode::GREATER, varName,
-                                      operand1, operand2);
+                                      reg1, reg2);
         } else if (currentToken().type == Token::Type::EQUALS) {
             take(Token::Type::EQUALS);
-            std::any operand2 = operandParser();
+            std::any reg2 = operandParser();
             instructions.emplace_back(Instruction::OperationCode::EQUALS, varName,
-                                      operand1, operand2);
+                                      reg1, reg2);
         } else if (currentToken().type == Token::Type::NOT_EQUALS) {
             take(Token::Type::NOT_EQUALS);
-            std::any operand2 = operandParser();
+            std::any reg2 = operandParser();
             instructions.emplace_back(Instruction::OperationCode::NOT_EQUALS,
-                                               varName, operand1, operand2);
+                                      varName, reg1, reg2);
         } else if (currentToken().type == Token::Type::LEFT_ELEMENT) {
             take(Token::Type::LEFT_ELEMENT);
-            auto functionName = std::any_cast<std::string>(operand1);
+            auto functionName = std::any_cast<std::string>(reg1);
             std::vector<std::string> arguments;
             while (currentToken().type != Token::Type::RIGHT_ELEMENT) {
                 if (currentToken().type == Token::Type::NUMBER ||
@@ -103,7 +103,7 @@ std::vector<Instruction> Parser::assignmentParser(const std::string &varName) {
                                                functionName, arguments, varName);
         } else {
             instructions.emplace_back(
-                    Instruction::OperationCode::SAVE, varName, operand1);
+                    Instruction::OperationCode::SAVE, varName, reg1);
         }
     }
     take(Token::Type::SEMICOLON);
