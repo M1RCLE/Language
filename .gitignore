@@ -2,6 +2,12 @@
 *.d
 antlr4-module
 
+**/CMakeFiles*
+**cmake_install*
+**/*.bytecel
+**/Makefile
+**/CMakeCache*
+bin/CEL
 
 # Compiled Object files
 *.slo

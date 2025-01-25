@@ -248,11 +248,13 @@ std::vector<Instruction> Parser::forStatementParser() {
     std::vector<Instruction> instructions;
     take(Token::Type::FOR);
     take(Token::Type::LEFT_ELEMENT);
-    std::any conditionOperand1 = currentToken().value;
+    std::string variableName = currentToken().value;
+    take(Token::Type::IDENTIFIER);
+    take(Token::Type::COLON);
+    std::any initializationValue = currentToken().value;
     take(currentToken().type);
-    Token::Type comparisonType = currentToken().type;
-    take(comparisonType);
-    std::any conditionOperand2 = currentToken().value;
+    take(Token::Type::COLON);
+    std::any limitValue = currentToken().value;
     take(currentToken().type);
     take(Token::Type::RIGHT_ELEMENT);
 
@@ -265,30 +267,11 @@ std::vector<Instruction> Parser::forStatementParser() {
     }
     take(Token::Type::BLOCK_CLOSE);
 
-    Instruction::OperationCode comparisonOpCode;
-    switch (comparisonType) {
-        case Token::Type::LESS:
-            comparisonOpCode = Instruction::OperationCode::LESS;
-            break;
-        case Token::Type::GREATER:
-            comparisonOpCode = Instruction::OperationCode::GREATER;
-            break;
-        case Token::Type::EQUALS:
-            comparisonOpCode = Instruction::OperationCode::EQUALS;
-            break;
-        case Token::Type::NOT_EQUALS:
-            comparisonOpCode = Instruction::OperationCode::NOT_EQUALS;
-            break;
-        case Token::Type::RETURN:
-            comparisonOpCode = Instruction::OperationCode::RETURN;
-            break;
-        default:
-            throw std::runtime_error("Unsupported comparison operator");
-    }
-
     instructions.emplace_back(
-            Instruction::OperationCode::FOR, std::any_cast<std::string>(conditionOperand1),
-            comparisonOpCode, conditionOperand2, blockInstructions);
+            Instruction::OperationCode::FOR,
+            variableName,
+            initializationValue,
+            limitValue, blockInstructions);
     return instructions;
 }
 

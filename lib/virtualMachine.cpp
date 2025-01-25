@@ -96,8 +96,13 @@ void VirtualMachine::loadFromFile(const std::string &filename) {
 
                                 std::getline(file, operand3, '\0');
 
-                                auto operandCompare =
-                                        static_cast<Instruction::OperationCode>(operand2[0]);
+                                std::any operandCompare = operand2;
+                                if (nestedOpCode == Instruction::OperationCode::FOR) {
+                                    operandCompare = operand2;
+                                } else {
+                                    operandCompare =
+                                        static_cast<Instruction::OperationCode>(operand2[0]);  
+                                }
 
                                 std::vector<Instruction> nestedBlock = readNestedBlock(file);
                                 block.emplace_back(nestedOpCode, operand1,
@@ -145,7 +150,12 @@ void VirtualMachine::loadFromFile(const std::string &filename) {
                 opCode == Instruction::OperationCode::WHILE ||
                 opCode == Instruction::OperationCode::FOR) {
                 block = readNestedBlock(file);
-                auto operandCompare = static_cast<Instruction::OperationCode>(operand2[0]);
+                std::any operandCompare;
+                if (opCode == Instruction::OperationCode::FOR) {
+                    operandCompare = operand2;
+                } else {
+                    operandCompare = static_cast<Instruction::OperationCode>(operand2[0]);
+                }
                 instructions.emplace_back(opCode, operand1, operandCompare, operand3, block);
             } else {
                 instructions.emplace_back(opCode, operand1, operand2, operand3, block);
@@ -391,10 +401,17 @@ void VirtualMachine::execute(const Instruction &instruction) {
             break;
         }
         case Instruction::OperationCode::FOR: {
+            std::string variableName = std::any_cast<std::string>(instruction.register1);
+            long startValue = getOperandValue(std::any_cast<std::string>(instruction.register2));
+            long endValue = getOperandValue(std::any_cast<std::string>(instruction.register3));
+            execute(Instruction(Instruction::OperationCode::SAVE, variableName, startValue, nullptr));
+            Instruction instructionAdd = Instruction(Instruction(Instruction::OperationCode::ADD, variableName, variableName, 1));
+            execute(instructionAdd);
             while (conditions(instruction)) {
                 if (!instruction.block.empty()) {
                     run(instruction.block);
                 }
+                execute(instructionAdd);
             }
             break;
         }
@@ -540,7 +557,12 @@ void VirtualMachine::run(const std::vector<Instruction> &block) {
 }
 
 bool VirtualMachine::conditions(const Instruction &instruction) {
-    std::string conditionType = anyToStringVM(instruction.register2);
+    std::string conditionType;
+    if (instruction.operationCode == Instruction::OperationCode::FOR) {
+        conditionType = "LESS";
+    } else {
+        conditionType = anyToStringVM(instruction.register2);
+    }
     if (conditionType == "LESS") {
         return getOperandValue(instruction.register1) <
                getOperandValue(instruction.register3);

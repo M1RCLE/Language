@@ -68,6 +68,9 @@ std::vector<Token> Lexer::tokenize() {
         } else if (currentChar == '>') {
             tokens.emplace_back(Token::Type::GREATER, ">");
             step();
+        } else if (currentChar == ':') {
+            tokens.emplace_back(Token::Type::COLON, ";");
+            step();
         } else if (currentChar == ';') {
             tokens.emplace_back(Token::Type::SEMICOLON, ";");
             step();
