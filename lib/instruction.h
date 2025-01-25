@@ -31,7 +31,9 @@ public:
         ARRAY_VARIABLE_STORAGE,
         CALL,
         MOD,
-        COMMA
+        COMMA,
+        COLON,
+        FOR,
     };
 
     OperationCode operationCode;

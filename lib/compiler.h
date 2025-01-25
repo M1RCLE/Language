@@ -27,7 +27,8 @@ private:
 
     bool isInteger(const std::string &str);
 
-    Instruction compileLoop(const Instruction &loopInstruction);
+    Instruction compileForLoop(const Instruction &loopInstruction);
+    Instruction compileWhileLoop(const Instruction &loopInstruction);
 
     std::vector<Instruction> adaptInstructions(
             std::vector<Instruction> &instructions);

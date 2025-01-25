@@ -36,6 +36,8 @@ public:
         VAR,
         WHILE,
         WRITE_INDEX,
+        COLON,
+        FOR
     };
 
     Type type;

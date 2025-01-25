@@ -27,6 +27,7 @@ private:
     std::vector<Instruction> conditionalStatementParser();
 
     std::vector<Instruction> whileStatementParser();
+    std::vector<Instruction> forStatementParser();
 
     Instruction returnStatementParser();
 

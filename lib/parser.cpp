@@ -244,6 +244,54 @@ std::vector<Instruction> Parser::whileStatementParser() {
     return instructions;
 }
 
+std::vector<Instruction> Parser::forStatementParser() {
+    std::vector<Instruction> instructions;
+    take(Token::Type::FOR);
+    take(Token::Type::LEFT_ELEMENT);
+    std::any conditionOperand1 = currentToken().value;
+    take(currentToken().type);
+    Token::Type comparisonType = currentToken().type;
+    take(comparisonType);
+    std::any conditionOperand2 = currentToken().value;
+    take(currentToken().type);
+    take(Token::Type::RIGHT_ELEMENT);
+
+    std::vector<Instruction> blockInstructions;
+    take(Token::Type::BLOCK_OPEN);
+    while (currentToken().type != Token::Type::BLOCK_CLOSE) {
+        auto single = parseSingle();
+        blockInstructions.insert(blockInstructions.end(), single.begin(),
+                                 single.end());
+    }
+    take(Token::Type::BLOCK_CLOSE);
+
+    Instruction::OperationCode comparisonOpCode;
+    switch (comparisonType) {
+        case Token::Type::LESS:
+            comparisonOpCode = Instruction::OperationCode::LESS;
+            break;
+        case Token::Type::GREATER:
+            comparisonOpCode = Instruction::OperationCode::GREATER;
+            break;
+        case Token::Type::EQUALS:
+            comparisonOpCode = Instruction::OperationCode::EQUALS;
+            break;
+        case Token::Type::NOT_EQUALS:
+            comparisonOpCode = Instruction::OperationCode::NOT_EQUALS;
+            break;
+        case Token::Type::RETURN:
+            comparisonOpCode = Instruction::OperationCode::RETURN;
+            break;
+        default:
+            throw std::runtime_error("Unsupported comparison operator");
+    }
+
+    instructions.emplace_back(
+            Instruction::OperationCode::FOR, std::any_cast<std::string>(conditionOperand1),
+            comparisonOpCode, conditionOperand2, blockInstructions);
+    return instructions;
+}
+
 Instruction Parser::returnStatementParser() {
     take(Token::Type::RETURN);
 
@@ -320,6 +368,9 @@ Instruction Parser::functionDeclarationParser() {
         } else if (currentToken().type == Token::Type::WHILE) {
             auto loopStmt = whileStatementParser();
             instructions.insert(instructions.end(), loopStmt.begin(), loopStmt.end());
+        } else if (currentToken().type == Token::Type::FOR) {
+            auto loopStmt = forStatementParser();
+            instructions.insert(instructions.end(), loopStmt.begin(), loopStmt.end());
         } else if (currentToken().type == Token::Type::RETURN) {
             instructions.push_back(returnStatementParser());
         } else {
@@ -362,6 +413,9 @@ std::vector<Instruction> Parser::parseSingle() {
     } else if (currentToken().type == Token::Type::WHILE) {
         auto loopStmt = whileStatementParser();
         instructions.insert(instructions.end(), loopStmt.begin(), loopStmt.end());
+    } else if (currentToken().type == Token::Type::FOR) {
+        auto loopStmt = forStatementParser();
+        instructions.insert(instructions.end(), loopStmt.begin(), loopStmt.end());
     } else {
         throw std::runtime_error("Unknown statement");
     }
@@ -400,6 +454,9 @@ std::vector<Instruction> Parser::parse() {
             instructions.push_back(returnStatementParser());
         } else if (currentToken().type == Token::Type::WHILE) {
             auto loopStmt = whileStatementParser();
+            instructions.insert(instructions.end(), loopStmt.begin(), loopStmt.end());
+        } else if (currentToken().type == Token::Type::FOR) {
+            auto loopStmt = forStatementParser();
             instructions.insert(instructions.end(), loopStmt.begin(), loopStmt.end());
         } else {
             throw std::runtime_error("Unknown statement");

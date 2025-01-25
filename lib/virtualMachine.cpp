@@ -87,7 +87,8 @@ void VirtualMachine::loadFromFile(const std::string &filename) {
                                 block.emplace_back(Instruction::OperationCode::RETURN,
                                                             returnValue, nestedInstruction);
                             } else if (nestedOpCode == Instruction::OperationCode::IF ||
-                                       nestedOpCode == Instruction::OperationCode::WHILE) {
+                                       nestedOpCode == Instruction::OperationCode::WHILE ||
+                                       nestedOpCode == Instruction::OperationCode::FOR) {
                                 std::string operand1, operand2, operand3;
                                 std::getline(file, operand1, '\0');
 
@@ -141,7 +142,8 @@ void VirtualMachine::loadFromFile(const std::string &filename) {
 
             std::vector<Instruction> block;
             if (opCode == Instruction::OperationCode::IF ||
-                opCode == Instruction::OperationCode::WHILE) {
+                opCode == Instruction::OperationCode::WHILE ||
+                opCode == Instruction::OperationCode::FOR) {
                 block = readNestedBlock(file);
                 auto operandCompare = static_cast<Instruction::OperationCode>(operand2[0]);
                 instructions.emplace_back(opCode, operand1, operandCompare, operand3, block);
@@ -188,7 +190,8 @@ std::vector<Instruction> VirtualMachine::readNestedBlock(std::ifstream &file) {
                 block.emplace_back(
                         Instruction::OperationCode::RETURN, returnValue, instruction);
             } else if (nestedOpCode == Instruction::OperationCode::IF ||
-                       nestedOpCode == Instruction::OperationCode::WHILE) {
+                       nestedOpCode == Instruction::OperationCode::WHILE ||
+                       nestedOpCode == Instruction::OperationCode::FOR) {
                 std::string operand1, operand2, operand3;
                 std::getline(file, operand1, '\0');
                 std::getline(file, operand2, '\0');
@@ -380,6 +383,14 @@ void VirtualMachine::execute(const Instruction &instruction) {
             break;
         }
         case Instruction::OperationCode::WHILE: {
+            while (conditions(instruction)) {
+                if (!instruction.block.empty()) {
+                    run(instruction.block);
+                }
+            }
+            break;
+        }
+        case Instruction::OperationCode::FOR: {
             while (conditions(instruction)) {
                 if (!instruction.block.empty()) {
                     run(instruction.block);

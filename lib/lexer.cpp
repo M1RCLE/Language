@@ -74,6 +74,7 @@ std::vector<Token> Lexer::tokenize() {
         } else if (currentChar == '(') {
             if (!tokens.empty() && (tokens.back().type == Token::Type::IF ||
                                     tokens.back().type == Token::Type::WHILE ||
+                                    tokens.back().type == Token::Type::FOR ||
                                     tokens.back().type == Token::Type::PRINT ||
                                     tokens.back().type == Token::Type::IDENTIFIER)) {
                 tokens.emplace_back(Token::Type::LEFT_ELEMENT, "(");
@@ -99,6 +100,9 @@ std::vector<Token> Lexer::tokenize() {
         } else if (currentChar == ',') {
             tokens.emplace_back(Token::Type::COMMA, ",");
             step();
+        } else if (currentChar == ',') {
+            tokens.emplace_back(Token::Type::COMMA, ".");
+            step();
         } else if (currentChar == '!') {
             step();
             if (currentChar == '=') {
@@ -121,6 +125,8 @@ std::vector<Token> Lexer::tokenize() {
                 tokens.emplace_back(Token::Type::IF, id);
             } else if (id == "while") {
                 tokens.emplace_back(Token::Type::WHILE, id);
+            } else if (id == "for") {
+                tokens.emplace_back(Token::Type::FOR, id);
             } else if (id == "def") {
                 tokens.emplace_back(Token::Type::DEF, id);
             } else if (id == "return") {

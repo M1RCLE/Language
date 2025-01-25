@@ -60,8 +60,14 @@ bool Compiler::isInteger(const std::string &str) {
     return std::all_of(str.begin(), str.end(), ::isdigit);
 }
 
-Instruction Compiler::compileLoop(const Instruction &loopInstruction) {
+Instruction Compiler::compileWhileLoop(const Instruction &loopInstruction) {
     return Instruction(Instruction::OperationCode::WHILE, loopInstruction.register1,
+                       loopInstruction.register2, loopInstruction.register3,
+                       loopInstruction.block);
+}
+
+Instruction Compiler::compileForLoop(const Instruction &loopInstruction) {
+    return Instruction(Instruction::OperationCode::FOR, loopInstruction.register1,
                        loopInstruction.register2, loopInstruction.register3,
                        loopInstruction.block);
 }
@@ -87,12 +93,19 @@ std::vector<Instruction> Compiler::adaptInstructions(
                 adaptedInstructions.push_back(instr);
                 break;
 
+            case Instruction::OperationCode::FOR:
+                if (!instr.block.empty()) {
+                    processedBlock = adaptInstructions(instr.block);
+                    instr.block = processedBlock;
+                }
+                adaptedInstructions.push_back(compileForLoop(instr));
+                break;
             case Instruction::OperationCode::WHILE:
                 if (!instr.block.empty()) {
                     processedBlock = adaptInstructions(instr.block);
                     instr.block = processedBlock;
                 }
-                adaptedInstructions.push_back(compileLoop(instr));
+                adaptedInstructions.push_back(compileWhileLoop(instr));
                 break;
             case Instruction::OperationCode::ADD:
             case Instruction::OperationCode::SUB:
@@ -189,6 +202,7 @@ void Compiler::writeInstruction(std::ofstream &out, const Instruction &instr) {
             }
             break;
         }
+        case Instruction::OperationCode::FOR:
         case Instruction::OperationCode::WHILE: {
             if (!instr.register1.empty()) {
                 out << instr.register1;
