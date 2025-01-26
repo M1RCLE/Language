@@ -2,7 +2,7 @@
 
 #include "utils.h"
 
-bool shouldUnrollFor(const Instruction& instruction) {
+bool shouldUnrollFor(Instruction instruction) {
   try {
     long startValue =
         std::stol(std::any_cast<std::string>(instruction.register2));
@@ -14,8 +14,8 @@ bool shouldUnrollFor(const Instruction& instruction) {
   }
 }
 
-Instruction unrollIf(const Instruction& instruction) {
-     Instruction inst = Instruction(instruction);
+Instruction unrollIf(Instruction instruction) {
+  Instruction inst = instruction;
   int i = 0;
   while (i < inst.block.size()) {
     if (inst.block[i].operationCode == Instruction::OperationCode::IF) {
@@ -60,7 +60,7 @@ Instruction unrollIf(const Instruction& instruction) {
   return inst;
 }
 
-Instruction unrollLoop(Instruction& instruction) {
+Instruction unrollLoop(Instruction instruction) {
   Instruction instr = unrollIf(instruction);
   Instruction unrolledLoop;
   unrolledLoop.operationCode = Instruction::OperationCode::FOR;
@@ -85,7 +85,7 @@ Instruction unrollLoop(Instruction& instruction) {
   return unrolledLoop;
 }
 
-Instruction Jit::process(Instruction& instruction) {
+Instruction Jit::process(Instruction instruction) {
   if (instruction.operationCode != Instruction::OperationCode::FOR) {
     return instruction;
   }

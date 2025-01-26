@@ -135,15 +135,19 @@ class Instruction {
         block(),
         target(),
         parameters() {}
-    
-  Instruction(const Instruction& instr) {
-    operationCode = instr.operationCode;
-    register1 = instr.register1;
-    register2 = instr.register2;
-    register3 = instr.register2;
-    block = instr.block;
-    target = instr.target;
-    parameters = instr.parameters;
+
+  Instruction &operator=(const Instruction &instr) {
+    if (this != &instr) {
+      operationCode = instr.operationCode;
+      register1 = instr.register1;
+      register2 = instr.register2;
+      register3 = instr.register3;
+      block = instr.block;
+      target = instr.target;
+      parameters = instr.parameters;
+      operationId = instr.operationId;
+    }
+    return *this;
   }
 
   static Instruction FunctionInstruction(

@@ -267,8 +267,11 @@ std::vector<Instruction> Parser::forStatementParser() {
                                  single.end());
     }
     take(Token::Type::BLOCK_CLOSE);
+    Instruction forInstr =
+        Instruction(Instruction::OperationCode::FOR, variableName,
+                    initializationValue, limitValue, blockInstructions);
 
-    instructions.emplace_back(Instruction(Instruction::OperationCode::FOR, variableName, initializationValue, limitValue, blockInstructions));
+    instructions.push_back(forInstr);
 
     return instructions;
 }

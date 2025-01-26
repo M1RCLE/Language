@@ -9,6 +9,6 @@ def x(var a) {
     return tmp;
 }
 
-var a = 10;
+var a = 20;
 var result = x(a);
 print(result);
