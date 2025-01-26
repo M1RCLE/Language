@@ -99,8 +99,9 @@ std::vector<Instruction> Parser::assignmentParser(const std::string &varName) {
                 }
             }
             take(Token::Type::RIGHT_ELEMENT);
-            instructions.emplace_back(Instruction::OperationCode::CALL,
-                                               functionName, arguments, varName);
+            Instruction instruction = Instruction(Instruction::OperationCode::CALL, functionName, arguments, varName);
+            instruction.operationId = ++operationSequence;
+            instructions.emplace_back(instruction);
         } else {
             instructions.emplace_back(
                     Instruction::OperationCode::SAVE, varName, reg1);
@@ -238,9 +239,12 @@ std::vector<Instruction> Parser::whileStatementParser() {
             throw std::runtime_error("Unsupported comparison operator");
     }
 
-    instructions.emplace_back(
-            Instruction::OperationCode::WHILE, std::any_cast<std::string>(conditionOperand1),
+
+    Instruction instruction = Instruction(Instruction::OperationCode::WHILE, std::any_cast<std::string>(conditionOperand1),
             comparisonOpCode, conditionOperand2, blockInstructions);
+    instruction.operationId = ++operationSequence;
+    instructions.emplace_back(instruction);
+
     return instructions;
 }
 
@@ -267,11 +271,10 @@ std::vector<Instruction> Parser::forStatementParser() {
     }
     take(Token::Type::BLOCK_CLOSE);
 
-    instructions.emplace_back(
-            Instruction::OperationCode::FOR,
-            variableName,
-            initializationValue,
-            limitValue, blockInstructions);
+    Instruction instruction = Instruction(Instruction::OperationCode::FOR, variableName, initializationValue, limitValue, blockInstructions);
+    instruction.operationId = ++operationSequence;
+    instructions.emplace_back(instruction);
+
     return instructions;
 }
 
@@ -297,8 +300,9 @@ Instruction Parser::returnStatementParser() {
 
         take(Token::Type::CALL_FUN_CLOSE);
 
-        Instruction instruction =
-                Instruction(Instruction::OperationCode::CALL, returnValue, arguments, nullptr);
+        Instruction instruction = Instruction(Instruction::OperationCode::CALL, returnValue, arguments, nullptr);
+        instruction.operationId = ++operationSequence;
+        
         take(Token::Type::SEMICOLON);
         return Instruction(Instruction::OperationCode::RETURN, nullptr, instruction);
     }

@@ -1,7 +1,7 @@
-#include "virtualMachine.h"
-
 #include <fstream>
 #include <sstream>
+
+#include "virtualMachine.h"
 
 std::string anyToStringVM(const std::any &value) {
     if (!value.has_value()) {
@@ -233,6 +233,7 @@ void VirtualMachine::run() {
 }
 
 void VirtualMachine::execute(const Instruction &instruction) {
+    
     switch (instruction.operationCode) {
         case Instruction::OperationCode::SAVE: {
             if (!instruction.target.empty()) {
@@ -393,23 +394,25 @@ void VirtualMachine::execute(const Instruction &instruction) {
             break;
         }
         case Instruction::OperationCode::WHILE: {
-            while (conditions(instruction)) {
-                if (!instruction.block.empty()) {
-                    run(instruction.block);
+            const Instruction &hotswop = this->hotspot.hotSwap(instruction);
+            while (conditions(hotswop)) {
+                if (!hotswop.block.empty()) {
+                    run(hotswop.block);
                 }
             }
             break;
         }
         case Instruction::OperationCode::FOR: {
+            const Instruction &hotswop = this->hotspot.hotSwap(instruction);
             std::string variableName = std::any_cast<std::string>(instruction.register1);
             long startValue = getOperandValue(std::any_cast<std::string>(instruction.register2));
             long endValue = getOperandValue(std::any_cast<std::string>(instruction.register3));
             execute(Instruction(Instruction::OperationCode::SAVE, variableName, startValue, nullptr));
             Instruction instructionAdd = Instruction(Instruction(Instruction::OperationCode::ADD, variableName, variableName, 1));
             execute(instructionAdd);
-            while (conditions(instruction)) {
-                if (!instruction.block.empty()) {
-                    run(instruction.block);
+            while (conditions(hotswop)) {
+                if (!hotswop.block.empty()) {
+                    run(hotswop.block);
                 }
                 execute(instructionAdd);
             }
@@ -419,8 +422,7 @@ void VirtualMachine::execute(const Instruction &instruction) {
             std::string functionName = instruction.register1;
             std::vector<std::string> params = instruction.parameters;
             std::vector<Instruction> functionBody = instruction.block;
-            Instruction functionInstr = Instruction(
-                    Instruction::OperationCode::FUNC, functionName, params, functionBody);
+            Instruction functionInstr = Instruction(Instruction::OperationCode::FUNC, functionName, params, functionBody);
             functions[functionName] = functionInstr;
             break;
         }
@@ -428,7 +430,8 @@ void VirtualMachine::execute(const Instruction &instruction) {
             if (!functions.contains(instruction.register1)) {
                 throw std::runtime_error("Unknown function");
             }
-            auto &functionInstruction = functions[instruction.register1];
+            
+            const Instruction &functionInstruction = this->hotspot.hotSwap(functions[instruction.register1]);
 
             std::vector<std::string> params = functionInstruction.parameters;
 

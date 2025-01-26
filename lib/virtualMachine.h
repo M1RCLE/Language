@@ -12,6 +12,7 @@
 
 #include "instruction.h"
 #include "memoryManager.h"
+#include "hotspot.h"
 
 class VirtualMachine {
 private:
@@ -19,6 +20,7 @@ private:
     MemoryManager memoryManager;
     std::map<std::string, Instruction> functions;
     bool isReturning = false;
+    HotSpot hotspot;
 public:
     void loadFromFile(const std::string &filename);
 

@@ -33,6 +33,7 @@ private:
 
     Instruction functionDeclarationParser();
 
+    long operationSequence = 0;
 
 public:
     explicit Parser(const std::vector<Token> &tokens);

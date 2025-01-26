@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 
+long nextOperationId();
+
 class Instruction {
 public:
     enum class OperationCode {
@@ -43,6 +45,7 @@ public:
     std::vector<Instruction> block;
     std::string target;
     std::vector<std::string> parameters;
+    long operationId = nextOperationId();
 
     Instruction(OperationCode opCode, std::string reg1)
             : operationCode(opCode),
