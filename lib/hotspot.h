@@ -2,7 +2,7 @@
 #define HOTSPOT_H
 
 #include <map>
-#include "instruction.h"
+#include <chrono>
 #include "jit.h"
 
 struct InstructionEntry {
@@ -24,20 +24,24 @@ struct InstructionEntry {
 
 };
 
+struct HotSwapReturn {
+  Instruction& instruction;
+  bool isSwapped;
+
+  HotSwapReturn(Instruction& _instruction, bool _isSwapped) : instruction(_instruction), isSwapped(_isSwapped) {}
+  HotSwapReturn() = default;
+};
+
 class HotSpot {
+ private:
+  std::map<long, InstructionEntry *> calls;
+  Jit jitter;
 
-private:
+ public:
+  HotSpot() {}
 
-    std::map<long, InstructionEntry*> calls;
-    Jit jitter;
-
-public:
-
-    HotSpot() {}
-
-    const Instruction& hotSwap(const Instruction &instruction);
-    const void hotStat(const Instruction &instruction);
-
+  HotSwapReturn hotSwap(Instruction &instruction);
+  const void hotStat(const Instruction &instruction);
 };
 
 #endif

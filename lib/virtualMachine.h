@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "instruction.h"
 #include "memoryManager.h"
 #include "hotspot.h"
 
@@ -21,6 +20,7 @@ private:
     std::map<std::string, Instruction> functions;
     bool isReturning = false;
     HotSpot hotspot;
+    bool instructionSwapped = false;
 public:
     void loadFromFile(const std::string &filename);
 
@@ -28,9 +28,9 @@ public:
 
     void run();
 
-    void execute(const Instruction &instruction);
+    void execute(std::vector<Instruction> &instructions, Instruction &instruction);
 
-    void run(const std::vector<Instruction> &block);
+    void run(std::vector<Instruction> &block);
 
     bool conditions(const Instruction &instruction);
 

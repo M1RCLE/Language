@@ -1,17 +1,13 @@
 #ifndef JIT_H
 #define JIT_H
 
-#include "instruction.h"
+#include "compiler.h"
 
 class Jit {
+ public:
+  Instruction process(Instruction& instruction);
 
-    public:
-
-        const Instruction& process(const Instruction &instruction);
-
-        Jit() {
-        }
+  Jit() {}
 };
-
 
 #endif

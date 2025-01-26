@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "instruction.h"
+#include "parser.h"
 
 class Compiler {
 private:
