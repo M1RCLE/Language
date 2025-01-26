@@ -2,6 +2,7 @@
 #include <sstream>
 
 #include "virtualMachine.h"
+#include "utils.h"
 
 std::string anyToStringVM(const std::any &value) {
     if (!value.has_value()) {
@@ -650,12 +651,6 @@ long VirtualMachine::getOperandValue(const std::any &operand) {
         throw std::runtime_error("Variable " + varName + " has unsupported type");
     }
     throw std::runtime_error("Invalid operand type");
-}
-
-bool is_number(const std::string &s) {
-    std::string::const_iterator it = s.begin();
-    while (it != s.end() && std::isdigit(*it)) ++it;
-    return !s.empty() && it == s.end();
 }
 
 std::vector<std::any> VirtualMachine::parseToListOfObjects(

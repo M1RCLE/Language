@@ -1,9 +1,14 @@
 def f() {
-  for (b: 1: 3) {
-    print(b);
+  for (b: 5: 7) {
+    if (2 < 3) {
+      print(b);
+    }
   }
 }
 
+var result = f();
+var result = f();
+var result = f();
 var result = f();
 var result = f();
 var result = f();

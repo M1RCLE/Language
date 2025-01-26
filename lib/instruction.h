@@ -135,6 +135,16 @@ class Instruction {
         block(),
         target(),
         parameters() {}
+    
+  Instruction(const Instruction& instr) {
+    operationCode = instr.operationCode;
+    register1 = instr.register1;
+    register2 = instr.register2;
+    register3 = instr.register2;
+    block = instr.block;
+    target = instr.target;
+    parameters = instr.parameters;
+  }
 
   static Instruction FunctionInstruction(
       const std::string &functionName,
