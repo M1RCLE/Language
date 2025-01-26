@@ -5,7 +5,7 @@
 #include <string>
 
 template <typename T>
-bool compareAny(const std::any &a, const std::any &b) {
+static bool compareAny(const std::any &a, const std::any &b) {
   if (a.type() != b.type()) {
     return false;
   }
@@ -19,7 +19,7 @@ bool compareAny(const std::any &a, const std::any &b) {
   return false;
 }
 
-bool compareAnyValues(const std::any &a, const std::any &b) {
+static bool compareAnyValues(const std::any &a, const std::any &b) {
   if (a.type() == b.type()) {
     if (a.type() == typeid(int)) {
       return compareAny<int>(a, b);

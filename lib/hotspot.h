@@ -29,7 +29,6 @@ struct HotSwapReturn {
   bool isSwapped;
 
   HotSwapReturn(Instruction& _instruction, bool _isSwapped) : instruction(_instruction), isSwapped(_isSwapped) {}
-  HotSwapReturn() = default;
 };
 
 class HotSpot {
