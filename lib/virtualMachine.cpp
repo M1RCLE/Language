@@ -556,6 +556,7 @@ void VirtualMachine::run(const std::vector<Instruction> &block) {
             break;
         }
         execute(instruction);
+        this->hotspot.hotStat(instruction);
     }
 }
 

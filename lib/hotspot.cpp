@@ -7,13 +7,15 @@ const Instruction& HotSpot::hotSwap(const Instruction &instruction) {
          instruction.operationCode == Instruction::OperationCode::WHILE ||
          instruction.operationCode == Instruction::OperationCode::FOR )
     {
+        InstructionEntry* entry;
         if (this->calls.find(instruction.operationId) == this->calls.end())
         {
-            this->calls[instruction.operationId] = new InstructionEntry(instruction);
+            entry = new InstructionEntry(instruction, 1);
+            this->calls[instruction.operationId] = entry;
         }
         else
         {
-            InstructionEntry* entry = this->calls[instruction.operationId];
+            entry = this->calls[instruction.operationId];
             if (entry->calls == 5)
             {
                 const Instruction& jittered = this->jitter.process(instruction);
@@ -21,13 +23,26 @@ const Instruction& HotSpot::hotSwap(const Instruction &instruction) {
                 delete this->calls[instruction.operationId];
                 this->calls[instruction.operationId] = entry;
                 return jittered;
-            } else if (entry->calls > 5) {
-                entry->calls++;            
-                return this->calls[instruction.operationId]->jittered;
+            } else {
+                entry->calls++;
             }
-            entry->calls++;            
-
         }
+        entry->startTime = std::chrono::high_resolution_clock::now();
     }
     return instruction;
+}
+
+const void HotSpot::hotStat(const Instruction &instruction) {
+    // Здесь обрабатываем вызов статистики
+    if (this->calls.find(instruction.operationId) != this->calls.end())
+    {
+        InstructionEntry& entry = *(this->calls[instruction.operationId]);
+        long duration = (std::chrono::high_resolution_clock::now() - entry.startTime).count();
+        if (entry.calls < 5) {
+            std::cerr << "original instruction #" << instruction.operationId << " stat: " << duration << std::endl;
+        } else if (entry.calls >= 10 && entry.calls < 20) {
+            std::cerr << "jittered instruction #" << instruction.operationId << " stat: " << duration << std::endl;
+        }
+    }
+
 }

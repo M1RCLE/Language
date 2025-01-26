@@ -6,15 +6,19 @@
 #include "jit.h"
 
 struct InstructionEntry {
-    long calls = 0;
+    long calls;
     const Instruction &original;
     const Instruction &jittered;
+    std::chrono::high_resolution_clock::time_point startTime;
 
     InstructionEntry(const Instruction &original, const Instruction &jittered, long calls) :
         original(original), jittered(jittered), calls(calls) {};
 
     InstructionEntry(const Instruction &original) :
-        original(original), jittered(original) {};
+        original(original), jittered(original), calls(0) {};
+
+    InstructionEntry(const Instruction &original, long calls) :
+        original(original), jittered(original), calls(calls) {};
 
 };
 
@@ -30,6 +34,7 @@ public:
     HotSpot() {}
 
     const Instruction& hotSwap(const Instruction &instruction);
+    const void hotStat(const Instruction &instruction);
 
 };
 
