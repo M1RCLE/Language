@@ -17,7 +17,7 @@ const Instruction& HotSpot::hotSwap(const Instruction &instruction) {
             if (entry->calls == 5)
             {
                 const Instruction& jittered = this->jitter.process(instruction);
-                InstructionEntry* entry = new InstructionEntry(instruction, jittered, 6);
+                entry = new InstructionEntry(instruction, jittered, 6);
                 delete this->calls[instruction.operationId];
                 this->calls[instruction.operationId] = entry;
                 return jittered;
