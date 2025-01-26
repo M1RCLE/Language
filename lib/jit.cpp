@@ -2,43 +2,35 @@
 
 bool shouldUnroll(const Instruction& instruction) {
   try {
-    long startValue = std::any_cast<long>(instruction.register2);
-    long endValue = std::any_cast<long>(instruction.register3);
-    return (endValue - startValue) <= 8;  // Разворачиваем, если итераций <= 8
+    long startValue =
+        std::stol(std::any_cast<std::string>(instruction.register2));
+    long endValue =
+        std::stol(std::any_cast<std::string>(instruction.register3));
+    return (endValue - startValue) <= 8;
   } catch (const std::bad_any_cast&) {
-    return false;  // Невозможно развернуть цикл, если диапазон не числовой
-  }
-}
-
-void replaceVariable(Instruction& instruction, const std::string& variable,
-                     long value) {
-  if (instruction.register1 == variable) {
-    instruction.register1 = std::to_string(value);
-  }
-  if (instruction.register2.type() == typeid(std::string) &&
-      std::any_cast<std::string>(instruction.register2) == variable) {
-    instruction.register2 = value;
-  }
-  if (instruction.register3.type() == typeid(std::string) &&
-      std::any_cast<std::string>(instruction.register3) == variable) {
-    instruction.register3 = value;
+    return false;  
   }
 }
 
 Instruction unrollLoop(const Instruction& instruction) {
   Instruction unrolledLoop;
-  unrolledLoop.operationCode =
-      Instruction::OperationCode::FOR;
-  long startValue = std::any_cast<long>(instruction.register2);
-  long endValue = std::any_cast<long>(instruction.register3);
-  std::string variableName = instruction.register1;
+  unrolledLoop.operationCode = Instruction::OperationCode::FOR;
+  std::string variableName = std::any_cast<std::string>(instruction.register1);
+  long startValue =
+      std::stol(std::any_cast<std::string>(instruction.register2));
+  long endValue = std::stol(std::any_cast<std::string>(instruction.register3));
+  Instruction instructionStore = Instruction(Instruction::OperationCode::SAVE,
+                                             variableName, startValue, nullptr);
+  Instruction instructionAdd = Instruction(Instruction(
+      Instruction::OperationCode::ADD, variableName, variableName, 1));
 
-  // Генерируем инструкции для каждой итерации цикла
+      unrolledLoop.block.push_back(instructionStore);
+
   for (long i = startValue; i < endValue; ++i) {
     for (const auto& innerInstruction : instruction.block) {
       Instruction iteration = innerInstruction;
-      replaceVariable(iteration, variableName, i);
       unrolledLoop.block.push_back(iteration);
+      unrolledLoop.block.push_back(instructionAdd);
     }
   }
 

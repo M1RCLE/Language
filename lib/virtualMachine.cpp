@@ -399,13 +399,17 @@ void VirtualMachine::execute(std::vector<Instruction>& instructions, Instruction
         }
         case Instruction::OperationCode::FOR: {
           HotSwapReturn hotswapReturn = this->hotspot.hotSwap(instruction);
-          Instruction &hotswap = hotswapReturn.instruction;
+          Instruction hotswap = hotswapReturn.instruction;
           if (hotswapReturn.isSwapped) {
             this->instructionSwapped = true;
-            auto it =
-                std::find(instructions.begin(), instructions.end(), instruction);
-            instructions.insert(it + 1, hotswap.block.begin(), hotswap.block.end());
-            instructions.erase(it);
+            int i = 0;
+            for (i = 0; i < instructions.size(); ++i) {
+                if (instructions[i] == instruction) {
+                    break;
+                }
+            }
+            instructions.insert(instructions.begin() + i + 1, hotswap.block.begin(), hotswap.block.end());
+            instructions.erase(instructions.begin() + i);
           } else {
             std::string variableName =
                 std::any_cast<std::string>(hotswap.register1);
@@ -420,15 +424,14 @@ void VirtualMachine::execute(std::vector<Instruction>& instructions, Instruction
             Instruction instructionAdd =
                 Instruction(Instruction(Instruction::OperationCode::ADD,
                                         variableName, variableName, 1));
-            execute(instructions, instructionAdd);
             while (conditions(hotswap)) {
               if (!hotswap.block.empty()) {
                 run(hotswap.block);
               }
               execute(instructions, instructionAdd);
             }
-            break;
           }
+          break;
         }
         case Instruction::OperationCode::FUNC: {
             std::string functionName = instruction.register1;
@@ -443,11 +446,11 @@ void VirtualMachine::execute(std::vector<Instruction>& instructions, Instruction
                 throw std::runtime_error("Unknown function");
             }
             
-            const Instruction &functionInstruction = functions[instruction.register1];
+            Instruction &functionInstruction = functions[instruction.register1];
 
             std::vector<std::string> params = functionInstruction.parameters;
 
-            std::vector<Instruction> functionBody = functionInstruction.block;
+            std::vector<Instruction>& functionBody = functionInstruction.block;
 
             auto args = instruction.register2;
             std::vector<std::any> valsForAlloc;
@@ -564,18 +567,21 @@ void VirtualMachine::execute(std::vector<Instruction>& instructions, Instruction
 }
 
 void VirtualMachine::run(std::vector<Instruction> &block) {
-  for (size_t i = 0; i < block.size(); ++i) {
-    Instruction instruction = block[i];
-    if (isReturning) {
-      break;
-    }
-    execute(block, instruction);
-    if (instructionSwapped) {
-        --i;
+    size_t i = 0;
+    while (i < block.size()) {
+      Instruction instruction = block[i];
+      if (isReturning) {
+        break;
+      }
+      execute(block, instruction);
+      this->hotspot.hotStat(instruction);
+      i++;
+      
+      if (instructionSwapped) {
+        i--;
         instructionSwapped = false;
+      }
     }
-    this->hotspot.hotStat(instruction);
-  }
 }
 
 bool VirtualMachine::conditions(const Instruction &instruction) {

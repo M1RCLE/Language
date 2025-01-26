@@ -1,19 +1,18 @@
-def f(var a) {
-  for (b: 1: a) {
+def f() {
+  for (b: 1: 3) {
     print(b);
   }
 }
 
-var a = 5;
-var result = f(a);
-var result = f(a);
-var result = f(a);
-var result = f(a);
-var result = f(a);
-var result = f(a);
-var result = f(a);
-var result = f(a);
-var result = f(a);
-var result = f(a);
-var result = f(a);
-var result = f(a);
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
