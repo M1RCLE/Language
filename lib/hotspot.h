@@ -9,6 +9,8 @@ struct InstructionEntry {
     long calls;
     const Instruction &original;
     const Instruction &jittered;
+    long originalTime = 0;
+    long jitterTime = 0;
     std::chrono::high_resolution_clock::time_point startTime;
 
     InstructionEntry(const Instruction &original, const Instruction &jittered, long calls) :

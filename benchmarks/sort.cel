@@ -55,10 +55,10 @@ def insertionSort (var arr, var size) {
     return arr;
 }
 
-var arr = new[100];
-var size = 100;
+var arr = new[200];
+var size = 200;
 var min = 1;
-var max = 100;
+var max = 10000;
 var arr = fillRandom(arr, size, min, max);
 
 var arr = insertionSort(arr, size);

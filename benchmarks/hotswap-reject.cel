@@ -1,0 +1,14 @@
+def f(var a) {
+  if (a > 20) {
+    var xx = 20;
+    while (xx > 0) {
+      var xx = xx - 1;
+    }
+  }
+  return a;
+}
+var a = 1000;
+for (b: 1: a) {
+  var c = f(b);
+}
+print(a);

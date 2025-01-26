@@ -404,9 +404,9 @@ void VirtualMachine::execute(const Instruction &instruction) {
         }
         case Instruction::OperationCode::FOR: {
             const Instruction &hotswop = this->hotspot.hotSwap(instruction);
-            std::string variableName = std::any_cast<std::string>(instruction.register1);
-            long startValue = getOperandValue(std::any_cast<std::string>(instruction.register2));
-            long endValue = getOperandValue(std::any_cast<std::string>(instruction.register3));
+            std::string variableName = std::any_cast<std::string>(hotswop.register1);
+            long startValue = getOperandValue(std::any_cast<std::string>(hotswop.register2));
+            long endValue = getOperandValue(std::any_cast<std::string>(hotswop.register3));
             execute(Instruction(Instruction::OperationCode::SAVE, variableName, startValue, nullptr));
             Instruction instructionAdd = Instruction(Instruction(Instruction::OperationCode::ADD, variableName, variableName, 1));
             execute(instructionAdd);
@@ -469,6 +469,7 @@ void VirtualMachine::execute(const Instruction &instruction) {
             }
 
             run(functionBody);
+            this->hotspot.hotStat(functionInstruction);
 
             std::any returnValue = memoryManager.getReturnValue();
             memoryManager.exitFunction();

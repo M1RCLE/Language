@@ -224,4 +224,6 @@ public:
     }
 };
 
+const std::string instructionTypeStr(const Instruction &instruction);
+
 #endif  // INSTRUCTION_H
