@@ -96,18 +96,14 @@ void VirtualMachine::loadFromFile(const std::string &filename) {
 
                                 std::getline(file, operand3, '\0');
 
-                                std::any operandCompare = operand2;
+                                std::vector<Instruction> nestedBlock = readNestedBlock(file);
                                 if (nestedOpCode == Instruction::OperationCode::FOR) {
-                                    operandCompare = operand2;
+                                    block.emplace_back(nestedOpCode, operand1, operand2, operand3, nestedBlock);
                                 } else {
-                                    operandCompare =
-                                        static_cast<Instruction::OperationCode>(operand2[0]);  
+                                    std::any operandCompare = static_cast<Instruction::OperationCode>(operand2[0]);
+                                    block.emplace_back(nestedOpCode, operand1, operandCompare, operand3, nestedBlock);
                                 }
 
-                                std::vector<Instruction> nestedBlock = readNestedBlock(file);
-                                block.emplace_back(nestedOpCode, operand1,
-                                                            operandCompare, operand3,
-                                                            nestedBlock);
                             } else {
                                 std::string nestedOperand1, nestedOperand2, nestedOperand3;
                                 std::getline(file, nestedOperand1, '\0');
@@ -150,13 +146,12 @@ void VirtualMachine::loadFromFile(const std::string &filename) {
                 opCode == Instruction::OperationCode::WHILE ||
                 opCode == Instruction::OperationCode::FOR) {
                 block = readNestedBlock(file);
-                std::any operandCompare;
                 if (opCode == Instruction::OperationCode::FOR) {
-                    operandCompare = operand2;
+                    instructions.emplace_back(opCode, operand1, operand2, operand3, block);
                 } else {
-                    operandCompare = static_cast<Instruction::OperationCode>(operand2[0]);
+                    std::any operandCompare = static_cast<Instruction::OperationCode>(operand2[0]);
+                    instructions.emplace_back(opCode, operand1, operandCompare, operand3, block);
                 }
-                instructions.emplace_back(opCode, operand1, operandCompare, operand3, block);
             } else {
                 instructions.emplace_back(opCode, operand1, operand2, operand3, block);
             }
@@ -207,11 +202,13 @@ std::vector<Instruction> VirtualMachine::readNestedBlock(std::ifstream &file) {
                 std::getline(file, operand2, '\0');
                 std::getline(file, operand3, '\0');
 
-                auto operandCompare = static_cast<Instruction::OperationCode>(operand2[0]);
-
                 std::vector<Instruction> nestedBlock = readNestedBlock(file);
-                block.emplace_back(nestedOpCode, operand1, operandCompare,
-                                               operand3, nestedBlock);
+                if (nestedOpCode == Instruction::OperationCode::FOR) {
+                    block.emplace_back(nestedOpCode, operand1, operand2, operand3, nestedBlock);
+                } else {
+                    auto operandCompare = static_cast<Instruction::OperationCode>(operand2[0]);
+                    block.emplace_back(nestedOpCode, operand1, operandCompare, operand3, nestedBlock);
+                }
             } else {
                 std::string nestedOperand1, nestedOperand2, nestedOperand3;
                 std::getline(file, nestedOperand1, '\0');
