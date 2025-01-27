@@ -2,8 +2,8 @@
 
 #include <map>
 
-#define STEP_TO_JIT 10
-#define STEP_TO_FIX 50
+#define STEP_TO_JIT 20
+#define STEP_TO_FIX 60
 
 HotSwapReturn HotSpot::hotSwap(Instruction& instruction) {
   bool swapped = false;
@@ -16,31 +16,40 @@ HotSwapReturn HotSpot::hotSwap(Instruction& instruction) {
     if (this->calls.find(instruction.operationId) == this->calls.end()) {
       entry = new InstructionEntry(instruction, 1);
       this->calls[instruction.operationId] = entry;
-//    std::cerr << "NEW SWAP: " << instructionTypeStr(instruction) << std::endl;
+      std::cerr << "new hotswap instruction : " << instructionTypeStr(instruction) << std::endl;
     } else {
       entry = this->calls[instruction.operationId];
       // Если сработало STEP_TO_JIT - обрабатываем jitterom;
       if (entry->calls == STEP_TO_JIT) {
-      // std::cerr << "STEP_TO_JIT: " << instructionTypeStr(instruction) << std::endl;
-        Instruction jittered = this->jitter.process(instruction);
-        swapped = true;
-        long originalTime = entry->originalTime;
-        entry = new InstructionEntry(instruction, jittered, STEP_TO_JIT + 1);
-        entry->originalTime = originalTime;
-        delete this->calls[instruction.operationId];
-        entry->startTime = std::chrono::high_resolution_clock::now();
-        this->calls[instruction.operationId] = entry;
-        HotSwapReturn r = HotSwapReturn(jittered, swapped);
-        std::cerr << "instruction " << instructionTypeStr(instruction) << " has been jittered" << std::endl;
-
-        return r;
+        Instruction* jittered = this->jitter.process(&instruction);
+        if (jittered != nullptr) {
+          std::cerr << "hotswap jittered for: " << instructionTypeStr(instruction) << std::endl;
+          swapped = true;
+          long originalTime = entry->originalTime;
+          entry = new InstructionEntry(instruction, jittered, STEP_TO_JIT + 1);
+          entry->originalTime = originalTime;
+          delete this->calls[instruction.operationId];
+          this->calls[instruction.operationId] = entry;
+          entry->jittered = jittered;
+          entry->startTime = std::chrono::high_resolution_clock::now();
+          HotSwapReturn r = HotSwapReturn(jittered, swapped);
+          return r;
+        } else {
+          entry->calls++;
+        }
       } else {
-        entry->calls++;
+          entry->calls++;
+          if (entry->jittered != nullptr) {
+            Instruction* jittered = entry->jittered;
+            HotSwapReturn r = HotSwapReturn(jittered, true);
+            entry->startTime = std::chrono::high_resolution_clock::now();
+            return HotSwapReturn(jittered, true);
+          }
       }
     }
     entry->startTime = std::chrono::high_resolution_clock::now();
   }
-  HotSwapReturn r = HotSwapReturn(instruction, swapped);
+  HotSwapReturn r = HotSwapReturn(&instruction, swapped);
   return r;
 }
 
@@ -72,7 +81,7 @@ const void HotSpot::hotStat(const Instruction& instruction) {
         std::cerr << "instruction " << instructionTypeStr(instruction)
                   << " jit code has been rejected" << std::endl;
         InstructionEntry* newEntry =
-            new InstructionEntry(instruction, entry.original, STEP_TO_FIX + 1);
+            new InstructionEntry(instruction, nullptr, STEP_TO_FIX + 1);
         delete &entry;
         this->calls[instruction.operationId] = newEntry;
       } else {

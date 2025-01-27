@@ -8,27 +8,28 @@
 struct InstructionEntry {
     long calls;
     const Instruction &original;
-    const Instruction &jittered;
+    Instruction* jittered;
     long originalTime = 0;
     long jitterTime = 0;
     std::chrono::high_resolution_clock::time_point startTime;
 
-    InstructionEntry(const Instruction &original, const Instruction &jittered, long calls) :
+    InstructionEntry(const Instruction &original, Instruction *jittered, long calls) :
         original(original), jittered(jittered), calls(calls) {};
 
     InstructionEntry(const Instruction &original) :
-        original(original), jittered(original), calls(0) {};
+        original(original), jittered(nullptr), calls(0) {};
 
     InstructionEntry(const Instruction &original, long calls) :
-        original(original), jittered(original), calls(calls) {};
+        original(original), jittered(nullptr), calls(calls) {};
 
 };
 
 struct HotSwapReturn {
-  Instruction instruction;
+  Instruction* instruction;
   bool isSwapped;
 
-  HotSwapReturn(Instruction _instruction, bool _isSwapped) : instruction(_instruction), isSwapped(_isSwapped) {}
+  HotSwapReturn(Instruction* _instruction, bool _isSwapped) : instruction(_instruction), isSwapped(_isSwapped) {}
+
 };
 
 class HotSpot {

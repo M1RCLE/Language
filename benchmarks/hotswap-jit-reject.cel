@@ -1,6 +1,6 @@
 def f(var a) {
-  if (a > 10) {
-    var xx = 20;
+  if (a > 40) {
+    var xx = 200;
     while (xx > 0) {
       var xx = xx - 1;
     }

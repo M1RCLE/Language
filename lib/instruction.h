@@ -127,6 +127,33 @@ class Instruction {
         target(),
         parameters(parameters) {}
 
+
+  Instruction(Instruction* instraction)
+      : operationCode(instraction->operationCode),
+      register1(instraction->register1),
+      register2(instraction->register2),
+      register3(instraction->register3),
+      block(instraction->block),
+      target(instraction->target),
+      parameters(instraction->parameters),
+      operationId(instraction->operationId) {}
+  
+  Instruction(Instruction* instraction, std::vector<Instruction> *block)
+      : operationCode(instraction->operationCode),
+      register1(instraction->register1),
+      register2(instraction->register2),
+      register3(instraction->register3),
+      target(instraction->target),
+      parameters(instraction->parameters),
+      operationId(instraction->operationId) {
+        if (block != nullptr) {
+          std::cerr << "ADD INSTRUCTIONS" << block->size() << std::endl;
+          for (Instruction instruction:*block) {
+            this->block.push_back(instruction);
+          }
+        }
+      }
+
   Instruction()
       : operationCode(OperationCode::SAVE),
         register1(),

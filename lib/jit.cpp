@@ -97,11 +97,15 @@ Instruction jit_for_process(Instruction instruction) {
   return instruction;
 }
 
-Instruction Jit::process(Instruction instruction) {
-  if (instruction.operationCode != Instruction::OperationCode::FOR) {
-    return jit_function_process(instruction);
+Instruction* Jit::process(Instruction* instruction) {
+  if (instruction->operationCode != Instruction::OperationCode::FOR) {
+    Instruction* jittered = jit_function_process(instruction);
+    // std::cerr << "JITER for: " << instructionTypeStr(*instruction) << (jittered == nullptr ? "ORIGINAL" : "NEW") << instructionTypeStr(instruction);
+    return jittered;
   } else  {
-    return jit_for_process(instruction);
+    Instruction pocessInstraction = *instruction;
+    Instruction newInstruction = jit_for_process(pocessInstraction);
+    return new Instruction(newInstruction);
   }
   return instruction;
 }

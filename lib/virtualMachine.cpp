@@ -399,9 +399,18 @@ void VirtualMachine::execute(std::vector<Instruction>& instructions, Instruction
             break;
         }
         case Instruction::OperationCode::FOR: {
-          HotSwapReturn hotswapReturn = this->hotspot.hotSwap(instruction);
-          Instruction hotswap = hotswapReturn.instruction;
-          if (hotswapReturn.isSwapped) {
+          Instruction* hotswapRef = nullptr;
+          bool isSwapped = false;
+          if (instruction.register1 != "l") {
+              HotSwapReturn hotswapReturn = this->hotspot.hotSwap(instruction);
+              isSwapped = hotswapReturn.isSwapped;
+              hotswapRef = hotswapReturn.instruction;
+          } else {
+              hotswapRef = &instruction;
+          }
+          Instruction& hotswap = *hotswapRef;
+
+          if (isSwapped) {
             this->instructionSwapped = true;
             int i = 0;
             for (i = 0; i < instructions.size(); ++i) {
@@ -446,10 +455,11 @@ void VirtualMachine::execute(std::vector<Instruction>& instructions, Instruction
             if (!functions.contains(instruction.register1)) {
                 throw std::runtime_error("Unknown function");
             }
-            
+
             Instruction &currentFunctionInstraction = functions[instruction.register1];
+            functions[instruction.register1] = currentFunctionInstraction;
             HotSwapReturn hotswapReturn = this->hotspot.hotSwap(currentFunctionInstraction);
-            Instruction &functionInstruction = hotswapReturn.instruction;
+            Instruction &functionInstruction = *hotswapReturn.instruction;
 
             std::vector<std::string> params = functionInstruction.parameters;
 

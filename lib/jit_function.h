@@ -3,6 +3,6 @@
 
 #include "jit.h"
 
-Instruction jit_function_process(Instruction instruction);
+Instruction* jit_function_process(Instruction* instruction);
 
 #endif

@@ -5,6 +5,21 @@ def f() {
   }
 }
 
+
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
 var result = f();
 var result = f();
 var result = f();

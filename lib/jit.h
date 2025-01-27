@@ -5,7 +5,7 @@
 
 class Jit {
  public:
-  Instruction process(Instruction instruction);
+  Instruction* process(Instruction* instruction);
 
   Jit() {}
 };
