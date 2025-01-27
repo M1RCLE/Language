@@ -1,1 +1,1 @@
-# Social Safe Language (SoSaL)
+# C++ Enjoyers Language (CEL)

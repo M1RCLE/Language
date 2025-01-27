@@ -1,0 +1,33 @@
+def f() {
+  var b = 9;
+  if (2 < 3) {
+    print(b);
+  }
+}
+
+
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();

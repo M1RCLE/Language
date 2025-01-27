@@ -1,0 +1,27 @@
+def f() {
+  for (b: 5: 6) {
+    print(b);
+  }
+}
+
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();
+var result = f();

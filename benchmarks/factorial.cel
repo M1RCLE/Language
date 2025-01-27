@@ -1,0 +1,14 @@
+def x(var a) {
+    var name = 1;
+    if (a < 2) {
+        return name;
+    }
+    var b = a - 1;
+    var tmpa = x(b);
+    var tmp = a * tmpa;
+    return tmp;
+}
+
+var a = 20;
+var result = x(a);
+print(result);

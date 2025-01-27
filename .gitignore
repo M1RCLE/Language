@@ -1,5 +1,18 @@
 # Prerequisites
 *.d
+antlr4-module
+
+**/CMakeFiles*
+**cmake_install*
+**/*.bytecel
+**/Makefile
+**/CMakeCache*
+bin/CEL
+
+.cmake/**
+.ninja*
+build.ninja
+Testing/**
 
 # Compiled Object files
 *.slo
@@ -33,3 +46,7 @@
 
 .idea
 cmake-build-debug
+cmake-build-release
+
+build/
+.vscode/

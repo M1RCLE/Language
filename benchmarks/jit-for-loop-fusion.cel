@@ -1,0 +1,21 @@
+def f() {
+    var result = 100;
+    var a = 0;
+    var b = 1;
+    var end = 2;
+    var r = 0;
+      var r = 1;
+      for(i: 0: end) {
+        var a = a + 1;
+      }
+      for (i: 0: end) {
+        var b = b + 1;
+      }
+    var result = a + b;
+    return result;
+}
+var result = 10;
+for (f: 0: 100) {
+  var result = f();
+}
+print(result);

@@ -1,0 +1,24 @@
+add_library(Language
+    compiler.cpp
+    compiler.h
+    instruction.h
+    instruction.cpp
+    jit.h
+    jit.cpp
+    jit_function.h
+    jit_function.cpp
+    jit_for_fusion.h
+    jit_for_fusion.cpp
+    hotspot.h
+    hotspot.cpp
+    lexer.cpp
+    lexer.h
+    lib.h
+    memoryManager.cpp
+    memoryManager.h
+    parser.cpp
+    parser.h
+    token.cpp
+    token.h
+    virtualMachine.cpp
+    virtualMachine.h)
