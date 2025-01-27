@@ -1,7 +1,7 @@
 #include "jit.h"
 
 #include "utils.h"
-#include "jit-function.h"
+#include "jit_function.h"
 
 bool shouldUnrollFor(Instruction instruction) {
   try {

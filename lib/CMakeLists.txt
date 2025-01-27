@@ -5,10 +5,10 @@ add_library(Language
     instruction.cpp
     jit.h
     jit.cpp
-    jit-function.h
-    jit-function.cpp
-    jit-for-fusion.h
-    jit-for-fusion.cpp
+    jit_function.h
+    jit_function.cpp
+    jit_for_fusion.h
+    jit_for_fusion.cpp
     hotspot.h
     hotspot.cpp
     lexer.cpp
