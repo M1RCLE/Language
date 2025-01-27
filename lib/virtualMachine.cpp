@@ -447,7 +447,9 @@ void VirtualMachine::execute(std::vector<Instruction>& instructions, Instruction
                 throw std::runtime_error("Unknown function");
             }
             
-            Instruction &functionInstruction = functions[instruction.register1];
+            Instruction &currentFunctionInstraction = functions[instruction.register1];
+            HotSwapReturn hotswapReturn = this->hotspot.hotSwap(currentFunctionInstraction);
+            Instruction &functionInstruction = hotswapReturn.instruction;
 
             std::vector<std::string> params = functionInstruction.parameters;
 

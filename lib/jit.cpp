@@ -9,7 +9,7 @@ bool shouldUnrollFor(Instruction instruction) {
     long endValue =
         std::stol(std::any_cast<std::string>(instruction.register3));
     return (endValue - startValue) <= 8;
-  } catch (const std::bad_any_cast&) {
+  } catch (const std::exception&) {
     return false;
   }
 }
@@ -64,7 +64,7 @@ Instruction unrollLoop(Instruction instruction) {
   Instruction instr = unrollIf(instruction);
   Instruction unrolledLoop;
   unrolledLoop.operationCode = Instruction::OperationCode::FOR;
-  std::string variableName = std::any_cast<std::string>(instr.register1);
+  std::string variableName = instr.register1;
   long startValue = std::stol(std::any_cast<std::string>(instr.register2));
   long endValue = std::stol(std::any_cast<std::string>(instr.register3));
   Instruction instructionStore = Instruction(Instruction::OperationCode::SAVE,

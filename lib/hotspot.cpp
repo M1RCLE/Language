@@ -7,15 +7,21 @@
 
 HotSwapReturn HotSpot::hotSwap(Instruction& instruction) {
   bool swapped = false;
-  if (instruction.operationCode == Instruction::OperationCode::FOR) {
+  if (
+    instruction.operationCode == Instruction::OperationCode::FOR ||
+    instruction.operationCode == Instruction::OperationCode::WHILE ||
+    instruction.operationCode == Instruction::OperationCode::FUNC
+  ) {
     InstructionEntry* entry;
     if (this->calls.find(instruction.operationId) == this->calls.end()) {
       entry = new InstructionEntry(instruction, 1);
       this->calls[instruction.operationId] = entry;
+//    std::cerr << "NEW SWAP: " << instructionTypeStr(instruction) << std::endl;
     } else {
       entry = this->calls[instruction.operationId];
       // Если сработало STEP_TO_JIT - обрабатываем jitterom;
       if (entry->calls == STEP_TO_JIT) {
+      // std::cerr << "STEP_TO_JIT: " << instructionTypeStr(instruction) << std::endl;
         Instruction jittered = this->jitter.process(instruction);
         swapped = true;
         long originalTime = entry->originalTime;
@@ -25,6 +31,8 @@ HotSwapReturn HotSpot::hotSwap(Instruction& instruction) {
         entry->startTime = std::chrono::high_resolution_clock::now();
         this->calls[instruction.operationId] = entry;
         HotSwapReturn r = HotSwapReturn(jittered, swapped);
+        std::cerr << "instruction " << instructionTypeStr(instruction) << " has been jittered" << std::endl;
+
         return r;
       } else {
         entry->calls++;
