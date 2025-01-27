@@ -1,6 +1,7 @@
 #include "jit.h"
 
 #include "utils.h"
+#include "jit-function.h"
 
 bool shouldUnrollFor(Instruction instruction) {
   try {
@@ -85,10 +86,7 @@ Instruction unrollLoop(Instruction instruction) {
   return unrolledLoop;
 }
 
-Instruction Jit::process(Instruction instruction) {
-  if (instruction.operationCode != Instruction::OperationCode::FOR) {
-    return instruction;
-  }
+Instruction jit_for_process(Instruction instruction) {
   Instruction processedInstruction;
   if (shouldUnrollFor(instruction)) {
     std::cerr << "Unrolling FOR loop: " << instructionTypeStr(instruction)
@@ -96,6 +94,14 @@ Instruction Jit::process(Instruction instruction) {
     processedInstruction = unrollLoop(instruction);
     return processedInstruction;
   }
+  return instruction;
+}
 
+Instruction Jit::process(Instruction instruction) {
+  if (instruction.operationCode != Instruction::OperationCode::FOR) {
+    return jit_function_process(instruction);
+  } else  {
+    return jit_for_process(instruction);
+  }
   return instruction;
 }
