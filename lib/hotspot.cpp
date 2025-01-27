@@ -78,15 +78,15 @@ const void HotSpot::hotStat(const Instruction& instruction) {
                 << " original avr time: " << originalAvgTime
                 << ", jittered avr time: " << jitteredAvgTime << std::endl;
       if (jitteredAvgTime > originalAvgTime) {
-        std::cerr << "instruction " << instructionTypeStr(instruction)
-                  << " jit code has been rejected" << std::endl;
+//        std::cerr << "instruction " << instructionTypeStr(instruction)
+//                  << " jit code has been rejected" << std::endl;
         InstructionEntry* newEntry =
             new InstructionEntry(instruction, nullptr, STEP_TO_FIX + 1);
         delete &entry;
         this->calls[instruction.operationId] = newEntry;
       } else {
-        std::cerr << "instruction " << instructionTypeStr(instruction)
-                  << " jit code has been approved" << std::endl;
+//        std::cerr << "instruction " << instructionTypeStr(instruction)
+//                  << " jit code has been approved" << std::endl;
       }
     }
   }

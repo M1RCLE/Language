@@ -9,6 +9,11 @@ antlr4-module
 **/CMakeCache*
 bin/CEL
 
+.cmake/**
+.ninja*
+build.ninja
+Testing/**
+
 # Compiled Object files
 *.slo
 *.lo

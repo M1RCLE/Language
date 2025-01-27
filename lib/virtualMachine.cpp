@@ -391,7 +391,8 @@ void VirtualMachine::execute(std::vector<Instruction>& instructions, Instruction
             break;
         }
         case Instruction::OperationCode::WHILE: {
-            while (conditions(instruction)) {
+            HotSwapReturn hotswapReturn = this->hotspot.hotSwap(instruction);
+             while (conditions(*hotswapReturn.instruction)) {
               if (!instruction.block.empty()) {
                 run(instruction.block);
               }

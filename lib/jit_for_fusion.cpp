@@ -30,6 +30,7 @@ Instruction* buildLoopInstruction(Instruction* currentInstruction, Instruction &
                     newLoop->block.emplace_back(first);
                     std::cerr << "\t\t\t" << instructionTypeStr(first) << " - " << first.register1 << std::endl;
                }
+              newInstruction->block.emplace_back(newLoop);
           } else if (pos == line_num+1) {
                for (Instruction second: instruction.block) {
                     newLoop->block.emplace_back(second);
@@ -38,41 +39,6 @@ Instruction* buildLoopInstruction(Instruction* currentInstruction, Instruction &
           }
           pos++;
      }
-     std::cerr << "\t\tLOOP FUSION PROCESS: " << instructionTypeStr(*newInstruction) << std::endl;
-     return newInstruction;
-//     Instruction newInstruction = new Instruction(currentInstruction);
-//     std::cerr << "RETURN JITTERED: " << instructionTypeStr(newInstruction) << std::endl;
-//     return new Instruction(currentInstruction);
-}
-
-Instruction* buildLoopInstruction1(Instruction* currentInstruction, Instruction &firstLoop, Instruction &secondLoop, int line_num) {
-     std::vector<Instruction> loopBlock;
-     std::cerr << "  REWRITE: " << instructionTypeStr(currentInstruction) << " - " << currentInstruction->register1 << std::endl;
-
-     for (Instruction instruction : firstLoop.block) {
-          std::cerr << "  >> LEFT >> " << instructionTypeStr(instruction) << " - " << instruction.register1 << std::endl;
-          loopBlock.push_back(instruction);
-     }
-     for (Instruction instruction : secondLoop.block) {
-          std::cerr << "  >> RIGHT >> " << instructionTypeStr(instruction) << " - " << instruction.register1 << std::endl;
-          loopBlock.push_back(instruction);
-     }
-      std::cerr << "  " << std::endl;
-
-     Instruction* newLoop = new Instruction(&firstLoop, &loopBlock);
-     std::vector<Instruction> *instructionBlock = new std::vector<Instruction>;
-     int i=0;
-     for(Instruction instruction : currentInstruction->block) {
-          if (i < line_num || i>line_num+1) {
-               std::cerr << "  >> INSTUCTIONS . >> " << instructionTypeStr(instruction) << " - " << instruction.register1 << std::endl;
-               newLoop->block.push_back(instruction);
-          } else if (line_num == i) {
-               std::cerr << " INSTUCTIONS + " << instructionTypeStr(instruction) << " - " << instruction.register1 << std::endl;
-               instructionBlock->push_back(*newLoop);
-          }
-          i++;
-     }
-     Instruction* newInstruction = new Instruction(currentInstruction, instructionBlock);
      std::cerr << "\t\tLOOP FUSION PROCESS: " << instructionTypeStr(*newInstruction) << std::endl;
      return newInstruction;
 //     Instruction newInstruction = new Instruction(currentInstruction);

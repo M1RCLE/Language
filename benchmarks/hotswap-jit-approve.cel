@@ -1,5 +1,5 @@
 def f(var a) {
-  if (a > 10) {
+  if (a > 20) {
     for (l: 0: 10) {
       var x = 1;
     }
